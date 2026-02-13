@@ -12,3 +12,4 @@ out/
 
 # misc
 next-env.d.ts
+tsconfig.tsbuildinfo
