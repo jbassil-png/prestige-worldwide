@@ -1,5 +1,3 @@
-const nextConfig = {
-  basePath: '/prestige-worldwide',
-};
+const nextConfig = {};
 
 export default nextConfig;
