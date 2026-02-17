@@ -1,26 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [magicSent, setMagicSent] = useState(false);
+  // When email confirmation is required, Supabase returns a user but no session
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
       setError(error.message);
@@ -28,8 +30,15 @@ export default function SignUpPage() {
       return;
     }
 
-    router.push("/onboarding");
-    router.refresh();
+    if (data.session) {
+      // Email confirmation is disabled — session is live immediately
+      router.refresh();
+      router.push("/onboarding");
+    } else {
+      // Email confirmation is required — tell the user to check their inbox
+      setConfirmationSent(true);
+      setLoading(false);
+    }
   }
 
   async function handleMagicLink() {
@@ -40,7 +49,14 @@ export default function SignUpPage() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const redirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: redirectTo,
+        shouldCreateUser: true,
+      },
+    });
 
     if (error) {
       setError(error.message);
@@ -50,6 +66,24 @@ export default function SignUpPage() {
 
     setMagicSent(true);
     setLoading(false);
+  }
+
+  if (confirmationSent) {
+    return (
+      <div className="text-center space-y-3">
+        <div className="text-4xl">📬</div>
+        <h2 className="text-lg font-semibold text-gray-800">Confirm your email</h2>
+        <p className="text-sm text-gray-500">
+          We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.
+        </p>
+        <button
+          onClick={() => setConfirmationSent(false)}
+          className="text-sm text-brand-600 hover:underline"
+        >
+          Use a different email
+        </button>
+      </div>
+    );
   }
 
   if (magicSent) {
