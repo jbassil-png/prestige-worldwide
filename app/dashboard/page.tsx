@@ -67,7 +67,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardClient
-      initialPlan={plan}
+      initialPlan={plan!}
       initialNews={newsItems}
       residenceCurrency={residenceCurrency}
       retirementCurrency={retirementCurrency}
