@@ -57,12 +57,15 @@ export default function DashboardClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(meta),
       });
+      if (!res.ok) throw new Error(`Plan refresh failed (${res.status})`);
       const updated = await res.json();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("user_plans").insert({ user_id: user.id, plan: { ...updated, meta } });
       }
       setPlan({ ...updated, meta });
+    } catch (err) {
+      console.error("handleRefreshPlan:", err);
     } finally {
       setRefreshing(false);
     }

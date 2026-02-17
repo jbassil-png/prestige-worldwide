@@ -1,18 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignInPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const searchParams = useSearchParams();
+  const supabase = useMemo(() => createClient(), []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    searchParams.get("error") === "auth_callback_error"
+      ? "The sign-in link was invalid or has expired. Please try again."
+      : null
+  );
   const [magicSent, setMagicSent] = useState(false);
 
   async function handlePasswordSignIn(e: React.FormEvent) {
@@ -28,8 +33,9 @@ export default function SignInPage() {
       return;
     }
 
-    router.push("/dashboard");
+    // Refresh server components so the new session is visible, then navigate
     router.refresh();
+    router.push("/dashboard");
   }
 
   async function handleMagicLink() {
@@ -40,7 +46,11 @@ export default function SignInPage() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const redirectTo = `${window.location.origin}/auth/callback?next=/dashboard`;
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo },
+    });
 
     if (error) {
       setError(error.message);

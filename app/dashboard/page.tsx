@@ -47,8 +47,6 @@ export default async function DashboardPage() {
     return <DashboardClient />;
   }
 
-  if (!plan) redirect("/onboarding");
-
   const residenceCurrency =
     (plan as Plan & { meta?: { residenceCountry?: string } }).meta?.residenceCountry === "Canada"
       ? "CAD"

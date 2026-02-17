@@ -35,14 +35,22 @@ export async function middleware(request: NextRequest) {
   if (!user && (pathname.startsWith("/dashboard") || pathname.startsWith("/onboarding"))) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach(({ name, value, ...rest }) => {
+      redirectResponse.cookies.set(name, value, rest);
+    });
+    return redirectResponse;
   }
 
   // Redirect authenticated users away from auth pages
   if (user && (pathname === "/sign-in" || pathname === "/sign-up")) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach(({ name, value, ...rest }) => {
+      redirectResponse.cookies.set(name, value, rest);
+    });
+    return redirectResponse;
   }
 
   return supabaseResponse;
