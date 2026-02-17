@@ -1,13 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,6 +21,7 @@ export default function SignUpPage() {
     setLoading(true);
     setError(null);
 
+    const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
@@ -49,6 +49,7 @@ export default function SignUpPage() {
     setLoading(true);
     setError(null);
 
+    const supabase = createClient();
     const redirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
     const { error } = await supabase.auth.signInWithOtp({
       email,

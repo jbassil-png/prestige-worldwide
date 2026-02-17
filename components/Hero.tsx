@@ -6,11 +6,14 @@ export default function Hero() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
-    // TODO: wire up to a real backend (Resend, Mailchimp, Supabase, etc.)
-    console.log("Early access request:", email);
+    await fetch("/api/email/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
     setSubmitted(true);
   }
 
