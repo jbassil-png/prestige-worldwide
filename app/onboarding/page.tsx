@@ -14,7 +14,6 @@ type WizardData = {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
@@ -52,6 +51,7 @@ export default function OnboardingPage() {
       const plan = await planRes.json();
 
       // Persist plan to Supabase (best-effort — works with or without Supabase configured)
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("user_plans").insert({
