@@ -1,28 +1,9 @@
-"use client";
-
-import { useState } from "react";
+import Link from "next/link";
 
 export default function Hero() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-    await fetch("/api/email/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    setSubmitted(true);
-  }
-
   return (
     <section className="pt-32 pb-24 px-6 bg-gradient-to-b from-brand-50 to-white">
       <div className="max-w-3xl mx-auto text-center">
-        <div className="inline-block bg-brand-100 text-brand-700 text-sm font-medium px-3 py-1 rounded-full mb-6">
-          Now in private beta
-        </div>
         <h1 className="text-5xl font-extrabold text-slate-900 leading-tight mb-6">
           Your finances don&apos;t stop at borders.
           <br />
@@ -34,38 +15,23 @@ export default function Hero() {
           you can plan with the full picture.
         </p>
 
-        {submitted ? (
-          <div className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-6 py-5 inline-block">
-            <p className="font-semibold">You&apos;re on the list.</p>
-            <p className="text-sm mt-1 text-green-700">
-              We&apos;ll be in touch when your spot is ready.
-            </p>
-          </div>
-        ) : (
-          <form
-            id="early-access"
-            onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto"
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link
+            href="/sign-up"
+            className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors whitespace-nowrap"
           >
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-            <button
-              type="submit"
-              className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors whitespace-nowrap"
-            >
-              Request early access
-            </button>
-          </form>
-        )}
+            Get started
+          </Link>
+          <Link
+            href="/sign-in"
+            className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-8 py-3 rounded-lg border border-slate-300 transition-colors whitespace-nowrap"
+          >
+            Sign in
+          </Link>
+        </div>
 
-        <p className="mt-4 text-xs text-slate-400">
-          No spam, ever. Unsubscribe any time.
+        <p className="mt-6 text-sm text-slate-500">
+          Free to start. No credit card required.
         </p>
       </div>
     </section>
