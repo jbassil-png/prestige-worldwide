@@ -28,7 +28,24 @@ This document tracks non-critical issues and improvements identified during test
 
 ## Bug Fixes
 
-_(Empty - will add as we find issues during testing)_
+### 1. News API Returns Empty Array Without API Key
+**Issue:** When `OPENROUTER_API_KEY` is not configured, the `/api/news` endpoint returns an empty items array instead of stub/mock news.
+
+**Current Behavior:**
+- API returns `{ "items": [] }` when OpenRouter API key is missing
+- Users see empty news panel with no content
+- No indication that stub data should be shown
+
+**Expected Behavior:**
+- Should return stub news data (defined in `STUB_NEWS` constant) when API key is not configured
+- Code has fallback logic (lines 46-47) but it's not triggering correctly
+
+**Location:** `app/api/news/route.ts` lines 44-48
+
+**Impact:** News panel appears broken until OpenRouter API is configured
+
+**Priority:** Medium
+**Effort:** Small - Debug why the fallback condition isn't working
 
 ---
 
