@@ -93,7 +93,19 @@
 
 ## Project Overview
 
-**Prestige Worldwide** is an AI-powered personal finance web app for people with cross-border financial lives — expats, dual citizens, cross-border workers, international retirees. It allows users to connect bank accounts across multiple countries, receive a personalised AI financial plan, and get daily AI-powered insights and news.
+### 🎯 Core Mission
+
+**Democratizing sophisticated wealth management through AI-powered investment advisory**
+
+Making institutional-grade investment strategies accessible to everyday investors through:
+- Personalized multi-asset portfolio recommendations
+- Real-time market data integration
+- AI-powered risk assessment and rebalancing
+- Educational approach to financial literacy
+
+**Target Users:** People with cross-border financial lives — expats, dual citizens, cross-border workers, international retirees.
+
+**Key Features:** Connect bank accounts across multiple countries, receive a personalised AI financial plan, and get daily AI-powered insights and news.
 
 **Repo:** `jbassil-png/prestige-worldwide`
 **Primary dev branch:** `claude/start-planning-gWIXp`
@@ -352,3 +364,27 @@ This ensures every PR has proper documentation and context.
 - **N8N not configured** — plan generation and chat use OpenRouter fallback. If more sophisticated AI orchestration is needed later, n8n can be added.
 - **No RLS (Row Level Security)** on Supabase tables — this should be addressed before any real user data is stored.
 - **OpenRouter model for plan/chat** — currently defaults to `claude-3.5-haiku`. Can be changed via `OPENROUTER_MODEL` env var.
+
+---
+
+## 🎓 Learning Resources
+
+### **Supabase:**
+- Official docs: https://supabase.com/docs
+- Key concepts: PostgreSQL, Row Level Security (RLS), Auth, Realtime, Edge Functions
+- Will learn: Database design, security policies, authentication flows, real-time subscriptions
+
+### **N8N:**
+- Official docs: https://docs.n8n.io/
+- Key concepts: Nodes, connections, expressions, webhooks
+- Will learn: Visual workflow building, API orchestration, data transformation
+
+### **OpenRouter:**
+- Official docs: https://openrouter.ai/docs
+- Key concepts: Model selection, pricing, streaming, fallbacks
+- Will learn: Choosing models per use case, cost optimization, prompt engineering
+
+### **Testing (Future):**
+- Vitest: https://vitest.dev/
+- React Testing Library: https://testing-library.com/react
+- Playwright: https://playwright.dev/
