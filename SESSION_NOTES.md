@@ -93,12 +93,47 @@
 
 ## Project Overview
 
-**Prestige Worldwide** is an AI-powered personal finance web app for people with cross-border financial lives — expats, dual citizens, cross-border workers, international retirees. It allows users to connect bank accounts across multiple countries, receive a personalised AI financial plan, and get daily AI-powered insights and news.
+### 🎯 Core Mission
+
+**Democratizing sophisticated wealth management through AI-powered investment advisory**
+
+Making institutional-grade investment strategies accessible to everyday investors through:
+- Personalized multi-asset portfolio recommendations
+- Real-time market data integration
+- AI-powered risk assessment and rebalancing
+- Educational approach to financial literacy
+
+**Target Users:** People with cross-border financial lives — expats, dual citizens, cross-border workers, international retirees.
+
+**Key Features:** Connect bank accounts across multiple countries, receive a personalised AI financial plan, and get daily AI-powered insights and news.
 
 **Repo:** `jbassil-png/prestige-worldwide`
 **Primary dev branch:** `claude/start-planning-gWIXp`
 **Production branch:** `main`
 **Deployment:** Vercel (auto-deploys on push to `main`)
+
+### 🎓 Learning-First Development Approach
+
+**This project emphasizes learning by doing with hands-on guidance.** The development process is designed to build sustainable knowledge, not just working code.
+
+**Primary Learning Objectives:**
+1. **Supabase (Backend-as-a-Service):** Understanding PostgreSQL database design, Row Level Security (RLS), authentication, real-time subscriptions, and serverless functions
+2. **N8N (Workflow Automation):** Understanding visual workflow design, webhooks, API orchestration, data transformation, error handling
+3. **OpenRouter (Model Marketplace):** Navigating model selection, cost optimization, prompt engineering, streaming vs. non-streaming responses
+
+**Teaching Methodology:**
+- **Explain the concept** (what and why)
+- **Show an example** (how it works)
+- **User does it** (hands-on practice)
+- **Review together** (understanding check)
+
+**Why This Matters:**
+- Owner wants sustainable knowledge, not just working code
+- Learning these tools enables independent feature development
+- Understanding architecture enables better decision-making
+- Hands-on experience builds confidence and ownership
+
+⚠️ **For future sessions:** Always check if user wants to learn something hands-on vs. having it built for them. Default to teaching mode when introducing new tools/concepts.
 
 ---
 
@@ -251,6 +286,32 @@ Work has been done across multiple PRs, all merged from `claude/start-planning-g
 
 ---
 
+## Development Workflow
+
+### **Branch Strategy:**
+- Main development happens on `claude/start-planning-*` branches
+- Commit frequently with descriptive messages
+- Push when work is complete or at logical checkpoints
+
+### **Pull Request Workflow:**
+**⚠️ ALWAYS create a PR with title and description when ready to push**
+
+When work is complete and pushed:
+1. **Review commits** included in the PR (`git log origin/main..HEAD`)
+2. **Generate PR title** - Clear, concise summary (< 70 characters)
+3. **Write PR description** with:
+   - Summary (bullet points of key changes)
+   - Detailed sections (Security, Documentation, Features, etc.)
+   - Learning objectives if applicable
+   - Next steps
+   - Test plan checklist
+   - Session link
+4. **Create the PR** using `gh pr create` with formatted title and body
+
+This ensures every PR has proper documentation and context.
+
+---
+
 ## Current Status (Updated: Feb 27, 2026)
 
 - **App is live on Vercel** — Production deployment working
@@ -303,3 +364,27 @@ Work has been done across multiple PRs, all merged from `claude/start-planning-g
 - **N8N not configured** — plan generation and chat use OpenRouter fallback. If more sophisticated AI orchestration is needed later, n8n can be added.
 - **No RLS (Row Level Security)** on Supabase tables — this should be addressed before any real user data is stored.
 - **OpenRouter model for plan/chat** — currently defaults to `claude-3.5-haiku`. Can be changed via `OPENROUTER_MODEL` env var.
+
+---
+
+## 🎓 Learning Resources
+
+### **Supabase:**
+- Official docs: https://supabase.com/docs
+- Key concepts: PostgreSQL, Row Level Security (RLS), Auth, Realtime, Edge Functions
+- Will learn: Database design, security policies, authentication flows, real-time subscriptions
+
+### **N8N:**
+- Official docs: https://docs.n8n.io/
+- Key concepts: Nodes, connections, expressions, webhooks
+- Will learn: Visual workflow building, API orchestration, data transformation
+
+### **OpenRouter:**
+- Official docs: https://openrouter.ai/docs
+- Key concepts: Model selection, pricing, streaming, fallbacks
+- Will learn: Choosing models per use case, cost optimization, prompt engineering
+
+### **Testing (Future):**
+- Vitest: https://vitest.dev/
+- React Testing Library: https://testing-library.com/react
+- Playwright: https://playwright.dev/
