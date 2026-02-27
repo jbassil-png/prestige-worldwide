@@ -100,6 +100,29 @@
 **Production branch:** `main`
 **Deployment:** Vercel (auto-deploys on push to `main`)
 
+### 🎓 Learning-First Development Approach
+
+**This project emphasizes learning by doing with hands-on guidance.** The development process is designed to build sustainable knowledge, not just working code.
+
+**Primary Learning Objectives:**
+1. **Supabase (Backend-as-a-Service):** Understanding PostgreSQL database design, Row Level Security (RLS), authentication, real-time subscriptions, and serverless functions
+2. **N8N (Workflow Automation):** Understanding visual workflow design, webhooks, API orchestration, data transformation, error handling
+3. **OpenRouter (Model Marketplace):** Navigating model selection, cost optimization, prompt engineering, streaming vs. non-streaming responses
+
+**Teaching Methodology:**
+- **Explain the concept** (what and why)
+- **Show an example** (how it works)
+- **User does it** (hands-on practice)
+- **Review together** (understanding check)
+
+**Why This Matters:**
+- Owner wants sustainable knowledge, not just working code
+- Learning these tools enables independent feature development
+- Understanding architecture enables better decision-making
+- Hands-on experience builds confidence and ownership
+
+⚠️ **For future sessions:** Always check if user wants to learn something hands-on vs. having it built for them. Default to teaching mode when introducing new tools/concepts.
+
 ---
 
 ## Tech Stack
