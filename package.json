@@ -12,17 +12,17 @@
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
-    "next": "^14.2.35",
+    "next": "^16.1.5",
     "plaid": "^41.1.0",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^19",
+    "react-dom": "^19",
     "react-plaid-link": "^4.1.1",
     "resend": "^6.9.2"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "autoprefixer": "^10.0.1",
     "dotenv": "^16.4.7",
     "postcss": "^8",
