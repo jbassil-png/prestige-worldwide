@@ -117,9 +117,29 @@ Making institutional-grade investment strategies accessible to everyday investor
 **This project emphasizes learning by doing with hands-on guidance.** The development process is designed to build sustainable knowledge, not just working code.
 
 **Primary Learning Objectives:**
-1. **Supabase (Backend-as-a-Service):** Understanding PostgreSQL database design, Row Level Security (RLS), authentication, real-time subscriptions, and serverless functions
-2. **N8N (Workflow Automation):** Understanding visual workflow design, webhooks, API orchestration, data transformation, error handling
-3. **OpenRouter (Model Marketplace):** Navigating model selection, cost optimization, prompt engineering, streaming vs. non-streaming responses
+
+1. **Supabase (Backend-as-a-Service)**
+   - PostgreSQL database design and schema modeling
+   - Row Level Security (RLS) policies for multi-tenant data
+   - Authentication flows and session management
+   - Real-time subscriptions and presence features
+   - Edge Functions for serverless backend logic
+
+2. **N8N (Workflow Automation)**
+   - How to design workflows visually (nodes, connections, data flow)
+   - How to handle webhooks (receiving data from Next.js)
+   - How to make HTTP requests (calling external APIs)
+   - How to transform data between steps (functions, expressions)
+   - How to handle errors and retries
+   - How to test and debug workflows
+
+3. **OpenRouter (Model Marketplace)**
+   - How different models compare (speed, cost, capabilities)
+   - How to choose the right model for each use case
+   - How to structure prompts for different models
+   - How to handle streaming vs. non-streaming responses
+   - How to track costs and usage
+   - How to fallback between models
 
 **Teaching Methodology:**
 - **Explain the concept** (what and why)
