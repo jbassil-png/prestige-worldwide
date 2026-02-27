@@ -1,6 +1,6 @@
 # Prestige Worldwide — Session Notes
 
-> **Instructions for Claude:** At the start of each session, read the "Recent Sessions" section below to understand current status. Only read the full document if you need deeper context.
+> **Instructions for Claude:** At the start of each session, read the "Project Overview" and "Recent Sessions" sections below to understand the project mission and current status. Only read the full document if you need deeper context.
 
 ---
 
