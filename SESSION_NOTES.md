@@ -7,6 +7,63 @@
 ## 📅 Recent Sessions
 *Most recent first. Archive sessions older than 2 weeks.*
 
+### Session: Feb 27, 2026 (Evening) — N8N Workflow Planning & Documentation
+
+**Branch:** `claude/start-planning-gWIXp`
+
+**What Was Accomplished:**
+1. ✅ Consolidated session notes into single canonical `SESSION_NOTES.md`
+   - Merged valuable content from `.claude/SESSION_NOTES.md` (Core Mission, Learning Resources)
+   - Removed duplicate `.claude/SESSION_NOTES.md` to eliminate confusion
+2. ✅ Enhanced Project Overview with Core Mission statement
+   - Added focus on democratizing wealth management through AI
+   - Clarified target users and key features
+3. ✅ Expanded Learning Objectives with detailed skill breakdowns
+   - **Supabase:** Database design, RLS, auth, real-time, edge functions
+   - **N8N:** Visual workflows, webhooks, HTTP requests, data transformation, error handling, testing
+   - **OpenRouter:** Model comparison, selection, prompt engineering, streaming, cost tracking, fallbacks
+4. ✅ Added Development Workflow section with PR creation guidelines
+5. ✅ Added Learning Resources section with documentation links
+6. ✅ Updated session notes instruction to read both Project Overview and Recent Sessions at startup
+7. ✅ Set up N8N account and workspace (user completed)
+8. ✅ Planned first N8N workflow: AI Chat integration
+
+**Documentation Updates:**
+- `SESSION_NOTES.md` now serves as single source of truth for project context
+- All learning objectives clearly documented with measurable outcomes
+- PR workflow documented for future reference
+
+**N8N Planning:**
+- Decided to build production-ready workflows (not toy examples)
+- First workflow: **AI Chat** (replaces OpenRouter fallback in Next.js)
+- Learned key N8N concepts:
+  - Nodes = functions/operations (NOT agents)
+  - Workflows = connected nodes that process data
+  - Trigger nodes → Action nodes → Response nodes
+
+**Current State:**
+- Ready to build first N8N workflow tomorrow
+- User has N8N account set up and ready
+- Clear understanding of what will be built and why
+
+**Next Steps (Resume Here Tomorrow):**
+1. 🎯 **BUILD AI Chat Workflow in N8N:**
+   - Workflow: `[Webhook] → [HTTP Request to OpenRouter] → [Transform Response] → [Respond to Webhook]`
+   - This will replace the OpenRouter fallback in `app/api/chat/route.ts`
+   - User will learn: Webhooks, HTTP calls, API credentials, data transformation, testing
+2. Test the workflow in N8N dashboard
+3. Update Next.js `app/api/chat/route.ts` to call N8N webhook instead of OpenRouter directly
+4. Test end-to-end in production app
+5. Build Workflow 2: Plan Generation (more complex, same pattern)
+
+**Ready to Build Tomorrow:**
+- Open N8N dashboard
+- Create new workflow called "Prestige Worldwide - AI Chat"
+- Follow step-by-step guidance to build each node
+- Test and integrate with Next.js app
+
+---
+
 ### Session: Feb 27, 2026 — Manual Testing & Bug Documentation
 
 **Branch:** `claude/start-planning-gWIXp`
@@ -117,9 +174,29 @@ Making institutional-grade investment strategies accessible to everyday investor
 **This project emphasizes learning by doing with hands-on guidance.** The development process is designed to build sustainable knowledge, not just working code.
 
 **Primary Learning Objectives:**
-1. **Supabase (Backend-as-a-Service):** Understanding PostgreSQL database design, Row Level Security (RLS), authentication, real-time subscriptions, and serverless functions
-2. **N8N (Workflow Automation):** Understanding visual workflow design, webhooks, API orchestration, data transformation, error handling
-3. **OpenRouter (Model Marketplace):** Navigating model selection, cost optimization, prompt engineering, streaming vs. non-streaming responses
+
+1. **Supabase (Backend-as-a-Service)**
+   - PostgreSQL database design and schema modeling
+   - Row Level Security (RLS) policies for multi-tenant data
+   - Authentication flows and session management
+   - Real-time subscriptions and presence features
+   - Edge Functions for serverless backend logic
+
+2. **N8N (Workflow Automation)**
+   - How to design workflows visually (nodes, connections, data flow)
+   - How to handle webhooks (receiving data from Next.js)
+   - How to make HTTP requests (calling external APIs)
+   - How to transform data between steps (functions, expressions)
+   - How to handle errors and retries
+   - How to test and debug workflows
+
+3. **OpenRouter (Model Marketplace)**
+   - How different models compare (speed, cost, capabilities)
+   - How to choose the right model for each use case
+   - How to structure prompts for different models
+   - How to handle streaming vs. non-streaming responses
+   - How to track costs and usage
+   - How to fallback between models
 
 **Teaching Methodology:**
 - **Explain the concept** (what and why)
