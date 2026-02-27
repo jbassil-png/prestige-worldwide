@@ -274,6 +274,32 @@ Work has been done across multiple PRs, all merged from `claude/start-planning-g
 
 ---
 
+## Development Workflow
+
+### **Branch Strategy:**
+- Main development happens on `claude/start-planning-*` branches
+- Commit frequently with descriptive messages
+- Push when work is complete or at logical checkpoints
+
+### **Pull Request Workflow:**
+**⚠️ ALWAYS create a PR with title and description when ready to push**
+
+When work is complete and pushed:
+1. **Review commits** included in the PR (`git log origin/main..HEAD`)
+2. **Generate PR title** - Clear, concise summary (< 70 characters)
+3. **Write PR description** with:
+   - Summary (bullet points of key changes)
+   - Detailed sections (Security, Documentation, Features, etc.)
+   - Learning objectives if applicable
+   - Next steps
+   - Test plan checklist
+   - Session link
+4. **Create the PR** using `gh pr create` with formatted title and body
+
+This ensures every PR has proper documentation and context.
+
+---
+
 ## Current Status (Updated: Feb 27, 2026)
 
 - **App is live on Vercel** — Production deployment working
