@@ -5,10 +5,10 @@
 
 ## 🚀 Pre-Test Setup
 
-- [ ] Start development server: `npm run dev`
+- [ ] Navigate to: **https://prestige-worldwide-kappa.vercel.app**
 - [ ] Open browser console (F12) - watch for errors throughout
 - [ ] Clear browser cache and cookies (for clean auth testing)
-- [ ] Have `.env.local` values ready if needed
+- [ ] Have test credentials ready (or prepare to create new account)
 
 ---
 
@@ -17,7 +17,7 @@
 ### 1. Authentication - New User Flow
 **Goal:** Verify complete signup → onboarding → dashboard flow
 
-- [ ] Navigate to homepage (http://localhost:3000)
+- [ ] Navigate to homepage (https://prestige-worldwide-kappa.vercel.app)
 - [ ] Click "Sign Up" or navigate to `/sign-up`
 - [ ] **CHECKPOINT:** Sign-up page loads without errors
 - [ ] Fill out sign-up form with new credentials
@@ -135,37 +135,37 @@
 
 ---
 
-## ✅ Priority 3: Build & Performance
+## ✅ Priority 3: Performance & Polish
 
-### 10. Production Build
-**Goal:** Verify clean production build
+### 10. Page Performance
+**Goal:** Verify production deployment performs well
 
-- [ ] Stop dev server
-- [ ] Run: `npm run build`
-- [ ] **CHECKPOINT:** Build completes successfully
-- [ ] **CHECKPOINT:** No TypeScript errors
-- [ ] **CHECKPOINT:** No build warnings about React 19 incompatibility
-- [ ] Note build output sizes (compare with previous if available)
+- [ ] Open Network tab in DevTools
+- [ ] Hard refresh homepage (Ctrl+Shift+R / Cmd+Shift+R)
+- [ ] **CHECKPOINT:** Page loads in reasonable time (< 3s)
+- [ ] Check total page weight and requests
+- [ ] Navigate to dashboard
+- [ ] **CHECKPOINT:** Dashboard loads smoothly
+- [ ] Note any slow-loading resources
 
-**Build Metrics to Record:**
+**Performance Notes:**
 ```
-Route (app)                              Size     First Load JS
-├ ○ /                                    ___ kB   ___ kB
-├ ○ /dashboard                           ___ kB   ___ kB
-└ ○ /sign-in                             ___ kB   ___ kB
+- Homepage load time: ___ ms
+- Dashboard load time: ___ ms
+- Any slow resources: ___
 ```
 
 ---
 
-### 11. Production Server Test
-**Goal:** Verify production build runs
+### 11. Console & Network Health
+**Goal:** Verify no React 19 or Next.js 16 warnings
 
-- [ ] Run: `npm start`
-- [ ] **CHECKPOINT:** Server starts on port 3000
-- [ ] Navigate to http://localhost:3000
-- [ ] **CHECKPOINT:** Homepage loads
-- [ ] Quick test: sign in → dashboard
-- [ ] **CHECKPOINT:** Works in production mode
+- [ ] Clear console
+- [ ] Navigate through: Home → Sign-in → Dashboard
+- [ ] **CHECKPOINT:** No React 19 deprecation warnings
+- [ ] **CHECKPOINT:** No Next.js 16 compatibility errors
+- [ ] **CHECKPOINT:** No 404s or failed requests (check Network tab)
+- [ ] **CHECKPOINT:** All API routes return proper status codes
 
 ---
 
