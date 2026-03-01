@@ -86,7 +86,7 @@ export default function ChatPanel({ planContext }: Props) {
         const data = await res.json();
         const assistantMsg: Message = {
           role: "assistant",
-          content: data.content ?? data.message ?? "Sorry, I couldn't get a response.",
+          content: data.choices?.[0]?.message?.content ?? data.content ?? data.message ?? "Sorry, I couldn't get a response.",
         };
         setMessages((prev) => [...prev, assistantMsg]);
       }
