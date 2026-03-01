@@ -7,6 +7,135 @@
 ## 📅 Recent Sessions
 *Most recent first. Archive sessions older than 2 weeks.*
 
+### Session: Feb 28, 2026 — N8N Workflow Integration Complete! 🎉
+
+**Branch:** `claude/start-planning-gWIXp`
+
+**What Was Accomplished:**
+1. ✅ **Built First Production N8N Workflow** - "Prestige Worldwide - AI Chat"
+   - **Workflow:** `Webhook → Code Node → HTTP Request (OpenRouter) → Respond to Webhook`
+   - **Model:** Claude 3.5 Haiku (anthropic/claude-3.5-haiku)
+   - **Production URL:** `https://jbassil.app.n8n.cloud/webhook/ai-chat`
+2. ✅ **Integrated N8N with Next.js Production App**
+   - Added `N8N_CHAT_WEBHOOK_URL` environment variable to Vercel
+   - Next.js `/api/chat` now calls N8N webhook first, falls back to OpenRouter if needed
+3. ✅ **Fixed Frontend Response Parsing**
+   - Updated `components/ChatPanel.tsx` to correctly parse OpenRouter response format
+   - Changed from `data.content` to `data.choices?.[0]?.message?.content`
+4. ✅ **Debugged Full Integration**
+   - Troubleshot API key authentication (Bearer token format)
+   - Fixed N8N HTTP Request node body configuration (switched to "Using JSON" mode)
+   - Traced data flow through all nodes to verify correct response handling
+5. ✅ **Deployed and Verified**
+   - Committed code changes
+   - Pushed to GitHub (`claude/start-planning-gWIXp`)
+   - Vercel auto-deployed
+   - **Chat is working end-to-end in production!** ✅
+
+**Learning Outcomes:**
+
+**N8N Skills Learned:**
+- ✅ Creating webhook triggers (receiving POST requests from external apps)
+- ✅ Using Code nodes for data transformation (JavaScript in workflows)
+- ✅ Making HTTP API calls to external services (OpenRouter)
+- ✅ Configuring authentication (Header Auth with Bearer tokens)
+- ✅ Responding to webhooks (sending data back to caller)
+- ✅ Debugging workflow executions (reading node inputs/outputs, checking logs)
+- ✅ Publishing workflows (Test URL → Production URL transition)
+
+**OpenRouter Skills Learned:**
+- ✅ Browsing and comparing AI models (speed, cost, capabilities)
+- ✅ Understanding cost/performance tradeoffs (free vs. cheap vs. expensive models)
+- ✅ Selecting appropriate model for use case (Claude 3.5 Haiku for fast, cheap chat)
+- ✅ Understanding API authentication (Bearer token format)
+- ✅ Parsing API response format (`choices[0].message.content` structure)
+- ✅ Monitoring usage and costs (tracked in OpenRouter dashboard)
+
+**Full-Stack Integration Skills:**
+- ✅ Connecting Next.js with external webhooks
+- ✅ Managing environment variables in Vercel (and understanding deployment requirements)
+- ✅ Debugging API integrations (Browser DevTools Network tab, N8N execution logs, Vercel function logs)
+- ✅ Fixing frontend/backend data format mismatches
+- ✅ Understanding deployment propagation (environment variables, code changes)
+
+**Technical Details:**
+
+**N8N Workflow Structure:**
+```
+1. Webhook Trigger (POST /webhook/ai-chat)
+   ↓ Receives: { messages: [{role, content}] }
+
+2. Code in JavaScript
+   ↓ Formats data for OpenRouter API
+   ↓ Output: { model: "anthropic/claude-3.5-haiku", messages: [...] }
+
+3. HTTP Request
+   ↓ POST to https://openrouter.ai/api/v1/chat/completions
+   ↓ Auth: Bearer token in Authorization header
+   ↓ Body: { model, messages } (Using JSON mode)
+
+4. Respond to Webhook
+   ↓ Returns OpenRouter response to Next.js
+   ↓ Response: { choices: [{ message: { content: "..." } }] }
+```
+
+**Cost Analysis:**
+- **Claude 3.5 Haiku:** $0.25/1M input tokens, $1.25/1M output tokens
+- **Practical cost:** ~$0.001 per 100 chat messages
+- **Monthly estimate (1000 messages):** ~$0.10
+- Incredibly cost-effective for production use!
+
+**Files Modified:**
+- `components/ChatPanel.tsx` - Fixed response parsing (line 89)
+- `.env.local` - Added N8N webhook URL (local only, not committed)
+- Vercel environment variables - Added `N8N_CHAT_WEBHOOK_URL` (production)
+
+**Bugs Fixed:**
+- Frontend was looking for `data.content` but OpenRouter returns `data.choices[0].message.content`
+- HTTP Request node body needed "Using JSON" mode instead of "Using Fields Below"
+- API key needed "Bearer " prefix in Header Auth credential
+
+**Current State:**
+- ✅ N8N workflow published and active (24/7 production)
+- ✅ Chat working end-to-end in production app
+- ✅ Full integration verified and tested
+- ✅ Code committed and pushed
+- 📝 PR prepared and ready to create
+
+**Next Steps (Resume Here Next Session):**
+
+**Immediate Priorities:**
+1. 🎯 **Create Pull Request** - Merge N8N integration into main
+2. 🎯 **Build Workflow #2: Plan Generation** (more complex multi-step workflow)
+   - Workflow: `[Webhook] → [Fetch Market Data] → [Build Prompt] → [Call OpenRouter] → [Format Response] → [Respond]`
+   - This will replace the `/api/plan` endpoint's OpenRouter fallback
+   - More complex than chat - involves multiple data sources and transformations
+
+**Future Enhancements:**
+3. [ ] Set up automated testing with Vitest/Jest
+4. [ ] Write unit tests for N8N webhook integration
+5. [ ] Add error handling and retry logic in N8N workflows
+6. [ ] Monitor usage and costs in OpenRouter dashboard
+7. [ ] Experiment with other AI models (compare quality/speed/cost)
+8. [ ] Add streaming support to N8N workflow (for real-time responses)
+9. [ ] Fix Bug #2: News API empty array issue
+
+**Architecture Achieved:**
+```
+User → Next.js /api/chat → N8N Webhook → OpenRouter → Claude 3.5 Haiku → Response ✅
+              ↓ (fallback if N8N fails)
+        OpenRouter Direct (safety net)
+```
+
+**Benefits of N8N Integration:**
+- ✅ Centralized AI orchestration (all AI logic visible in N8N dashboard)
+- ✅ Easy to modify workflows without code changes
+- ✅ Visual debugging (see data flow through each node)
+- ✅ Can add multi-step logic (call multiple APIs, aggregate data, etc.)
+- ✅ Fallback still works if N8N is unavailable
+
+---
+
 ### Session: Feb 27, 2026 (Evening) — N8N Workflow Planning & Documentation
 
 **Branch:** `claude/start-planning-gWIXp`
