@@ -7,6 +7,19 @@
 ## 📅 Recent Sessions
 *Most recent first. Archive sessions older than 2 weeks.*
 
+---
+
+### 🎯 Next Steps (Resume Here Next Session):
+
+**Immediate Priorities:**
+1. 🎯 **Create Pull Request** - Merge N8N integration into main
+2. 🎯 **Build Workflow #2: Plan Generation** (more complex multi-step workflow)
+   - Workflow: `[Webhook] → [Fetch Market Data] → [Build Prompt] → [Call OpenRouter] → [Format Response] → [Respond]`
+   - This will replace the `/api/plan` endpoint's OpenRouter fallback
+   - More complex than chat - involves multiple data sources and transformations
+
+---
+
 ### Session: Mar 1, 2026 — Feature Planning: Visual Theming & Geographic AI Advisors 🎨👔
 
 **Branch:** `claude/start-planning-gWIXp`
