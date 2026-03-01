@@ -112,13 +112,20 @@
    - More complex than chat - involves multiple data sources and transformations
 
 **Future Enhancements:**
-3. [ ] Set up automated testing with Vitest/Jest
-4. [ ] Write unit tests for N8N webhook integration
-5. [ ] Add error handling and retry logic in N8N workflows
-6. [ ] Monitor usage and costs in OpenRouter dashboard
-7. [ ] Experiment with other AI models (compare quality/speed/cost)
-8. [ ] Add streaming support to N8N workflow (for real-time responses)
-9. [ ] Fix Bug #2: News API empty array issue
+3. [ ] **🎨 Visual Theming System: "Dream Lifestyle Modes"**
+   - Users choose aspirational lifestyle theme that transforms entire app UI
+   - Three themes: **Swiss Alps Retreat**, **Gaudy Miami**, **Clooney's Positano**
+   - Involves: Tailwind theme extension, React Context, Supabase user preferences table
+   - **Learning:** Advanced Tailwind theming, CSS variables, design systems, UX psychology
+   - **Note:** Check Vibe Coding class documentation for design inspiration resources
+   - **Priority:** High (differentiating feature, pure frontend work, doesn't block AI learning)
+4. [ ] Set up automated testing with Vitest/Jest
+5. [ ] Write unit tests for N8N webhook integration
+6. [ ] Add error handling and retry logic in N8N workflows
+7. [ ] Monitor usage and costs in OpenRouter dashboard
+8. [ ] Experiment with other AI models (compare quality/speed/cost)
+9. [ ] Add streaming support to N8N workflow (for real-time responses)
+10. [ ] Fix Bug #2: News API empty array issue
 
 **Architecture Achieved:**
 ```
@@ -570,6 +577,75 @@ This ensures every PR has proper documentation and context.
 - **N8N not configured** — plan generation and chat use OpenRouter fallback. If more sophisticated AI orchestration is needed later, n8n can be added.
 - **No RLS (Row Level Security)** on Supabase tables — this should be addressed before any real user data is stored.
 - **OpenRouter model for plan/chat** — currently defaults to `claude-3.5-haiku`. Can be changed via `OPENROUTER_MODEL` env var.
+
+---
+
+## 🎨 Planned Feature: Visual Theming System
+
+### **Concept: "Dream Lifestyle Modes"**
+
+An aspirational theming system where users choose a lifestyle theme that transforms the entire app's visual presentation. The goal is to make financial planning emotionally engaging — every login transports them to their dream financial future.
+
+### **Three Launch Themes:**
+
+**1. Swiss Alps Retreat** ❄️
+- **Vibe:** Minimalist luxury, serene, clean, timeless
+- **Colors:** Crisp white, slate gray, ice blue, warm wood tones
+- **Typography:** Clean sans-serif with generous whitespace
+- **Inspiration:** Scandinavian minimalism, alpine chalets, hygge
+
+**2. Gaudy Miami** 🌴
+- **Vibe:** Bold, energetic, Art Deco glamour, unapologetically flashy
+- **Colors:** Hot pink, turquoise, coral, gold, neon accents
+- **Typography:** Geometric Art Deco fonts, high contrast
+- **Inspiration:** South Beach, 1980s Miami Vice, Art Deco architecture
+
+**3. Clooney's Positano** 🇮🇹
+- **Vibe:** Effortless elegance, Mediterranean warmth, understated luxury
+- **Colors:** Terracotta, ocean blue, lemon yellow, olive green, warm beige
+- **Typography:** Elegant serif with Italian flair
+- **Inspiration:** Amalfi Coast, Italian Riviera, dolce vita
+
+### **Technical Implementation:**
+
+**Database Schema:**
+```sql
+create table user_preferences (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users unique not null,
+  theme text default 'swiss-alps' check (theme in ('swiss-alps', 'gaudy-miami', 'clooney-positano')),
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+```
+
+**Key Components:**
+- Theme configuration files (Tailwind CSS custom theme extension)
+- Theme selector UI component (user settings or onboarding)
+- React Context for theme state management
+- Supabase integration for theme persistence
+- CSS variables for dynamic theme switching
+
+### **Learning Opportunities:**
+- Advanced Tailwind CSS theming and CSS custom properties
+- React Context and global state management
+- Supabase user preferences and data persistence
+- Design systems thinking and cohesive visual languages
+- UX psychology and aspirational design principles
+
+### **Design Resources:**
+**Reminder:** Check Vibe Coding class documentation for additional design inspiration sites.
+
+**General Design Inspiration:**
+- Awwwards.com (best web designs)
+- Behance (design case studies)
+- Dribbble (UI/UX components)
+- SiteInspire (curated galleries)
+- Coolors.co (color palettes)
+- Luxury hotel websites (theme-specific inspiration)
+
+### **Recommended Timeline:**
+Build this after completing Workflow #2 (Plan Generation). It's a differentiating feature that's pure frontend work and won't block AI/backend learning objectives.
 
 ---
 
