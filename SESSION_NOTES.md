@@ -119,7 +119,16 @@
    - **Learning:** Advanced Tailwind theming, CSS variables, design systems, UX psychology
    - **Note:** Check Vibe Coding class documentation for design inspiration resources
    - **Priority:** High (differentiating feature, pure frontend work, doesn't block AI learning)
-4. [ ] Set up automated testing with Vitest/Jest
+4. [ ] **👔 Geographic AI Advisors: "Your Global Financial Team"**
+   - Country-specific AI advisors for each region where user has assets
+   - Example: "Gordon" (Canada), "Brad" (USA), "Nigel" (UK), etc.
+   - Each advisor has local expertise (tax laws, regulations, market knowledge)
+   - **Chat modes:** 1-on-1 with single advisor OR group chat with all advisors
+   - Involves: Multi-agent AI, N8N parallel workflows, advisor detection from Plaid
+   - **Learning:** Multi-agent systems, prompt engineering, i18n, advanced N8N workflows
+   - **Priority:** High (differentiating feature, enhances chat experience, teaches advanced AI)
+   - **Pairs with:** Visual Theming (advisors adapt to user's chosen theme)
+5. [ ] Set up automated testing with Vitest/Jest
 5. [ ] Write unit tests for N8N webhook integration
 6. [ ] Add error handling and retry logic in N8N workflows
 7. [ ] Monitor usage and costs in OpenRouter dashboard
@@ -646,6 +655,187 @@ create table user_preferences (
 
 ### **Recommended Timeline:**
 Build this after completing Workflow #2 (Plan Generation). It's a differentiating feature that's pure frontend work and won't block AI/backend learning objectives.
+
+---
+
+## 👔 Planned Feature: Geographic AI Advisors
+
+### **Concept: "Your Global Financial Team"**
+
+Country-specific AI advisors that provide localized financial expertise. Users get a personal advisor for each country where they hold assets, with the ability to consult advisors individually or in group chats.
+
+**Core Insight:** Financial advice is highly regional. Tax laws, investment vehicles, and market conditions vary dramatically by country. Generic advice doesn't work — users need LOCAL expertise.
+
+### **Example Advisor Roster:**
+
+| Country | Advisor | Personality | Expertise |
+|---------|---------|-------------|-----------|
+| 🇺🇸 USA | **Brad** | Confident, direct, optimistic | 401k, Roth IRA, S&P 500, US tax code |
+| 🇨🇦 Canada | **Gordon** | Polite, detail-oriented, thorough | TFSA, RRSP, Canadian dividends, TSX |
+| 🇬🇧 UK | **Nigel** | Witty, sophisticated, reserved | ISA, pensions, FTSE 100, UK property |
+| 🇦🇺 Australia | **Shane** | Laid-back, straightforward | Superannuation, ASX, property market |
+| 🇩🇪 Germany | **Klaus** | Precise, methodical, conservative | German tax system, DAX, EU markets |
+| 🇯🇵 Japan | **Kenji** | Respectful, patient, analytical | NISA, Japanese bonds, Nikkei 225 |
+
+**Expandable:** As user connects accounts in new countries, new advisors are automatically introduced.
+
+### **Chat Modes:**
+
+**1. One-on-One Chat**
+- User selects a specific advisor (e.g., "Talk to Gordon")
+- Advisor provides country-specific advice
+- Context limited to that country's assets and regulations
+
+**2. Group Chat (Multi-Advisor Consultation)**
+- User asks a question to all advisors simultaneously
+- Each advisor responds from their expertise area
+- Advisors can reference each other's advice
+- Example:
+  ```
+  User: "Should I max out my retirement accounts?"
+
+  Brad: "Absolutely! Max your Roth IRA first ($7,000/year).
+         Tax-free growth is unbeatable."
+
+  Gordon: "I agree with Brad on the Roth IRA. On the Canadian side,
+          prioritize TFSA ($7,000) over RRSP if you expect higher
+          income later in your career."
+  ```
+
+### **Technical Implementation:**
+
+**Database Schema:**
+```sql
+-- Track which countries user has assets in
+create table user_countries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users not null,
+  country_code text not null, -- 'US', 'CA', 'GB', etc.
+  detected_from text, -- 'plaid_account', 'manual_entry'
+  created_at timestamptz default now(),
+  unique(user_id, country_code)
+);
+
+-- Advisor configurations (could be hardcoded or DB-driven)
+create table advisors (
+  id uuid primary key default gen_random_uuid(),
+  country_code text unique not null,
+  name text not null, -- 'Brad', 'Gordon', etc.
+  personality text, -- Description for system prompt
+  avatar_url text,
+  specialties jsonb, -- ['401k', 'Roth IRA', 'US taxes']
+  system_prompt text -- Full prompt template
+);
+
+-- Track advisor assignments per chat session
+alter table chat_messages add column advisor_id uuid references advisors;
+```
+
+**Advisor Detection:**
+- When user connects Plaid account, detect country from institution location
+- Automatically add to `user_countries` table
+- Show "Meet your new advisor!" notification
+- Advisor appears in advisor selector UI
+
+**N8N Workflow: Multi-Advisor Chat**
+```
+[Webhook]
+  ↓
+[Identify Active Advisors] (based on selected chat mode)
+  ↓
+[Branch: Single vs Group?]
+  ↓
+Single → [Call OpenRouter with advisor-specific system prompt]
+  ↓
+Group → [Parallel OpenRouter calls, one per advisor]
+  ↓
+[Merge & Format Responses]
+  ↓
+[Respond to Client]
+```
+
+**Advisor System Prompts:**
+Each advisor has a specialized system prompt with:
+- Personality traits and communication style
+- Country-specific financial knowledge (tax codes, account types, markets)
+- Regulatory awareness (SEC, CRA, FCA, etc.)
+- Cultural financial norms (e.g., Canadians prefer TFSAs over taxable accounts)
+
+### **User Experience Features:**
+
+**Advisor Introductions:**
+When user first connects an account in a new country:
+```
+🎉 New country detected!
+
+You now have assets in Canada. Meet Gordon, your Canadian financial advisor.
+
+[Gordon's Avatar]
+
+"Hello! I'm Gordon, and I'll be helping you with your Canadian investments.
+I noticed you have a TD account - let's optimize it together!"
+
+[Chat with Gordon] [Maybe Later]
+```
+
+**Cross-Border Insights:**
+Advisors can collaborate on recommendations:
+```
+💡 Cross-Border Insight from Gordon & Brad
+
+Gordon noticed your Canadian TFSA is heavily weighted in US equities.
+Brad suggests rebalancing to reduce overexposure. Want a group consultation?
+
+[Talk to Both] [Dismiss]
+```
+
+**Advisor Visual Identity:**
+- Each advisor has unique avatar/profile picture
+- Color scheme subtly reflects country (e.g., Brad has red/white/blue accents)
+- Speech patterns and vocabulary differ (Brad: "401k", Gordon: "RRSP")
+- Adapts to user's chosen visual theme (Swiss Alps, Miami, Positano)
+
+### **Learning Opportunities:**
+
+1. **Multi-Agent AI Systems**
+   - Orchestrating multiple AI personalities
+   - Managing context across agents
+   - Combining parallel LLM responses
+
+2. **Advanced Prompt Engineering**
+   - Creating distinct AI personalities
+   - Country-specific knowledge injection
+   - System prompts for specialized expertise
+
+3. **Internationalization (i18n)**
+   - Multi-country financial data handling
+   - Regional terminology and regulations
+   - Currency conversion contexts
+
+4. **Advanced N8N Workflows**
+   - Parallel API calls and response merging
+   - Conditional branching based on user state
+   - Dynamic prompt generation
+
+5. **UX for Conversational AI**
+   - Multi-agent chat interface design
+   - Managing user expectations across advisors
+   - Making AI feel human and trustworthy
+
+### **How It Pairs with Visual Theming:**
+
+**Themes** = Aspirational (WHERE you want to be)
+**Advisors** = Practical (HOW to get there)
+
+Examples:
+- **Swiss Alps theme** → Advisors wear cozy sweaters, use calm language
+- **Gaudy Miami theme** → Advisors in colorful attire, more energetic tone
+- **Positano theme** → Advisors in linen shirts, relaxed Mediterranean vibe
+
+Visual theming affects the *aesthetic*, advisors provide the *expertise*.
+
+### **Recommended Timeline:**
+Build this after Visual Theming System. It leverages existing chat infrastructure and N8N workflows but adds multi-agent complexity.
 
 ---
 
