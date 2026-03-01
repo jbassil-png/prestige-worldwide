@@ -7,6 +7,44 @@
 ## 📅 Recent Sessions
 *Most recent first. Archive sessions older than 2 weeks.*
 
+### Session: Mar 1, 2026 — Feature Planning: Visual Theming & Geographic AI Advisors 🎨👔
+
+**Branch:** `claude/start-planning-gWIXp`
+
+**What Was Accomplished:**
+1. ✅ **Added Visual Theming System to Roadmap** - "Dream Lifestyle Modes"
+   - Three aspirational themes: Swiss Alps Retreat, Gaudy Miami, Clooney's Positano
+   - Users choose theme that transforms entire app visual presentation
+   - Involves: Tailwind theme extension, React Context, Supabase user preferences
+   - **Learning focus:** Advanced Tailwind theming, design systems, UX psychology
+   - **Note added:** Check Vibe Coding class docs for design inspiration sites
+
+2. ✅ **Added Geographic AI Advisors to Roadmap** - "Your Global Financial Team"
+   - Country-specific AI advisors (Gordon for Canada, Brad for USA, etc.)
+   - Each advisor has local expertise in tax laws, regulations, market knowledge
+   - Chat modes: 1-on-1 with single advisor OR group chat with all advisors
+   - Auto-detected from Plaid account connections
+   - Involves: Multi-agent AI, N8N parallel workflows, prompt engineering
+   - **Learning focus:** Multi-agent systems, advanced N8N, internationalization
+
+3. ✅ **Documented Feature Integration**
+   - Themes = Aspirational (WHERE you want to be)
+   - Advisors = Practical (HOW to get there)
+   - Advisors adapt visual identity to user's chosen theme
+   - Both features prioritized high (after Workflow #2, before testing)
+
+**Key Insight:**
+These two features work together to create **emotionally engaging financial planning**:
+- Visual themes provide aesthetic immersion in dream lifestyle
+- Geographic advisors provide localized, actionable expertise
+- Together they differentiate the product from generic fintech apps
+
+**Commits:**
+- "Add Visual Theming System to roadmap: Dream Lifestyle Modes"
+- "Add Geographic AI Advisors to roadmap: Global Financial Team"
+
+---
+
 ### Session: Feb 28, 2026 — N8N Workflow Integration Complete! 🎉
 
 **Branch:** `claude/start-planning-gWIXp`
@@ -129,8 +167,8 @@
    - **Priority:** High (differentiating feature, enhances chat experience, teaches advanced AI)
    - **Pairs with:** Visual Theming (advisors adapt to user's chosen theme)
 5. [ ] Set up automated testing with Vitest/Jest
-5. [ ] Write unit tests for N8N webhook integration
-6. [ ] Add error handling and retry logic in N8N workflows
+6. [ ] Write unit tests for N8N webhook integration
+7. [ ] Add error handling and retry logic in N8N workflows
 7. [ ] Monitor usage and costs in OpenRouter dashboard
 8. [ ] Experiment with other AI models (compare quality/speed/cost)
 9. [ ] Add streaming support to N8N workflow (for real-time responses)
