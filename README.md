@@ -64,6 +64,7 @@ PLAID_ENV=sandbox   # sandbox | development | production
 # n8n — optional, used for plan generation and chat
 N8N_WEBHOOK_URL=
 N8N_CHAT_WEBHOOK_URL=
+N8N_AI_PROXY_WEBHOOK_URL=
 
 # OpenRouter — optional, used for insight, news, and chat fallback
 OPENROUTER_API_KEY=
@@ -134,6 +135,7 @@ app/
 └── api/
     ├── plan/                    # Generate financial plan
     ├── chat/                    # Streaming AI chat
+    ├── ai-proxy/                # Generic AI proxy (N8N → OpenRouter)
     ├── insight/                 # Daily spotlight insight
     ├── news/                    # Personalised news feed
     ├── fx/                      # Live exchange rates
@@ -168,7 +170,25 @@ Without these keys, the onboarding step falls back to two hardcoded demo account
 |---|---|---|
 | Financial plan | n8n → OpenRouter → stub | configurable |
 | Chat | n8n → OpenRouter → stub | `claude-3.5-haiku` |
+| AI Proxy (generic) | n8n → OpenRouter | configurable (default: `claude-3.5-haiku`) |
 | Daily insight | OpenRouter | `gemini-flash-1.5` |
 | News feed | OpenRouter | `perplexity/sonar-pro` |
 
 All AI endpoints degrade gracefully if API keys are missing.
+
+### API Endpoints
+
+**`/api/ai-proxy`** - Generic AI proxy endpoint (NEW!)
+- Proxies requests to N8N workflow → OpenRouter
+- Accepts any model, messages, and parameters
+- Returns OpenRouter chat completion response
+- Example usage:
+  ```bash
+  curl -X POST https://your-app.vercel.app/api/ai-proxy \
+    -H "Content-Type: application/json" \
+    -d '{
+      "messages": [{"role": "user", "content": "Hello!"}],
+      "model": "anthropic/claude-3.5-haiku",
+      "max_tokens": 150
+    }'
+  ```

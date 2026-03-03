@@ -12,11 +12,126 @@
 ### 🎯 Next Steps (Resume Here Next Session):
 
 **Immediate Priorities:**
-1. 🎯 **Create Pull Request** - Merge N8N integration into main
-2. 🎯 **Build Workflow #2: Plan Generation** (more complex multi-step workflow)
+1. 🎯 **Add Frontend UI for AI Proxy** (optional)
+   - Create chat interface or form to use `/api/ai-proxy` endpoint
+   - Display AI responses in user-friendly format
+2. 🎯 **Create Pull Request** - Merge N8N integration into main
+3. 🎯 **Build Workflow #3: Plan Generation** (more complex multi-step workflow)
    - Workflow: `[Webhook] → [Fetch Market Data] → [Build Prompt] → [Call OpenRouter] → [Format Response] → [Respond]`
    - This will replace the `/api/plan` endpoint's OpenRouter fallback
    - More complex than chat - involves multiple data sources and transformations
+
+---
+
+### Session: Mar 3, 2026 — N8N AI Proxy Integration & OpenRouter Setup 🤖
+
+**Branch:** `claude/start-planning-gWIXp`
+
+**What Was Accomplished:**
+1. ✅ **Built Second N8N Workflow** - "Prestige Worldwide - Financial Plan" AI Proxy
+   - **Workflow:** `Webhook → Extract Variables → Build Request Body → HTTP Request (OpenRouter) → Return Response`
+   - **Production URL:** `https://jbassil.app.n8n.cloud/webhook/financial-plan`
+   - **Key Learning:** How to extract nested webhook data (`body.messages`), build dynamic request payloads, and configure webhook response modes
+
+2. ✅ **Created New Vercel API Endpoint** - `/api/ai-proxy`
+   - Created `/app/api/ai-proxy/route.ts` to proxy requests to N8N
+   - Added `N8N_AI_PROXY_WEBHOOK_URL` environment variable
+   - Follows same pattern as existing `/api/chat` route
+   - **Purpose:** Generic AI proxy that can be used for any OpenRouter model
+
+3. ✅ **Configured OpenRouter Integration**
+   - Set up OpenRouter account and API key
+   - Tested various models (Claude 3.5 Haiku, Gemini Flash)
+   - Configured N8N HTTP Request node with proper authentication
+   - **Key Finding:** JSON parsing errors resolved by using `JSON.stringify()` in request body
+
+4. ✅ **Debugged Full Integration End-to-End**
+   - **Issue 1:** N8N webhook not registered (404) → Solution: Activate workflow via "Publish" button
+   - **Issue 2:** Missing message content → Solution: Extract from `body.messages` not `messages`
+   - **Issue 3:** Webhook responding immediately → Solution: Set response mode to "When Last Node Finishes"
+   - **Issue 4:** JSON parsing failed → Solution: Use proper body format in HTTP Request node
+
+5. ✅ **Deployed and Verified Production**
+   - Environment variable added to Vercel
+   - Code committed and pushed to GitHub
+   - Vercel auto-deployed
+   - **Tested successfully:** Full flow from Vercel → N8N → OpenRouter → Response working! ✅
+
+**Technical Details:**
+
+**N8N Workflow Structure:**
+```
+Node 1: Webhook (POST /webhook/financial-plan)
+  ↓ Receives: { messages: [...], model: "...", max_tokens: 150 }
+
+Node 2: Code - Extract Variables
+  ↓ Extracts: body.messages, body.model, body.max_tokens
+  ↓ Returns: { messages, model, max_tokens }
+
+Node 3: Code - Build Request Body
+  ↓ Builds: { requestBody: { model, max_tokens, messages } }
+
+Node 4: HTTP Request - Call OpenRouter
+  ↓ POST https://openrouter.ai/api/v1/chat/completions
+  ↓ Returns: OpenRouter response with AI completion
+
+Webhook Response: Returns Node 4 output to caller
+```
+
+**API Endpoint Flow:**
+```
+Client → POST /api/ai-proxy → Vercel Next.js
+  ↓
+Vercel → POST N8N_AI_PROXY_WEBHOOK_URL → N8N Cloud
+  ↓
+N8N → POST https://openrouter.ai → OpenRouter API
+  ↓
+OpenRouter → Claude 3.5 Haiku generates response
+  ↓
+Response flows back: OpenRouter → N8N → Vercel → Client
+```
+
+**Learning Outcomes:**
+
+**N8N Advanced Skills:**
+- ✅ Extracting nested webhook data from request body
+- ✅ Building dynamic request payloads with Code nodes
+- ✅ Configuring webhook response modes ("When Last Node Finishes" vs "Immediately")
+- ✅ Debugging data flow through multiple nodes
+- ✅ Using expressions to access node outputs
+- ✅ Handling JSON parsing in HTTP Request nodes
+
+**OpenRouter Skills:**
+- ✅ Creating and managing API keys
+- ✅ Understanding request/response format for chat completions
+- ✅ Configuring authentication headers (Bearer tokens)
+- ✅ Model selection and configuration (max_tokens, etc.)
+- ✅ Cost tracking and usage monitoring
+
+**Deployment Skills:**
+- ✅ Managing environment variables across Vercel and N8N
+- ✅ Testing API endpoints with curl
+- ✅ Reading and debugging Vercel deployment logs
+- ✅ Understanding DNS/network restrictions in dev environments
+
+**Key Insights:**
+- N8N webhooks have two response modes: immediate vs. waiting for workflow completion
+- Webhook data is nested under `body` when accessed in N8N Code nodes
+- OpenRouter requires proper JSON structure in messages array (both `role` and `content`)
+- Local dev environments may have network restrictions preventing external API calls
+- Vercel deployments can successfully reach both N8N Cloud and OpenRouter
+
+**Files Changed:**
+- Created: `/app/api/ai-proxy/route.ts`
+- Modified: `.env.example` (added `N8N_AI_PROXY_WEBHOOK_URL`)
+
+**Commits:**
+- "Add AI proxy API route for N8N OpenRouter integration"
+
+**Next Session Resume Point:**
+- API proxy is working end-to-end ✅
+- Ready to add frontend UI if desired
+- Can proceed with more complex workflows (Plan Generation)
 
 ---
 
