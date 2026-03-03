@@ -12,7 +12,7 @@ Prestige Worldwide is an AI-powered personal finance tool for people with assets
 - **Bank account connectivity** — link real accounts via Plaid (US, CA, GB) or enter balances manually
 - **AI financial plan** — personalised recommendations across retirement, tax, currency, and estate planning
 - **Daily AI spotlight** — a fresh insight each day based on your specific plan
-- **Personalised news feed** — AI-curated financial news relevant to your countries and account types
+- **Personalised news feed** — AI-curated financial news relevant to your countries and account types _(planned: portfolio-specific news for stocks you own)_
 - **Streaming AI chat** — ask questions about your plan in context
 - **Currency toggle** — view all balances in residence currency, retirement currency, or native currencies
 - **Works without credentials** — every external service has a stub/mock fallback for local development
