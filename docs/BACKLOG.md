@@ -51,7 +51,27 @@ This document tracks non-critical issues and improvements identified during test
 
 ## Feature Requests
 
-_(Empty - will add as needed)_
+### 1. Portfolio-Aware News Feed (Major Enhancement)
+**Vision:** Replace generic country/account news with ticker-specific news for stocks/assets the user actually owns.
+
+**Current Implementation:**
+- `/api/news/route.ts` uses Perplexity Sonar Pro (LLM)
+- Generates 3-5 generic news items based on user's countries and account types
+- Example: "IRS releases foreign tax credit guidance for US-Canada taxpayers"
+- 24-hour cache in `user_news` table
+
+**New Vision:**
+- **Portfolio tracking:** Users add stocks/ETFs they own (AAPL, TSLA, VGRO.TO, etc.)
+- **Real news API:** Fetch actual financial news from Finnhub or Alpha Vantage
+- **Ticker-specific:** Show news about companies/assets in user's portfolio
+- **Dynamic updates:** When user buys a new stock, news about that stock appears automatically
+- **Example:** User holds AAPL → sees "Apple announces Q4 earnings beat expectations"
+
+**Technical Requirements:**
+See detailed specification: `docs/FEATURE_PORTFOLIO_NEWS.md`
+
+**Priority:** High (after Workflow #2 - Financial Plan)
+**Effort:** Large (requires DB schema changes, new API integration, N8N workflow, frontend redesign)
 
 ---
 
