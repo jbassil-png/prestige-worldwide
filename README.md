@@ -166,15 +166,40 @@ Without these keys, the onboarding step falls back to two hardcoded demo account
 
 ## AI Services
 
-| Feature | Service | Model |
-|---|---|---|
-| Financial plan | n8n → OpenRouter → stub | configurable |
-| Chat | n8n → OpenRouter → stub | `claude-3.5-haiku` |
-| AI Proxy (generic) | n8n → OpenRouter | configurable (default: `claude-3.5-haiku`) |
-| Daily insight | OpenRouter | `gemini-flash-1.5` |
-| News feed | OpenRouter | `perplexity/sonar-pro` |
+| Feature | Service | Model | Status |
+|---|---|---|---|
+| **Financial plan** | **n8n → Supabase (market data) → OpenRouter** | **`claude-3.5-sonnet`** | **✅ Production** |
+| Chat | n8n → OpenRouter → stub | `claude-3.5-haiku` | ⚠️ Stub |
+| AI Proxy (generic) | n8n → OpenRouter | configurable (default: `claude-3.5-haiku`) | ✅ Production |
+| Daily insight | OpenRouter | `gemini-flash-1.5` | ⚠️ Stub |
+| News feed | OpenRouter | `perplexity/sonar-pro` | ⚠️ Stub |
 
 All AI endpoints degrade gracefully if API keys are missing.
+
+### Financial Plan Generation (Production Ready!)
+
+The plan generation workflow is fully operational and includes:
+- ✅ Real-time market data integration (S&P 500, Treasury yields, inflation, MSCI World)
+- ✅ Cross-border financial analysis for multiple countries
+- ✅ Personalized recommendations across Tax, Retirement, Currency, and Estate planning
+- ✅ 7% growth projections and 4% withdrawal estimates
+- ✅ Comprehensive AI prompt with user context and market conditions
+
+**Test the live endpoint:**
+```bash
+curl -X POST https://jbassil.app.n8n.cloud/webhook-test/plan-generation \
+  -H "Content-Type: application/json" \
+  -d '{
+    "countries": ["US", "CA"],
+    "residenceCountry": "US",
+    "retirementCountry": "CA",
+    "currentAge": 35,
+    "retirementAge": 55,
+    "accounts": [{"type": "401k", "country": "US", "balanceUsd": 50000, "currency": "USD"}],
+    "goals": ["tax", "retirement"],
+    "notes": "Planning to move"
+  }'
+```
 
 ### API Endpoints
 
