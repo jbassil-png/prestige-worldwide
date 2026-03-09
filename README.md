@@ -187,7 +187,7 @@ The plan generation workflow is fully operational and includes:
 
 **Test the live endpoint:**
 ```bash
-curl -X POST https://jbassil.app.n8n.cloud/webhook-test/plan-generation \
+curl -X POST https://jbassil.app.n8n.cloud/webhook/plan-generation \
   -H "Content-Type: application/json" \
   -d '{
     "countries": ["US", "CA"],

@@ -10,7 +10,7 @@ This document describes all N8N workflows used in Prestige Worldwide.
 |----------|---------|----------------|---------------------|
 | AI Chat | Streaming chat responses | `https://jbassil.app.n8n.cloud/webhook/ai-chat` | `/api/chat` |
 | AI Proxy | Generic OpenRouter proxy | `https://jbassil.app.n8n.cloud/webhook/financial-plan` | `/api/ai-proxy` |
-| **Plan Generation** | **AI financial plans with market data** | `https://jbassil.app.n8n.cloud/webhook-test/plan-generation` | `/api/plan/generate` |
+| **Plan Generation** | **AI financial plans with market data** | `https://jbassil.app.n8n.cloud/webhook/plan-generation` | `/api/plan/generate` |
 
 ---
 
@@ -168,7 +168,7 @@ N8N_AI_PROXY_WEBHOOK_URL=https://jbassil.app.n8n.cloud/webhook/financial-plan
 
 ### Test Plan Generation (Direct to N8N)
 ```bash
-curl -X POST https://jbassil.app.n8n.cloud/webhook-test/plan-generation \
+curl -X POST https://jbassil.app.n8n.cloud/webhook/plan-generation \
   -H "Content-Type: application/json" \
   -d '{
     "countries": ["US", "CA"],
@@ -280,10 +280,11 @@ Webhook → Extract/Validate Input → Fetch Market Data (Supabase) → Build AI
 **Configuration:**
 
 ### Node 1: Webhook
-- **Path:** `/webhook-test/plan-generation`
+- **Path:** `plan-generation`
 - **Method:** POST
 - **Respond:** When Last Node Finishes
 - **Response Data:** First Entry JSON
+- **Production URL:** `https://jbassil.app.n8n.cloud/webhook/plan-generation`
 
 **Expected Input:**
 ```json
