@@ -455,7 +455,7 @@ See [docs/BACKLOG.md](docs/BACKLOG.md) for full feature backlog.
 - ✅ **Handle testimonials section** - Add disclaimer or remove placeholder testimonials
 - ✅ **Add demo mode CTA** - "Try Demo" button in Hero for easy access without signup
 - ✅ **Add SEO meta tags** - Title, description, Open Graph tags for sharing
-- ⏳ **Create demo account** - Frontend ready, requires Supabase account creation (see "Try the Demo" section)
+- ✅ **Create demo account** - Demo account created and live (demo@prestigeworldwide.com)
 - ✅ **Update documentation** - README with demo account instructions
 
 ### Phase 2: Pre-Launch Enhancements (Planned)
