@@ -19,10 +19,11 @@ const STUB_NEWS = [
 ];
 
 export async function POST(req: NextRequest) {
-  const { plan, forceRefresh } = await req.json();
+  try {
+    const { plan, forceRefresh } = await req.json();
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
   // Check cache (Supabase required for caching)
   if (user && !forceRefresh) {
@@ -84,8 +85,12 @@ Return ONLY a JSON array with this exact shape (no markdown, no extra text):
     }
 
     return NextResponse.json({ items });
-  } catch (err) {
-    console.error("News generation error:", err);
+    } catch (err) {
+      console.error("News generation error:", err);
+      return NextResponse.json({ items: STUB_NEWS, stub: true });
+    }
+  } catch (error) {
+    console.error("News API error:", error);
     return NextResponse.json({ items: STUB_NEWS, stub: true });
   }
 }

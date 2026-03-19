@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-
-  // ── N8N webhook ──────────────────────────────────────────────────────────────
-  const webhookUrl = process.env.N8N_AI_PROXY_WEBHOOK_URL;
-
-  if (!webhookUrl) {
-    return NextResponse.json(
-      { error: "N8N_AI_PROXY_WEBHOOK_URL not configured" },
-      { status: 500 }
-    );
-  }
-
   try {
+    const body = await req.json();
+
+    // ── N8N webhook ──────────────────────────────────────────────────────────────
+    const webhookUrl = process.env.N8N_AI_PROXY_WEBHOOK_URL;
+
+    if (!webhookUrl) {
+      return NextResponse.json(
+        { error: "N8N_AI_PROXY_WEBHOOK_URL not configured" },
+        { status: 500 }
+      );
+    }
+
+    try {
     const n8nRes = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -37,10 +38,17 @@ export async function POST(req: NextRequest) {
 
     const data = await n8nRes.json();
     return NextResponse.json(data);
-  } catch (err) {
-    console.error("N8N AI proxy webhook error:", err);
+    } catch (err) {
+      console.error("N8N AI proxy webhook error:", err);
+      return NextResponse.json(
+        { error: "Failed to proxy request to N8N" },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error("AI proxy API error:", error);
     return NextResponse.json(
-      { error: "Failed to proxy request to N8N" },
+      { error: "Unable to process request. Please try again." },
       { status: 500 }
     );
   }

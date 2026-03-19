@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { messages, planContext } = await req.json();
+  try {
+    const { messages, planContext } = await req.json();
 
   // ── N8N webhook ──────────────────────────────────────────────────────────────
   const webhookUrl = process.env.N8N_CHAT_WEBHOOK_URL;
@@ -67,4 +68,11 @@ The user's current financial plan context:\n\n${JSON.stringify(planContext, null
     role: "assistant",
     content: `Thanks for your question about "${lastUserMessage}". To get live AI responses, connect N8N or set OPENROUTER_API_KEY in your environment.`,
   });
+  } catch (error) {
+    console.error("Chat API error:", error);
+    return NextResponse.json({
+      role: "assistant",
+      content: "I'm having trouble responding right now. Please try again in a moment.",
+    });
+  }
 }
