@@ -397,8 +397,8 @@ The Plaid integration is fully implemented for real bank account connectivity.
 ## Production Status
 
 **Current Version:** Live on Vercel
-**Last Updated:** March 2026
-**Status:** MVP Ready 🚀
+**Last Updated:** March 19, 2026
+**Status:** Dashboard MVP Ready 🚀 | Landing Page Improvements In Progress 📋
 
 ### What's Working
 
@@ -431,6 +431,44 @@ The Plaid integration is fully implemented for real bank account connectivity.
 - ⚡ Real-time balance refresh
 
 See [docs/BACKLOG.md](docs/BACKLOG.md) for full feature backlog.
+
+---
+
+## 📋 MVP Checklist - Landing Page Improvements
+
+**Status:** In Progress (Phase 1)
+**Goal:** Make landing page review-ready for sharing with investors, advisors, and potential users
+
+### Phase 1: Critical for Review-Ready (Current Focus)
+
+- [ ] **Fix footer links** - Create Privacy Policy, Terms of Service, Contact pages
+- [ ] **Handle testimonials section** - Add disclaimer or remove placeholder testimonials
+- [ ] **Add demo mode CTA** - "Try Demo" button in Hero for easy access without signup
+- [ ] **Add SEO meta tags** - Title, description, Open Graph tags for sharing
+- [ ] **Create demo account** - Shared credentials for reviewers to access dashboard
+- [ ] **Update documentation** - README with demo account instructions
+
+### Phase 2: Pre-Launch Enhancements (Planned)
+
+- Add trust signals (security badges, integration logos)
+- Add product screenshots/visuals
+- Add FAQ section
+- Replace placeholder testimonials with real user feedback
+
+### Phase 3: Post-Launch Optimizations (Future)
+
+- A/B test headlines and CTAs
+- Add video demo
+- Add interactive elements
+- Email capture for newsletter
+
+**Deployment Strategy Decision:** Keeping landing page in same Next.js monorepo on Vercel for:
+- Simplified deployment and maintenance
+- Shared design system and components
+- Seamless auth flow from landing → signup → dashboard
+- Next.js automatic code-splitting already optimizes bundle size
+
+**Note:** Current landing page is functional but requires Phase 1 improvements before widely sharing. Dashboard is production-ready and available at `/dashboard` (authentication required).
 
 ---
 
