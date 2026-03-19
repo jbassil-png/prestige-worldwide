@@ -1,24 +1,82 @@
+<div align="center">
+
 # Prestige Worldwide
 
 **Financial planning without borders.**
 
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://prestige-worldwide-kappa.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[Live Demo](https://prestige-worldwide-kappa.vercel.app) • [Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation)
+
+</div>
+
+---
+
+## Overview
+
 Prestige Worldwide is an AI-powered personal finance tool for people with assets, retirement accounts, or tax obligations spanning multiple countries — expats, dual citizens, cross-border workers, and international retirees.
+
+### Key Highlights
+
+- 🌍 **Multi-country support** — US, CA, GB, and more with country-specific account types
+- 🏦 **Real bank connectivity** — Plaid integration for live account data
+- 🤖 **AI-powered planning** — Personalized financial recommendations using Claude and Gemini
+- 💱 **Multi-currency** — View balances in any currency with live exchange rates
+- 📰 **Personalized news** — AI-curated financial news relevant to your situation
+- 💬 **Streaming chat** — Ask questions about your plan in real-time
+
+---
+
+## Quick Start
+
+Get up and running in 5 minutes:
+
+```bash
+# 1. Clone and install
+git clone https://github.com/yourusername/prestige-worldwide.git
+cd prestige-worldwide
+npm install
+
+# 2. Set up environment
+cp .env.example .env.local
+# Add your Supabase credentials (required - see Prerequisites)
+
+# 3. Run development server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) and start exploring! The app works in demo mode with no additional credentials required.
+
+> **Note:** Without API keys, the app gracefully falls back to mock data, demo accounts, and stub responses. You can explore all features without configuring external services.
 
 ---
 
 ## Features
 
-- **Multi-country onboarding** — select countries and account types (401k, RRSP, TFSA, ISA, SIPP, CPF, Superannuation, and more)
-- **Bank account connectivity** — link real accounts via Plaid (US, CA, GB) or enter balances manually
-- **AI financial plan** — personalised recommendations across retirement, tax, currency, and estate planning
-- **Daily AI spotlight** — a fresh insight each day based on your specific plan
-- **Personalised news feed** — AI-curated financial news relevant to your countries and account types _(planned: portfolio-specific news for stocks you own)_
-- **Streaming AI chat** — ask questions about your plan in context
-- **Currency toggle** — view all balances in residence currency, retirement currency, or native currencies with helpful tooltips
-- **Account management** — clear visibility of connected accounts with prominent management controls
-- **Demo mode** — showcase all features with sample data for presentations and demonstrations
-- **Analytics tracking** — PostHog integration for key user actions (sign-ups, bank connections, chat interactions)
-- **Works without credentials** — every external service has a stub/mock fallback for local development
+### Core Functionality
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Multi-country onboarding** | Select countries and account types (401k, RRSP, TFSA, ISA, SIPP, CPF, Superannuation, etc.) | ✅ Production |
+| **Bank account connectivity** | Link real accounts via Plaid (US, CA, GB) or enter balances manually | ✅ Production |
+| **AI financial plan** | Personalized recommendations across retirement, tax, currency, and estate planning | ✅ Production |
+| **Daily AI spotlight** | Fresh insights each day based on your specific plan | ✅ Production |
+| **Personalized news feed** | AI-curated financial news relevant to your countries and portfolio | ✅ Production |
+| **Streaming AI chat** | Ask questions about your plan with real-time responses | ✅ Production |
+| **Currency toggle** | View all balances in residence, retirement, or native currencies | ✅ Production |
+| **Demo mode** | Showcase features with sample data for presentations | ✅ Production |
+| **Analytics tracking** | PostHog integration for key user actions | ✅ Production |
+
+### Developer Experience
+
+- ✅ **Works without credentials** — Every external service has stub/mock fallbacks for local development
+- ✅ **TypeScript throughout** — Full type safety across the entire codebase
+- ✅ **Modern stack** — Next.js 16, React 19, Tailwind CSS
+- ✅ **Mobile responsive** — Optimized for all screen sizes
+- ✅ **Comprehensive error handling** — User-friendly error messages with proper fallbacks
 
 ---
 
@@ -26,8 +84,8 @@ Prestige Worldwide is an AI-powered personal finance tool for people with assets
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript |
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5 |
 | Styling | Tailwind CSS (custom `brand` colour scale) |
 | Auth & Database | Supabase |
 | Bank Connectivity | Plaid |
@@ -35,60 +93,75 @@ Prestige Worldwide is an AI-powered personal finance tool for people with assets
 | LLM Provider | OpenRouter (Claude, Gemini Flash, Perplexity Sonar Pro) |
 | Analytics | PostHog |
 | FX Rates | exchangerate-api.com |
+| Deployment | Vercel |
+
+---
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- **Node.js** 20+ and npm installed
+- **A Supabase account** (required) — [Sign up free](https://supabase.com)
+- **Git** for version control
+
+**Optional but recommended:**
+- Plaid account for bank connectivity — [Get sandbox credentials](https://dashboard.plaid.com)
+- OpenRouter API key for AI features — [Get key](https://openrouter.ai/keys)
+- PostHog account for analytics — [Sign up](https://posthog.com)
 
 ---
 
 ## Getting Started
 
-### 1. Install dependencies
+### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Configure environment variables
+### 2. Configure Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in the values you need.
+Copy the example environment file and add your credentials:
 
 ```bash
 cp .env.example .env.local
 ```
 
+**Required (Supabase):**
 ```env
-# Supabase — required for auth and data persistence
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-
-# Plaid — optional, falls back to mock accounts
-PLAID_CLIENT_ID=
-PLAID_SECRET=
-PLAID_ENV=sandbox   # sandbox | development | production
-
-# n8n — optional, used for plan generation and chat
-N8N_WEBHOOK_URL=
-N8N_CHAT_WEBHOOK_URL=
-N8N_AI_PROXY_WEBHOOK_URL=
-
-# OpenRouter — optional, used for insight, news, and chat fallback
-OPENROUTER_API_KEY=
-OPENROUTER_MODEL=anthropic/claude-3.5-haiku
-
-# PostHog — optional, used for analytics tracking
-NEXT_PUBLIC_POSTHOG_KEY=
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-
-# FX rates — optional, falls back to hardcoded approximate rates
-FX_API_KEY=
+# Get these from: Supabase Dashboard → Settings → API
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
-> **Note:** The app runs fully in stub/mock mode with no credentials configured. Mock accounts, a stub plan, placeholder insights, and sample news items are all provided as fallbacks.
+**Optional (but recommended):**
+```env
+# Plaid (bank connectivity) — Get from: https://dashboard.plaid.com
+PLAID_CLIENT_ID=your_client_id
+PLAID_SECRET=your_sandbox_secret
+PLAID_ENV=sandbox
 
-### 3. Set up Supabase tables
+# OpenRouter (AI features) — Get from: https://openrouter.ai/keys
+OPENROUTER_API_KEY=your_openrouter_key
+OPENROUTER_MODEL=anthropic/claude-3.5-haiku
 
-Create the following tables in your Supabase project:
+# PostHog (analytics) — Get from: https://app.posthog.com
+NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
-**`user_plans`**
+# FX rates (currency conversion) — Get from: https://www.exchangerate-api.com
+FX_API_KEY=your_fx_api_key
+```
+
+See [`.env.example`](.env.example) for all available configuration options.
+
+### 3. Set Up Supabase Database
+
+Run these SQL commands in your Supabase SQL Editor:
+
+**`user_plans` table:**
 ```sql
 create table user_plans (
   id uuid primary key default gen_random_uuid(),
@@ -98,7 +171,7 @@ create table user_plans (
 );
 ```
 
-**`user_news`**
+**`user_news` table:**
 ```sql
 create table user_news (
   id uuid primary key default gen_random_uuid(),
@@ -108,7 +181,7 @@ create table user_news (
 );
 ```
 
-**`plaid_items`**
+**`plaid_items` table:**
 ```sql
 create table plaid_items (
   id uuid primary key default gen_random_uuid(),
@@ -118,17 +191,40 @@ create table plaid_items (
 );
 ```
 
-### 4. Run the development server
+> **Production Note:** Add Row Level Security (RLS) policies before deploying to production. See [Supabase RLS documentation](https://supabase.com/docs/guides/auth/row-level-security).
+
+### 4. Run the Development Server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) to see the app in action!
 
 ---
 
-## Project Structure
+## Development
+
+### Available Scripts
+
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Fetch live market data (requires ALPHA_VANTAGE_API_KEY)
+npm run fetch-market-data
+
+# Seed market data to Supabase
+npm run seed-market-data
+```
+
+### Project Structure
 
 ```
 app/
@@ -145,7 +241,7 @@ app/
     ├── chat/                    # Streaming AI chat
     ├── ai-proxy/                # Generic AI proxy (N8N → OpenRouter)
     ├── insight/                 # Daily spotlight insight
-    ├── news/                    # Personalised news feed
+    ├── news/                    # Personalized news feed
     ├── fx/                      # Live exchange rates
     └── plaid/                   # Plaid Link token + token exchange
 components/                      # Shared UI components
@@ -153,22 +249,23 @@ lib/supabase/                    # Supabase client helpers (browser + server)
 middleware.ts                    # Auth guard for /dashboard and /onboarding
 ```
 
----
+### Key Features Implementation
 
-## Plaid Integration
+**Authentication Flow:**
+- Supabase Auth handles sign-up, sign-in, and password reset
+- Middleware protects authenticated routes (`/dashboard`, `/onboarding`)
+- Automatic redirects for authenticated users attempting to access auth pages
 
-The Plaid integration is fully implemented. To enable real bank account connectivity:
+**Financial Plan Generation:**
+- Real-time market data integration (S&P 500, Treasury yields, inflation, MSCI World)
+- Cross-border financial analysis for multiple countries
+- Personalized recommendations across Tax, Retirement, Currency, and Estate planning
+- Powered by Claude 3.5 Sonnet via OpenRouter
 
-1. Create a free account at [dashboard.plaid.com](https://dashboard.plaid.com)
-2. Copy your **Client ID** and **Sandbox Secret**
-3. Add them to `.env.local`:
-   ```env
-   PLAID_CLIENT_ID=your_client_id
-   PLAID_SECRET=your_sandbox_secret
-   PLAID_ENV=sandbox
-   ```
-
-Without these keys, the onboarding step falls back to two hardcoded demo accounts (Chase 401k and TD RRSP) with a visible warning banner.
+**Bank Connectivity:**
+- Plaid Link integration for US, CA, GB banks
+- Sandbox mode for development and testing
+- Fallback to manual balance entry if Plaid is unavailable
 
 ---
 
@@ -178,22 +275,14 @@ Without these keys, the onboarding step falls back to two hardcoded demo account
 |---|---|---|---|
 | **Financial plan** | **n8n → Supabase (market data) → OpenRouter** | **`claude-3.5-sonnet`** | **✅ Production** |
 | Chat | n8n → OpenRouter → stub | `claude-3.5-haiku` | ⚠️ Stub |
-| AI Proxy (generic) | n8n → OpenRouter | configurable (default: `claude-3.5-haiku`) | ✅ Production |
+| AI Proxy (generic) | n8n → OpenRouter | configurable | ✅ Production |
 | Daily insight | OpenRouter | `gemini-flash-1.5` | ⚠️ Stub |
 | News feed | OpenRouter | `perplexity/sonar-pro` | ⚠️ Stub |
 
-All AI endpoints degrade gracefully if API keys are missing.
+All AI endpoints degrade gracefully if API keys are missing, falling back to mock data.
 
-### Financial Plan Generation (Production Ready!)
+### Testing the Plan Generation Endpoint
 
-The plan generation workflow is fully operational and includes:
-- ✅ Real-time market data integration (S&P 500, Treasury yields, inflation, MSCI World)
-- ✅ Cross-border financial analysis for multiple countries
-- ✅ Personalized recommendations across Tax, Retirement, Currency, and Estate planning
-- ✅ 7% growth projections and 4% withdrawal estimates
-- ✅ Comprehensive AI prompt with user context and market conditions
-
-**Test the live endpoint:**
 ```bash
 curl -X POST https://jbassil.app.n8n.cloud/webhook/plan-generation \
   -H "Content-Type: application/json" \
@@ -209,58 +298,93 @@ curl -X POST https://jbassil.app.n8n.cloud/webhook/plan-generation \
   }'
 ```
 
-### API Endpoints
+---
 
-**`/api/ai-proxy`** - Generic AI proxy endpoint (NEW!)
-- Proxies requests to N8N workflow → OpenRouter
-- Accepts any model, messages, and parameters
-- Returns OpenRouter chat completion response
-- Example usage:
-  ```bash
-  curl -X POST https://your-app.vercel.app/api/ai-proxy \
-    -H "Content-Type: application/json" \
-    -d '{
-      "messages": [{"role": "user", "content": "Hello!"}],
-      "model": "anthropic/claude-3.5-haiku",
-      "max_tokens": 150
-    }'
-  ```
+## Plaid Integration
+
+The Plaid integration is fully implemented for real bank account connectivity.
+
+**Setup:**
+1. Create a free account at [dashboard.plaid.com](https://dashboard.plaid.com)
+2. Copy your **Client ID** and **Sandbox Secret**
+3. Add them to `.env.local`:
+   ```env
+   PLAID_CLIENT_ID=your_client_id
+   PLAID_SECRET=your_sandbox_secret
+   PLAID_ENV=sandbox
+   ```
+
+**Without Plaid credentials:**
+- Onboarding falls back to two hardcoded demo accounts (Chase 401k and TD RRSP)
+- A visible warning banner indicates mock data mode
+- All features remain functional with simulated account data
 
 ---
 
-## Recent Improvements
+## Deployment
 
-### Dashboard UX Enhancements (March 2026)
+### Deploying to Vercel
 
-**Account Management Visibility**
-- Added prominent "Your Financial Snapshot" header above metrics
-- Display connected account count with green checkmark badge
-- "Manage accounts" button with settings icon for easy access
-- Clear data source attribution showing Plaid sync status
-- Account management controls visible for all users with connected accounts
+1. **Push your code to GitHub**
 
-**Currency Toggle Improvements**
-- Custom CSS tooltips with dark background and high contrast
-- Smooth fade-in animations for better visibility
-- Tooltips positioned below buttons to avoid browser frame conflicts
-- Clear explanations of what each currency mode displays
+2. **Import to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your GitHub repository
 
-**Demo Mode for Presentations**
-- Introduction banner explaining Prestige Worldwide's value proposition
-- Feature overview panel highlighting key capabilities
-- Demo news items showcasing news feed functionality
-- Helpful guidance for chat interactions
-- Self-explanatory UI for first-time visitors
+3. **Configure Environment Variables:**
+   - Add all required environment variables from `.env.local`
+   - Ensure `NEXT_PUBLIC_*` variables are properly prefixed
 
-**Plaid Integration Fixes**
-- Fixed z-index conflicts preventing Plaid popup visibility
-- Plaid modal now renders at z-index 99999, above all other content
-- Smooth connection experience without UI obstruction
+4. **Deploy:**
+   - Vercel will automatically build and deploy your app
+   - Production URL will be provided
 
-**Analytics Integration**
-- PostHog tracking for key user actions
-- Events tracked: sign-ups, bank connections, chat interactions
-- Foundation for data-driven product improvements
+**Environment Variables Required for Production:**
+- All Supabase credentials
+- Plaid credentials (if using real bank connectivity)
+- OpenRouter API key (for AI features)
+- PostHog keys (for analytics)
+- FX API key (for live exchange rates)
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**"Supabase client error" on startup:**
+- ✅ Verify `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set in `.env.local`
+- ✅ Ensure Supabase tables are created (see Step 3 in Getting Started)
+- ✅ Check Supabase project is active in your dashboard
+
+**Plaid Link modal doesn't open:**
+- ✅ Check `PLAID_CLIENT_ID` and `PLAID_SECRET` are set
+- ✅ Verify `PLAID_ENV=sandbox` is configured
+- ✅ Check browser console for Plaid errors
+- ✅ Ensure no ad blockers are interfering
+
+**AI plan generation returns errors:**
+- ✅ If using n8n: Verify `N8N_WEBHOOK_URL` is accessible
+- ✅ If using OpenRouter fallback: Check `OPENROUTER_API_KEY` is valid
+- ✅ Review API rate limits and quotas
+- ✅ Check browser network tab for specific error messages
+
+**Currency conversion shows "N/A":**
+- ✅ Set `FX_API_KEY` in `.env.local` for live rates
+- ✅ Without the key, hardcoded approximate rates are used
+- ✅ Verify exchangerate-api.com is accessible
+
+**News panel shows empty:**
+- ✅ This is a known issue when `OPENROUTER_API_KEY` is not set
+- ✅ Add OpenRouter API key to enable AI-curated news
+- ✅ Check `docs/BACKLOG.md` for more details
+
+### Need More Help?
+
+- 📖 Check the [docs/](docs/) folder for detailed guides
+- 🐛 [Open an issue](https://github.com/yourusername/prestige-worldwide/issues) for bug reports
+- 💬 [Start a discussion](https://github.com/yourusername/prestige-worldwide/discussions) for questions
 
 ---
 
@@ -270,7 +394,8 @@ curl -X POST https://jbassil.app.n8n.cloud/webhook/plan-generation \
 **Last Updated:** March 2026
 **Status:** MVP Ready 🚀
 
-**What's Working:**
+### What's Working
+
 - ✅ Complete authentication flow (sign-up, sign-in, password reset)
 - ✅ 3-step onboarding wizard with Plaid integration
 - ✅ AI-powered financial plan generation with market data
@@ -282,15 +407,123 @@ curl -X POST https://jbassil.app.n8n.cloud/webhook/plan-generation \
 - ✅ Mobile-responsive design
 - ✅ Comprehensive error handling
 
-**Known Limitations:**
+### Known Limitations
+
 - Plaid in sandbox mode (demo accounts only)
 - N8N integration optional (falls back to OpenRouter)
 - No Row Level Security on Supabase tables (planned for production)
 - Manual market data fetching (automation planned)
 
-**Next Steps:**
-- Visual theming system ("Dream Lifestyle Modes")
-- Geographic AI advisors (country-specific expertise)
-- Automated testing infrastructure
-- Production Plaid deployment
-- Real-time balance refresh
+### Roadmap
+
+- 📊 Portfolio-aware news feed (ticker-specific news for owned stocks)
+- 🎨 Visual theming system ("Dream Lifestyle Modes")
+- 🌍 Geographic AI advisors (country-specific expertise)
+- 🧪 Automated testing infrastructure
+- 🔐 Production-grade security (RLS, API rate limiting)
+- 🚀 Production Plaid deployment
+- ⚡ Real-time balance refresh
+
+See [docs/BACKLOG.md](docs/BACKLOG.md) for full feature backlog.
+
+---
+
+## Recent Improvements
+
+### Dashboard UX Enhancements (March 2026)
+
+**Account Management Visibility:**
+- Prominent "Your Financial Snapshot" header above metrics
+- Connected account count with green checkmark badge
+- "Manage accounts" button with settings icon for easy access
+- Clear data source attribution showing Plaid sync status
+
+**Currency Toggle Improvements:**
+- Custom CSS tooltips with dark background and high contrast
+- Smooth fade-in animations for better visibility
+- Tooltips positioned to avoid browser frame conflicts
+- Clear explanations of what each currency mode displays
+
+**Demo Mode for Presentations:**
+- Introduction banner explaining Prestige Worldwide's value proposition
+- Feature overview panel highlighting key capabilities
+- Demo news items showcasing news feed functionality
+- Helpful guidance for chat interactions
+
+**Error Handling & Security:**
+- Comprehensive API error handling across all endpoints
+- User-friendly error messages with proper context
+- Security audit: API keys, authentication protection, input validation
+- Graceful degradation when services are unavailable
+
+---
+
+## Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Reporting Bugs
+
+1. Check [existing issues](https://github.com/yourusername/prestige-worldwide/issues) first
+2. Include clear steps to reproduce
+3. Add screenshots if applicable
+4. Specify your environment (OS, browser, Node version)
+
+### Suggesting Features
+
+1. Check [BACKLOG.md](docs/BACKLOG.md) to see if it's already planned
+2. Open a [discussion](https://github.com/yourusername/prestige-worldwide/discussions) to gather feedback
+3. Create a detailed issue with use cases and examples
+
+### Pull Requests
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes with clear commit messages
+4. Test thoroughly (manual testing checklist in `docs/MANUAL_TEST_CHECKLIST.md`)
+5. Push to your fork and submit a pull request
+
+**Code Style:**
+- Follow existing TypeScript and React conventions
+- Use Tailwind CSS for styling
+- Add comments for complex logic
+- Keep components focused and reusable
+
+---
+
+## Documentation
+
+Additional documentation is available in the [`docs/`](docs/) folder:
+
+- [BACKLOG.md](docs/BACKLOG.md) — Issues, improvements, and feature requests
+- [MANUAL_TEST_CHECKLIST.md](docs/MANUAL_TEST_CHECKLIST.md) — Comprehensive testing guide
+- [FEATURE_PORTFOLIO_NEWS.md](docs/FEATURE_PORTFOLIO_NEWS.md) — Portfolio-aware news feed specification
+- [MARKET_DATA_SETUP.md](docs/MARKET_DATA_SETUP.md) — Market data integration guide
+- [n8n-setup.md](docs/n8n-setup.md) — N8N workflow configuration
+- [n8n-workflows.md](docs/n8n-workflows.md) — N8N workflow documentation
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Support
+
+**Questions or Issues?**
+- 📖 Check the [Documentation](#documentation)
+- 🐛 [Report a bug](https://github.com/yourusername/prestige-worldwide/issues)
+- 💬 [Ask a question](https://github.com/yourusername/prestige-worldwide/discussions)
+- 📧 Email: support@prestige-worldwide.example.com
+
+---
+
+<div align="center">
+
+**Built with ❤️ for expats, dual citizens, and global citizens**
+
+[Live Demo](https://prestige-worldwide-kappa.vercel.app) • [Documentation](docs/) • [Issues](https://github.com/yourusername/prestige-worldwide/issues)
+
+</div>
