@@ -52,6 +52,16 @@ Open [http://localhost:3000](http://localhost:3000) and start exploring! The app
 
 > **Note:** Without API keys, the app gracefully falls back to mock data, demo accounts, and stub responses. You can explore all features without configuring external services.
 
+### Try the Demo
+
+Want to see the dashboard without signing up? Use the demo account:
+
+- **URL:** [https://prestige-worldwide-kappa.vercel.app](https://prestige-worldwide-kappa.vercel.app)
+- **Click:** "Try Demo" button on the landing page
+- **Credentials:** Pre-filled automatically (or use `demo@prestigeworldwide.com` / `demo123456`)
+
+The demo account includes sample cross-border financial data to showcase all features.
+
 ---
 
 ## Features
@@ -436,17 +446,17 @@ See [docs/BACKLOG.md](docs/BACKLOG.md) for full feature backlog.
 
 ## 📋 MVP Checklist - Landing Page Improvements
 
-**Status:** In Progress (Phase 1)
+**Status:** ✅ Phase 1 Complete (March 19, 2026)
 **Goal:** Make landing page review-ready for sharing with investors, advisors, and potential users
 
-### Phase 1: Critical for Review-Ready (Current Focus)
+### Phase 1: Critical for Review-Ready ✅ COMPLETE
 
-- [ ] **Fix footer links** - Create Privacy Policy, Terms of Service, Contact pages
-- [ ] **Handle testimonials section** - Add disclaimer or remove placeholder testimonials
-- [ ] **Add demo mode CTA** - "Try Demo" button in Hero for easy access without signup
-- [ ] **Add SEO meta tags** - Title, description, Open Graph tags for sharing
-- [ ] **Create demo account** - Shared credentials for reviewers to access dashboard
-- [ ] **Update documentation** - README with demo account instructions
+- ✅ **Fix footer links** - Create Privacy Policy, Terms of Service, Contact pages
+- ✅ **Handle testimonials section** - Add disclaimer or remove placeholder testimonials
+- ✅ **Add demo mode CTA** - "Try Demo" button in Hero for easy access without signup
+- ✅ **Add SEO meta tags** - Title, description, Open Graph tags for sharing
+- ⏳ **Create demo account** - Frontend ready, requires Supabase account creation (see "Try the Demo" section)
+- ✅ **Update documentation** - README with demo account instructions
 
 ### Phase 2: Pre-Launch Enhancements (Planned)
 
