@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import posthog from "posthog-js";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -38,6 +39,11 @@ export default function SignUpPage() {
 
     if (data.session) {
       // Email confirmation is disabled — session is live immediately
+      // Track sign-up event
+      if (data.user) {
+        posthog.identify(data.user.id, { email: data.user.email });
+        posthog.capture('user_signed_up', { method: 'email_password' });
+      }
       router.refresh();
       router.push("/onboarding");
     } else {
@@ -73,6 +79,7 @@ export default function SignUpPage() {
 
     setMagicSent(true);
     setLoading(false);
+    // Note: We'll track sign-up completion when they confirm email and reach onboarding
   }
 
   if (confirmationSent) {

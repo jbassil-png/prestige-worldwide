@@ -457,6 +457,46 @@ export async function POST(req: Request) {
 
 ---
 
+### 15. Dashboard UX: Currency Toggle & Data Attribution
+**Priority:** HIGH
+**Time Estimate:** 1.5 hours
+**Reference:** User feedback - Dashboard clarity improvements
+
+Improve dashboard user experience by making currency toggle clearer and showing data sources:
+
+**1. Add Clear Labels & Tooltips to Currency Toggle**
+- [ ] Add tooltips to each currency option explaining what they do:
+  - Residence: "View all amounts in your residence country currency"
+  - Retirement: "View all amounts in your retirement country currency"
+  - Native: "View each account in its original currency"
+- [ ] Add sub-labels showing the actual currency code (e.g., "USD", "EUR")
+- [ ] Update `components/CurrencyToggle.tsx`
+
+**2. Add Account Data Attribution**
+- [ ] Add info banner in `PlanView` showing data sources
+- [ ] Display count of connected accounts via Plaid
+- [ ] Add "Manage accounts" button linking to account management
+- [ ] Use blue info style (bg-blue-50, border-blue-200)
+
+**3. Add Account Management Link**
+- [ ] Create account management page or modal
+- [ ] Allow users to view connected accounts
+- [ ] Allow users to add new accounts
+- [ ] Allow users to disconnect accounts
+- [ ] Show when balances were last refreshed
+
+**Files to modify:**
+- `components/CurrencyToggle.tsx` - Add tooltips and sub-labels
+- `components/PlanView.tsx` - Add data attribution banner
+- Create or update account management UI
+
+**Design notes:**
+- Skip manual override feature (adds complexity without clear value)
+- Focus on transparency: show where numbers come from
+- Make it easy to manage connected accounts
+
+---
+
 ## 🟢 NICE TO HAVE: Credibility & Polish
 
 ### 15. Custom Domain
@@ -591,12 +631,12 @@ These will block growth and MUST be addressed.
 
 ## 📊 Summary
 
-**Total Tasks:** 18
-**Total Estimated Time:** ~8 hours
+**Total Tasks:** 19
+**Total Estimated Time:** ~9.5 hours
 
 **Priority Breakdown:**
 - 🔴 Critical (Security & Errors): 5 tasks, ~2 hours
-- 🟡 High (Launch Essentials): 9 tasks, ~5 hours
+- 🟡 High (Launch Essentials): 10 tasks, ~6.5 hours
 - 🟢 Nice to Have (Polish): 4 tasks, ~2.5 hours
 
 **Recommended Order:**
@@ -606,9 +646,10 @@ These will block growth and MUST be addressed.
 4. README improvements (tasks 9-11) - 1.5 hours
 5. Analytics (task 6) - 1 hour
 6. Landing page (task 12) - 1 hour
-7. Feedback channel (task 13) - 30 min
-8. Beta testers (task 14) - ongoing
-9. Everything else - as time permits
+7. Dashboard UX improvements (task 15) - 1.5 hours
+8. Feedback channel (task 13) - 30 min
+9. Beta testers (task 14) - ongoing
+10. Everything else - as time permits
 
 ---
 
@@ -622,7 +663,7 @@ If starting a fresh session, follow this workflow:
 4. **Update checkboxes** - Mark completed items as you go
 5. **Document issues** - Add any new findings to `BACKLOG.md`
 
-**Current Progress:** 4/18 tasks completed (22%)
+**Current Progress:** 4/19 tasks completed (21%)
 
 ---
 
@@ -652,5 +693,5 @@ Use this section to document issues found during the checklist:
 ---
 
 **Last Updated:** 2026-03-19
-**Status:** 4/18 tasks completed - Critical security complete ✅
+**Status:** 4/19 tasks completed - Critical security complete ✅, Dashboard UX improvements added
 **Branch:** `claude/start-planning-gWIXp`

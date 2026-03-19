@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import posthog from "posthog-js";
 
 type Message = {
   role: "user" | "assistant";
@@ -36,6 +37,12 @@ export default function ChatPanel({ planContext }: Props) {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setThinking(true);
+
+    // Track chat message
+    posthog.capture('chat_message_sent', {
+      message_length: text.length,
+      has_plan_context: !!planContext,
+    });
 
     try {
       const res = await fetch("/api/chat", {
