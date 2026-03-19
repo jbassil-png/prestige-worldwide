@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent horizontal overflow on mobile */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#__next {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 /* Fix Plaid Link modal z-index to appear above all content */
 #plaid-link-iframe-1,
 [id^="plaid-link-iframe"],

@@ -21,8 +21,8 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
-      <div className="max-w-6xl mx-auto">
+    <section className="w-full py-16 sm:py-24 px-3 sm:px-4 md:px-6 bg-white">
+      <div className="w-full max-w-6xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3 sm:mb-4">
             Everything in one place
