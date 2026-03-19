@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import type { CountrySelection } from "./StepCountries";
+import posthog from "posthog-js";
 
 const CURRENCY_BY_COUNTRY: Record<string, string> = {
   US: "USD", CA: "CAD", GB: "GBP", SG: "SGD", AU: "AUD", DE: "EUR", FR: "EUR", OTHER: "USD",
@@ -65,8 +66,19 @@ function PlaidConnect({ selections, onAccounts }: { selections: CountrySelection
       const data = await res.json();
       setAccounts(data.accounts);
       setLinkToken(null);
+
+      // Track successful bank connection
+      posthog.capture('bank_connected', {
+        accounts_count: data.accounts?.length || 0,
+        source: 'plaid',
+      });
     } catch {
       setError("Failed to fetch account balances.");
+      // Track failed connection
+      posthog.capture('bank_connection_failed', {
+        source: 'plaid',
+        error: 'exchange_failed',
+      });
     }
     setLoading(false);
   }, []);

@@ -6,6 +6,7 @@ import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
 import StepGoals, { type GoalsData } from "./steps/StepGoals";
 import { createClient } from "@/lib/supabase/client";
+import posthog from "posthog-js";
 
 type WizardData = {
   selections: CountrySelection[];
@@ -62,6 +63,14 @@ export default function OnboardingPage() {
         // No Supabase session — store in sessionStorage so dashboard can read it
         sessionStorage.setItem("pw_plan", JSON.stringify({ ...plan, meta: payload }));
       }
+
+      // Track onboarding completion
+      posthog.capture('onboarding_completed', {
+        countries_count: payload.countries.length,
+        accounts_count: payload.accounts.length,
+        goals_count: payload.goals.length,
+        years_to_retirement: payload.retirementAge - payload.currentAge,
+      });
 
       router.push("/dashboard");
     } catch (err) {
