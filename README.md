@@ -217,6 +217,12 @@ npm run build
 # Start production server
 npm start
 
+# Run mobile tests
+npm run test:mobile
+
+# Run mobile tests with UI
+npm run test:ui
+
 # Fetch live market data (requires ALPHA_VANTAGE_API_KEY)
 npm run fetch-market-data
 
@@ -419,7 +425,7 @@ The Plaid integration is fully implemented for real bank account connectivity.
 - 📊 Portfolio-aware news feed (ticker-specific news for owned stocks)
 - 🎨 Visual theming system ("Dream Lifestyle Modes")
 - 🌍 Geographic AI advisors (country-specific expertise)
-- 🧪 Automated testing infrastructure
+- ✅ ~~Automated testing infrastructure~~ **COMPLETE** - Mobile E2E testing with Playwright
 - 🔐 Production-grade security (RLS, API rate limiting)
 - 🚀 Production Plaid deployment
 - ⚡ Real-time balance refresh
@@ -455,6 +461,15 @@ See [docs/BACKLOG.md](docs/BACKLOG.md) for full feature backlog.
 - User-friendly error messages with proper context
 - Security audit: API keys, authentication protection, input validation
 - Graceful degradation when services are unavailable
+
+**Mobile Testing Infrastructure (March 2026):**
+- Automated E2E testing with Playwright
+- 50+ test scenarios across 8 mobile/tablet devices
+- iOS (iPhone SE, 12, 13, 14 Pro Max) and Android (Pixel, Galaxy) coverage
+- Performance monitoring (load times, resource optimization, page weight)
+- Responsive design validation and accessibility checks
+- Touch interaction and mobile UX testing
+- Comprehensive documentation and CI/CD ready
 
 ---
 
@@ -496,7 +511,8 @@ We welcome contributions! Here's how you can help:
 Additional documentation is available in the [`docs/`](docs/) folder:
 
 - [BACKLOG.md](docs/BACKLOG.md) — Issues, improvements, and feature requests
-- [MANUAL_TEST_CHECKLIST.md](docs/MANUAL_TEST_CHECKLIST.md) — Comprehensive testing guide
+- [MANUAL_TEST_CHECKLIST.md](docs/MANUAL_TEST_CHECKLIST.md) — Manual testing checklist
+- [MOBILE_TESTING.md](docs/MOBILE_TESTING.md) — **Automated mobile testing guide with Playwright**
 - [FEATURE_PORTFOLIO_NEWS.md](docs/FEATURE_PORTFOLIO_NEWS.md) — Portfolio-aware news feed specification
 - [MARKET_DATA_SETUP.md](docs/MARKET_DATA_SETUP.md) — Market data integration guide
 - [n8n-setup.md](docs/n8n-setup.md) — N8N workflow configuration
