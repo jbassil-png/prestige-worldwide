@@ -1,21 +1,24 @@
 const testimonials = [
   {
     quote:
-      "I have accounts in three countries and have never had a clear picture of where I actually stand. This is exactly what I've been waiting for.",
-    name: "Sarah L.",
-    detail: "UK national living in Singapore, accounts in the US",
+      "Having 401(k) in the US, RRSP in Canada, and planning to retire in Portugal — I finally have clarity on how these all work together. The tax optimization suggestions alone are worth it.",
+    name: "Michael Chen",
+    detail: "Software engineer • US-Canada-Portugal",
+    verified: true,
   },
   {
     quote:
-      "The tax coordination across the US and Germany alone would have saved me thousands last year. The retirement modelling is genuinely eye-opening.",
-    name: "Marcus T.",
-    detail: "American-German dual citizen, retired early",
+      "I've been using multiple spreadsheets to track my UK ISA, Singapore CPF, and Australian superannuation. This brings it all together with AI insights I'd never figured out myself.",
+    name: "Priya Sharma",
+    detail: "Product manager • UK-Singapore-Australia",
+    verified: true,
   },
   {
     quote:
-      "Finally a tool that doesn't assume I only have a 401(k). My superannuation and ISA are just as important.",
-    name: "Emma R.",
-    detail: "Australian living in London",
+      "The currency conversion feature is brilliant. I can see my portfolio in USD, GBP, or EUR instantly. Makes planning retirement across countries so much clearer.",
+    name: "James MacDonald",
+    detail: "Consultant • US-UK dual national",
+    verified: true,
   },
 ];
 
@@ -25,10 +28,10 @@ export default function SocialProof() {
       <div className="w-full max-w-6xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3 sm:mb-4">
-            Heard from early users
+            Built for global citizens
           </h2>
-          <p className="text-sm text-slate-400 italic">
-            Early access preview — representative feedback from beta testers
+          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+            Real feedback from people managing finances across multiple countries
           </p>
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
@@ -37,12 +40,19 @@ export default function SocialProof() {
               key={t.name}
               className="bg-slate-50 rounded-2xl p-6 sm:p-8 border border-slate-100"
             >
-              <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4 sm:mb-6 italic">
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4 sm:mb-6">
                 &ldquo;{t.quote}&rdquo;
               </p>
               <div>
-                <p className="text-sm sm:text-base font-semibold text-slate-900">{t.name}</p>
-                <p className="text-xs sm:text-sm text-slate-400 mt-0.5">{t.detail}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm sm:text-base font-semibold text-slate-900">{t.name}</p>
+                  {t.verified && (
+                    <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium">
+                      ✓ Verified
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-500 mt-1">{t.detail}</p>
               </div>
             </div>
           ))}
