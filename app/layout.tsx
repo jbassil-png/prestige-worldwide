@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   title: "Prestige Worldwide — Financial planning without borders",
   description:
     "Retirement, taxes, and cash flow planning for people with assets in multiple countries.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+  },
 };
 
 export default function RootLayout({

@@ -21,27 +21,27 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="py-24 px-6 bg-slate-50">
+    <section className="py-16 sm:py-24 px-4 sm:px-6 bg-slate-50">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3 sm:mb-4">
             How it works
           </h2>
-          <p className="text-lg text-slate-500">
+          <p className="text-base sm:text-lg text-slate-500">
             From scattered accounts to a coherent strategy in three steps.
           </p>
         </div>
-        <div className="space-y-10">
+        <div className="space-y-6 sm:space-y-10">
           {steps.map((step, i) => (
-            <div key={step.number} className="flex gap-8 items-start">
-              <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-brand-600 text-white flex items-center justify-center text-xl font-bold">
+            <div key={step.number} className="flex gap-4 sm:gap-8 items-start">
+              <div className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-brand-600 text-white flex items-center justify-center text-base sm:text-xl font-bold">
                 {step.number}
               </div>
-              <div className="pt-2">
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              <div className="pt-1 sm:pt-2">
+                <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-1 sm:mb-2">
                   {step.title}
                 </h3>
-                <p className="text-slate-500 leading-relaxed">
+                <p className="text-sm sm:text-base text-slate-500 leading-relaxed">
                   {step.description}
                 </p>
               </div>
