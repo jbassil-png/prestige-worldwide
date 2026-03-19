@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 bg-gradient-to-b from-brand-50 to-white">
-      <div className="max-w-3xl mx-auto text-center">
+    <section className="w-full pt-24 sm:pt-32 pb-16 sm:pb-24 px-3 sm:px-4 md:px-6 bg-gradient-to-b from-brand-50 to-white">
+      <div className="w-full max-w-3xl mx-auto text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-4 sm:mb-6">
           Your finances don&apos;t stop at borders.
           <br />

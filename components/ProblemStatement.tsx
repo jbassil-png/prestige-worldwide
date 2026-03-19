@@ -1,7 +1,7 @@
 export default function ProblemStatement() {
   return (
-    <section className="py-16 sm:py-20 px-4 sm:px-6 bg-slate-900 text-white">
-      <div className="max-w-3xl mx-auto text-center">
+    <section className="w-full py-16 sm:py-20 px-3 sm:px-4 md:px-6 bg-slate-900 text-white">
+      <div className="w-full max-w-3xl mx-auto text-center">
         <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
           Cross-border finance is broken.
         </h2>
