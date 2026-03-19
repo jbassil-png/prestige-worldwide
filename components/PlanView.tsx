@@ -131,35 +131,46 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
 
       <p className="text-sm text-gray-700 leading-relaxed">{plan.summary}</p>
 
-      {accountCount > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+      {/* Account metrics header */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm">🔗</span>
-            <p className="text-xs text-blue-700 flex-1">
-              The numbers below are synced from <strong>{accountCount}</strong> connected account{accountCount !== 1 ? 's' : ''} via Plaid
-            </p>
+            <h3 className="text-sm font-semibold text-gray-900">Your Financial Snapshot</h3>
+            {accountCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                {accountCount} account{accountCount !== 1 ? 's' : ''} synced
+              </span>
+            )}
+          </div>
+          {accountCount > 0 && (
             <a
               href="/accounts"
-              className="text-xs text-blue-700 font-medium underline hover:text-blue-800 transition whitespace-nowrap"
+              className="inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:text-brand-800 transition"
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
               Manage accounts
             </a>
-          </div>
+          )}
         </div>
-      )}
+
+        {accountCount > 0 && (
+          <p className="text-xs text-gray-600">
+            💡 Numbers below are automatically synced from your connected bank and investment accounts via Plaid
+          </p>
+        )}
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         {metricCards.map((m) => (
-          <div key={m.label} className="bg-gray-50 rounded-xl p-4 border border-gray-100 relative group">
+          <div key={m.label} className="bg-gray-50 rounded-xl p-4 border border-gray-100 relative">
             <p className="text-xs text-gray-500 mb-1">{m.label}</p>
             <p className="text-lg font-bold text-gray-900">{m.value}</p>
-            {accountCount > 0 && (
-              <div className="absolute top-2 right-2 text-blue-500 opacity-40 group-hover:opacity-100 transition-opacity">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
-                </svg>
-              </div>
-            )}
           </div>
         ))}
       </div>
