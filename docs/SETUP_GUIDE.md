@@ -19,7 +19,10 @@ Before starting, gather these accounts/keys:
 | Alpha Vantage | Market data | https://www.alphavantage.co/support/#api-key | Free (25 calls/day) |
 | OpenRouter | AI (Claude) | https://openrouter.ai/keys | ~$0.01/plan |
 | Plaid | Bank accounts | https://dashboard.plaid.com | Sandbox free |
+| PostHog | Analytics tracking | https://app.posthog.com | Free (1M events/month) |
 | Resend (optional) | Email notifications | https://resend.com | Free tier |
+
+> **Note:** See [`docs/POSTHOG_SETUP.md`](./POSTHOG_SETUP.md) for detailed PostHog setup instructions.
 
 ---
 

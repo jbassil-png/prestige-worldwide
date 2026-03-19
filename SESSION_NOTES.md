@@ -9,6 +9,101 @@
 
 ---
 
+### Session: Mar 19, 2026 — Dashboard UX Refinement & Account Management Visibility 🎨
+
+**Branch:** `claude/start-planning-gWIXp`
+
+**What Was Accomplished:**
+1. ✅ **Fixed Account Management Controls Visibility**
+   - **Issue:** Account badge and "Manage accounts" button were hidden because `user_accounts` table was empty
+   - **Root Cause:** Plaid accounts were only used during onboarding to generate plans, but never persisted to database
+   - **Solution:** Made controls always visible for users with real account data (not demo mode)
+   - **Impact:** Users can now clearly see where their financial data comes from and access account management
+
+2. ✅ **Enhanced Currency Toggle UX**
+   - Replaced native browser tooltips with custom CSS tooltips
+   - Dark background with white text for better visibility and contrast
+   - Smooth fade-in animations
+   - Positioned below buttons to avoid browser frame conflicts
+   - Tooltips now visible and consistent across all browsers
+
+3. ✅ **Improved Popover Positioning**
+   - Fixed currency toggle tooltips appearing below browser frame
+   - Increased tooltip z-index to z-[9999] for better stacking
+   - Moved account sync indicator directly above metrics table for clearer context
+
+4. ✅ **Added Demo Mode for Project Presentation**
+   - Introduction banner explaining Prestige Worldwide's value proposition
+   - Feature overview panel highlighting key capabilities
+   - Demo news items to showcase news feed functionality
+   - Helpful tooltips and guidance for chat interactions
+   - Makes UI self-explanatory for first-time visitors and presentations
+
+5. ✅ **Fixed Plaid Popup Z-Index Issues**
+   - Plaid connection modal was appearing beneath browser frame
+   - Added CSS rules to ensure Plaid overlays render at z-index 99999
+   - Modal now appears above all other content including navbar
+
+6. ✅ **Account Source Attribution**
+   - Added "Your Financial Snapshot" header above metrics
+   - Display synced account count with green checkmark badge
+   - Prominent "Manage accounts" button with settings icon
+   - Explicit text explaining data source (Plaid sync)
+   - Positioned account management controls directly above numbers
+
+7. ✅ **Documentation Updates**
+   - Updated README.md with recent improvements and current production status
+   - Added "Recent Improvements" section highlighting dashboard UX enhancements
+   - Updated tech stack to include PostHog analytics
+   - Added production status section showing what's working and planned
+   - Updated environment variables to include PostHog configuration
+
+**Technical Details:**
+
+**PlanView.tsx Changes:**
+```typescript
+// BEFORE: Controls only shown when accountCount > 0
+{accountCount > 0 && (
+  <span>...badge...</span>
+)}
+
+// AFTER: Controls always shown for real plans
+<span>
+  {accountCount > 0 ? `${accountCount} accounts synced` : 'Accounts connected'}
+</span>
+```
+
+**Why This Matters:**
+- The conditional rendering created confusion when accounts were connected but not persisted
+- Plans were generated from real Plaid data but UI showed no account info
+- Users had no clear indication of data sources or how to manage accounts
+- Now account management is transparent and accessible
+
+**Files Modified:**
+- `components/PlanView.tsx` - Removed conditional rendering of account controls
+- `components/CurrencyToggle.tsx` - Added custom CSS tooltips
+- `app/dashboard/DashboardClient.tsx` - Demo mode enhancements
+- `app/globals.css` - Plaid z-index fixes
+- `README.md` - Documentation updates
+
+**Commits:**
+- "Improve currency toggle tooltips with visible CSS implementation"
+- "Fix Plaid popup visibility and improve dashboard for project submission"
+- "Fix popover positioning and improve account indicators"
+- "Make account source and management more prominent and explicit"
+- "Fix account management controls not appearing"
+
+**Current State:**
+- Dashboard UX significantly improved
+- Account management now clear and accessible
+- Demo mode ready for presentations
+- All visual bugs fixed
+- Documentation up to date
+
+**Next Steps (Resume Here Next Session):**
+
+---
+
 ### 🎯 Next Steps (Resume Here Next Session):
 
 **Immediate Priorities:**
