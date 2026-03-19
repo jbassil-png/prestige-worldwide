@@ -25,9 +25,20 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Add timeout to prevent hanging when Supabase is down/paused
+  let user = null;
+  try {
+    const userPromise = supabase.auth.getUser();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Supabase timeout")), 3000)
+    );
+
+    const result = await Promise.race([userPromise, timeoutPromise]);
+    user = (result as { data: { user: any } }).data.user;
+  } catch (error) {
+    console.error("Supabase auth check failed or timed out:", error);
+    // Treat as unauthenticated user, allow public pages to work
+  }
 
   const { pathname } = request.nextUrl;
 
