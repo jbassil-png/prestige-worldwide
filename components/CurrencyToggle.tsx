@@ -30,10 +30,25 @@ export default function CurrencyToggle({ residenceCurrency, retirementCurrency, 
     onChange(m);
   }
 
-  const options: { value: CurrencyMode; label: string; sub: string }[] = [
-    { value: "residence", label: "Residence", sub: residenceCurrency },
-    { value: "retirement", label: "Retirement", sub: retirementCurrency },
-    { value: "native", label: "Native", sub: "each currency" },
+  const options: { value: CurrencyMode; label: string; sub: string; tooltip: string }[] = [
+    {
+      value: "residence",
+      label: "Residence",
+      sub: residenceCurrency,
+      tooltip: "View all amounts in your residence country currency"
+    },
+    {
+      value: "retirement",
+      label: "Retirement",
+      sub: retirementCurrency,
+      tooltip: "View all amounts in your retirement country currency"
+    },
+    {
+      value: "native",
+      label: "Native",
+      sub: "each currency",
+      tooltip: "View each account in its original currency"
+    },
   ];
 
   return (
@@ -42,6 +57,7 @@ export default function CurrencyToggle({ residenceCurrency, retirementCurrency, 
         <button
           key={o.value}
           onClick={() => select(o.value)}
+          title={o.tooltip}
           className={`flex flex-col items-center px-4 py-1.5 rounded-lg text-xs font-medium transition ${
             mode === o.value
               ? "bg-white text-brand-700 shadow-sm"

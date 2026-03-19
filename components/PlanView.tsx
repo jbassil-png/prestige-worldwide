@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { CurrencyMode } from "./CurrencyToggle";
 
 type Metrics = {
@@ -65,6 +66,8 @@ function formatMoney(usd: number, mode: CurrencyMode, rates: Record<string, numb
 export default function PlanView({ plan, currencyMode, residenceCurrency, retirementCurrency }: Props) {
   const [insight, setInsight] = useState<string | null>(null);
   const [rates, setRates] = useState<Record<string, number>>({ USD: 1 });
+  const [accountCount, setAccountCount] = useState<number>(0);
+  const supabase = createClient();
 
   useEffect(() => {
     // Fetch FX rates once
@@ -83,6 +86,21 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
       .then((r) => r.json())
       .then((d) => setInsight(d.insight));
   }, [plan]);
+
+  useEffect(() => {
+    // Fetch connected account count
+    async function fetchAccountCount() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { count } = await supabase
+          .from("user_accounts")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id);
+        setAccountCount(count ?? 0);
+      }
+    }
+    fetchAccountCount();
+  }, [supabase]);
 
   const fmt = (usd: number) =>
     formatMoney(usd, currencyMode, rates, residenceCurrency, retirementCurrency);
@@ -108,6 +126,23 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
         <div className="bg-brand-50 border border-brand-200 rounded-xl px-4 py-3">
           <p className="text-xs font-semibold text-brand-700 mb-1">Today&apos;s spotlight</p>
           <p className="text-sm text-brand-900 leading-relaxed">{insight}</p>
+        </div>
+      )}
+
+      {accountCount > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">🔄</span>
+            <p className="text-xs text-blue-700 flex-1">
+              Numbers refreshed from <strong>{accountCount}</strong> connected account{accountCount !== 1 ? 's' : ''} via Plaid
+            </p>
+            <a
+              href="/accounts"
+              className="text-xs text-blue-700 font-medium underline hover:text-blue-800 transition whitespace-nowrap"
+            >
+              Manage accounts
+            </a>
+          </div>
         </div>
       )}
 
