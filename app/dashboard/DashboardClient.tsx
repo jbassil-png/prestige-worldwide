@@ -27,6 +27,7 @@ export default function DashboardClient({
   const [plan, setPlan] = useState<Plan | null>(initialPlan ?? null);
   const [currencyMode, setCurrencyMode] = useState<CurrencyMode>("residence");
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
 
   // Dev mode: load plan from sessionStorage if no server-side plan was passed
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function DashboardClient({
   async function handleRefreshPlan() {
     if (!plan) return;
     setRefreshing(true);
+    setRefreshError(null);
     try {
       const meta = (plan as Plan & { meta?: object }).meta ?? {};
       const res = await fetch("/api/plan", {
@@ -66,6 +68,7 @@ export default function DashboardClient({
       setPlan({ ...updated, meta });
     } catch (err) {
       console.error("handleRefreshPlan:", err);
+      setRefreshError("Couldn't refresh your plan. Please try again.");
     } finally {
       setRefreshing(false);
     }
@@ -123,6 +126,11 @@ export default function DashboardClient({
           >
             {refreshing ? "Refreshing…" : "Refresh plan"}
           </button>
+          {refreshError && (
+            <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1">
+              {refreshError}
+            </div>
+          )}
           <button
             onClick={handleSignOut}
             className="text-xs text-gray-500 hover:text-red-600 transition"
