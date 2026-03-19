@@ -4,6 +4,19 @@ import { useEffect, useState } from "react";
 
 export type CurrencyMode = "residence" | "retirement" | "native";
 
+// Simple tooltip component
+function Tooltip({ children, text }: { children: React.ReactNode; text: string }) {
+  return (
+    <div className="group/tooltip relative">
+      {children}
+      <div className="invisible group-hover/tooltip:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50 opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+        {text}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-gray-900"></div>
+      </div>
+    </div>
+  );
+}
+
 interface Props {
   residenceCurrency: string;
   retirementCurrency: string;
@@ -54,19 +67,19 @@ export default function CurrencyToggle({ residenceCurrency, retirementCurrency, 
   return (
     <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
       {options.map((o) => (
-        <button
-          key={o.value}
-          onClick={() => select(o.value)}
-          title={o.tooltip}
-          className={`flex flex-col items-center px-4 py-1.5 rounded-lg text-xs font-medium transition ${
-            mode === o.value
-              ? "bg-white text-brand-700 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <span>{o.label}</span>
-          <span className="text-[10px] opacity-70">{o.sub}</span>
-        </button>
+        <Tooltip key={o.value} text={o.tooltip}>
+          <button
+            onClick={() => select(o.value)}
+            className={`flex flex-col items-center px-4 py-1.5 rounded-lg text-xs font-medium transition ${
+              mode === o.value
+                ? "bg-white text-brand-700 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <span>{o.label}</span>
+            <span className="text-[10px] opacity-70">{o.sub}</span>
+          </button>
+        </Tooltip>
       ))}
     </div>
   );
