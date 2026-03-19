@@ -79,6 +79,32 @@ export default function DashboardClient({
     );
   }
 
+  // Demo plan for users without connected accounts
+  const isDemoMode = !initialPlan;
+  const demoNewsItems = [
+    {
+      headline: "New tax treaty between US and Canada impacts cross-border retirement accounts",
+      summary: "Recent changes may affect how RRSP and 401(k) withdrawals are taxed in both countries.",
+      relevance: "Relevant to your US-Canada portfolio",
+      url: "#",
+      date: "2026-03-19",
+    },
+    {
+      headline: "Singapore increases CPF contribution rates for 2026",
+      summary: "Higher mandatory savings rates may accelerate retirement goals but reduce take-home pay.",
+      relevance: "Impacts Singapore-based accounts",
+      url: "#",
+      date: "2026-03-18",
+    },
+    {
+      headline: "Currency volatility: USD strengthens against CAD and GBP",
+      summary: "Exchange rate movements could affect the real value of your multi-currency portfolio.",
+      relevance: "Monitor conversion timing for rebalancing",
+      url: "#",
+      date: "2026-03-17",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top bar */}
@@ -106,10 +132,49 @@ export default function DashboardClient({
         </div>
       </header>
 
+      {/* Introduction banner for demo/showcase */}
+      <div className="bg-gradient-to-r from-brand-600 to-brand-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <h1 className="text-2xl font-bold mb-2">Financial Planning Without Borders</h1>
+          <p className="text-brand-50 text-sm leading-relaxed max-w-3xl">
+            Prestige Worldwide helps people with assets in multiple countries navigate complex cross-border retirement,
+            tax, and cash flow planning. Get personalized recommendations that account for multi-currency portfolios,
+            international tax treaties, and retirement timing strategies.
+          </p>
+          {isDemoMode && (
+            <div className="mt-4 flex items-center gap-3">
+              <span className="bg-white/20 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full">
+                📊 Demo Mode
+              </span>
+              <button
+                onClick={() => router.push("/onboarding")}
+                className="bg-white text-brand-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-50 transition"
+              >
+                Connect Your Accounts to Get Started
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Main layout */}
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Features overview for demo mode */}
+          {isDemoMode && (
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+              <h3 className="text-sm font-semibold text-blue-900 mb-2">What You'll Get:</h3>
+              <ul className="text-sm text-blue-800 space-y-1.5">
+                <li>✓ <strong>AI-Powered Analysis:</strong> Personalized financial plan based on your real account balances</li>
+                <li>✓ <strong>Cross-Border Insights:</strong> Tax optimization and currency strategy recommendations</li>
+                <li>✓ <strong>Live News Feed:</strong> Relevant financial news tailored to your countries and accounts</li>
+                <li>✓ <strong>Interactive Chat:</strong> Ask questions about your plan anytime</li>
+                <li>✓ <strong>Secure Connections:</strong> Bank integration via Plaid (bank-level encryption)</li>
+              </ul>
+            </div>
+          )}
+
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <PlanView
               plan={plan}
@@ -120,13 +185,26 @@ export default function DashboardClient({
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <NewsPanel initialItems={initialNews as never[]} plan={plan} />
+            <NewsPanel
+              initialItems={isDemoMode ? (demoNewsItems as never[]) : (initialNews as never[])}
+              plan={plan}
+            />
+            {isDemoMode && (
+              <p className="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-100">
+                💡 <strong>Note:</strong> Connect your accounts to receive personalized news based on your portfolio and countries.
+              </p>
+            )}
           </div>
         </div>
 
         {/* Right column — chat */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col lg:h-[calc(100vh-7rem)] sticky top-6">
           <ChatPanel planContext={plan} />
+          {isDemoMode && (
+            <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
+              💬 Try asking: &quot;What tax considerations should I know?&quot; or &quot;When should I retire?&quot;
+            </p>
+          )}
         </div>
       </div>
     </div>
