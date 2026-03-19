@@ -1,0 +1,115 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1600" height="1000" fill="#F9FAFB"/>
+
+  <!-- Header -->
+  <rect width="1600" height="60" fill="white"/>
+  <rect x="24" y="18" width="180" height="24" rx="4" fill="#0F766E"/>
+  <text x="32" y="35" font-family="system-ui" font-size="16" font-weight="600" fill="white">Prestige Worldwide</text>
+
+  <!-- Header buttons -->
+  <rect x="1380" y="18" width="80" height="24" rx="4" fill="#E5E7EB"/>
+  <text x="1395" y="35" font-family="system-ui" font-size="12" fill="#374151">Refresh</text>
+  <rect x="1480" y="18" width="90" height="24" rx="4" fill="#E5E7EB"/>
+  <text x="1490" y="35" font-family="system-ui" font-size="12" fill="#374151">Sign out</text>
+
+  <!-- Banner -->
+  <rect y="60" width="1600" height="120" fill="#0F766E"/>
+  <text x="32" y="100" font-family="system-ui" font-size="24" font-weight="700" fill="white">Financial Planning Without Borders</text>
+  <text x="32" y="130" font-family="system-ui" font-size="14" fill="#CCF5F0">Personalized recommendations for your multi-country portfolio</text>
+  <rect x="32" y="145" width="100" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+  <text x="45" y="158" font-family="system-ui" font-size="11" fill="white">📊 Demo Mode</text>
+
+  <!-- Main content area -->
+  <g transform="translate(32, 200)">
+    <!-- Left column - Financial Plan -->
+    <rect width="1000" height="680" rx="12" fill="white" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Plan header -->
+    <text x="24" y="40" font-family="system-ui" font-size="20" font-weight="700" fill="#111827">Your Financial Plan</text>
+
+    <!-- Metrics cards -->
+    <g transform="translate(24, 60)">
+      <!-- Total Assets -->
+      <rect width="300" height="100" rx="8" fill="#F0FDF4"/>
+      <text x="16" y="30" font-family="system-ui" font-size="12" font-weight="500" fill="#166534">TOTAL ASSETS</text>
+      <text x="16" y="60" font-family="system-ui" font-size="28" font-weight="700" fill="#15803D">$487,500</text>
+      <text x="16" y="80" font-family="system-ui" font-size="11" fill="#22C55E">↑ Across 3 countries</text>
+
+      <!-- Retirement Age -->
+      <rect x="320" y="0" width="300" height="100" rx="8" fill="#EFF6FF"/>
+      <text x="336" y="30" font-family="system-ui" font-size="12" font-weight="500" fill="#1E40AF">RETIREMENT AGE</text>
+      <text x="336" y="60" font-family="system-ui" font-size="28" font-weight="700" fill="#1D4ED8">Age 58</text>
+      <text x="336" y="80" font-family="system-ui" font-size="11" fill="#3B82F6">3 years early possible</text>
+
+      <!-- Tax Efficiency -->
+      <rect x="640" y="0" width="300" height="100" rx="8" fill="#FEF3C7"/>
+      <text x="656" y="30" font-family="system-ui" font-size="12" font-weight="500" fill="#92400E">TAX EFFICIENCY</text>
+      <text x="656" y="60" font-family="system-ui" font-size="28" font-weight="700" fill="#B45309">85%</text>
+      <text x="656" y="80" font-family="system-ui" font-size="11" fill="#F59E0B">Optimized cross-border</text>
+    </g>
+
+    <!-- Recommendations section -->
+    <g transform="translate(24, 180)">
+      <text y="20" font-family="system-ui" font-size="16" font-weight="600" fill="#111827">AI Recommendations</text>
+
+      <!-- Recommendation cards -->
+      <g transform="translate(0, 35)">
+        <!-- Card 1 -->
+        <rect width="950" height="80" rx="6" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+        <text x="16" y="28" font-family="system-ui" font-size="14" font-weight="600" fill="#111827">🎯 Retirement Strategy</text>
+        <text x="16" y="50" font-family="system-ui" font-size="12" fill="#6B7280">Consider maxing out your 401(k) before RRSP contributions to optimize</text>
+        <text x="16" y="66" font-family="system-ui" font-size="12" fill="#6B7280">tax-deferred growth in your higher-tax country.</text>
+
+        <!-- Card 2 -->
+        <rect y="95" width="950" height="80" rx="6" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+        <text x="16" y="123" font-family="system-ui" font-size="14" font-weight="600" fill="#111827">💱 Currency Timing</text>
+        <text x="16" y="145" font-family="system-ui" font-size="12" fill="#6B7280">USD/CAD at favorable rates. Consider rebalancing 15% of Canadian</text>
+        <text x="16" y="161" font-family="system-ui" font-size="12" fill="#6B7280">holdings to USD assets to hedge currency risk.</text>
+
+        <!-- Card 3 -->
+        <rect y="190" width="950" height="80" rx="6" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+        <text x="16" y="218" font-family="system-ui" font-size="14" font-weight="600" fill="#111827">📋 Tax Planning</text>
+        <text x="16" y="240" font-family="system-ui" font-size="12" fill="#6B7280">Review US-Canada tax treaty provisions for RRSP withdrawals to avoid</text>
+        <text x="16" y="256" font-family="system-ui" font-size="12" fill="#6B7280">double taxation in retirement.</text>
+      </g>
+    </g>
+
+    <!-- News section -->
+    <g transform="translate(24, 500)">
+      <text y="20" font-family="system-ui" font-size="16" font-weight="600" fill="#111827">Personalized News</text>
+      <rect y="30" width="950" height="60" rx="6" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="16" y="55" font-family="system-ui" font-size="13" font-weight="500" fill="#111827">New tax treaty between US and Canada impacts cross-border retirement...</text>
+      <text x="16" y="73" font-family="system-ui" font-size="11" fill="#6B7280">Relevant to your US-Canada portfolio • 2 hours ago</text>
+
+      <rect y="100" width="950" height="60" rx="6" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="16" y="125" font-family="system-ui" font-size="13" font-weight="500" fill="#111827">Currency volatility: USD strengthens against CAD and GBP</text>
+      <text x="16" y="143" font-family="system-ui" font-size="11" fill="#6B7280">Monitor conversion timing for rebalancing • 5 hours ago</text>
+    </g>
+  </g>
+
+  <!-- Right column - Chat -->
+  <g transform="translate(1064, 200)">
+    <rect width="504" height="680" rx="12" fill="white" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="24" y="40" font-family="system-ui" font-size="16" font-weight="600" fill="#111827">Ask About Your Plan</text>
+
+    <!-- Chat messages -->
+    <g transform="translate(24, 60)">
+      <!-- User message -->
+      <rect width="280" height="60" rx="8" fill="#0F766E" x="196"/>
+      <text x="212" y="30" font-family="system-ui" font-size="13" fill="white">When should I retire to</text>
+      <text x="212" y="48" font-family="system-ui" font-size="13" fill="white">minimize taxes?</text>
+
+      <!-- AI response -->
+      <rect y="75" width="400" height="100" rx="8" fill="#F3F4F6"/>
+      <text x="16" y="95" font-family="system-ui" font-size="12" fill="#374151">Based on your US-Canada portfolio,</text>
+      <text x="16" y="113" font-family="system-ui" font-size="12" fill="#374151">retiring at age 58-60 optimizes your</text>
+      <text x="16" y="131" font-family="system-ui" font-size="12" fill="#374151">tax situation. This allows RRSP</text>
+      <text x="16" y="149" font-family="system-ui" font-size="12" fill="#374151">withdrawals before US Social Security...</text>
+    </g>
+
+    <!-- Input box -->
+    <rect x="24" y="620" width="456" height="40" rx="6" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="36" y="644" font-family="system-ui" font-size="13" fill="#9CA3AF">Ask a question...</text>
+  </g>
+</svg>
