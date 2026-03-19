@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Fix Plaid Link modal z-index to appear above all content */
+#plaid-link-iframe-1,
+[id^="plaid-link-iframe"],
+.plaid-link-iframe,
+div[style*="z-index"] iframe[src*="plaid"] {
+  z-index: 99999 !important;
+}
+
+/* Plaid overlay container */
+body > div[style*="position: fixed"][style*="z-index"] {
+  z-index: 99999 !important;
+}

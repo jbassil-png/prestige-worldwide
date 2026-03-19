@@ -63,7 +63,7 @@ export default function NewsPanel({ initialItems, plan }: Props) {
 
       {loading ? (
         <Skeleton />
-      ) : (
+      ) : items.length > 0 ? (
         <div className="space-y-3">
           {items.map((item, i) => (
             <div key={i} className="rounded-xl border border-gray-100 p-4 space-y-1.5 hover:border-brand-200 transition">
@@ -80,6 +80,10 @@ export default function NewsPanel({ initialItems, plan }: Props) {
               <p className="text-[10px] text-gray-400">{item.date}</p>
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-sm text-gray-500">No news items yet. Check back soon!</p>
         </div>
       )}
     </div>
