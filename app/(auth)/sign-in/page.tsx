@@ -8,9 +8,10 @@ import { createClient } from "@/lib/supabase/client";
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isDemoMode = searchParams.get("demo") === "true";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(isDemoMode ? "demo@prestigeworldwide.com" : "");
+  const [password, setPassword] = useState(isDemoMode ? "demo123456" : "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     searchParams.get("error") === "auth_callback_error"
@@ -84,6 +85,22 @@ function SignInForm() {
   return (
     <div>
       <h1 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">Sign in to your account</h1>
+
+      {isDemoMode && (
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-brand-50 border border-brand-200 rounded-lg">
+          <div className="flex items-start gap-2">
+            <span className="text-lg sm:text-xl">👋</span>
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-brand-900 mb-1">
+                Demo Mode
+              </p>
+              <p className="text-xs text-brand-700">
+                Demo credentials pre-filled. Click "Sign in" to explore the dashboard with sample data.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handlePasswordSignIn} className="space-y-4">
         <div>

@@ -7,10 +7,9 @@ export default function Footer() {
           <p className="text-xs sm:text-sm mt-1">Financial planning without borders.</p>
         </div>
         <nav className="flex gap-4 sm:gap-6 text-xs sm:text-sm">
-          {/* TODO: Add real links once pages exist */}
-          <a href="#" className="hover:text-white transition-colors">Privacy</a>
-          <a href="#" className="hover:text-white transition-colors">Terms</a>
-          <a href="#" className="hover:text-white transition-colors">Contact</a>
+          <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+          <a href="/terms" className="hover:text-white transition-colors">Terms</a>
+          <a href="/contact" className="hover:text-white transition-colors">Contact</a>
         </nav>
         <p className="text-xs sm:text-sm text-center md:text-right">
           &copy; {new Date().getFullYear()} Prestige Worldwide. All rights reserved.

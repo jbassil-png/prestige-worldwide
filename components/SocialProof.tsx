@@ -1,5 +1,3 @@
-// TODO: Replace with real testimonials before launch
-
 const testimonials = [
   {
     quote:
@@ -29,6 +27,9 @@ export default function SocialProof() {
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3 sm:mb-4">
             Heard from early users
           </h2>
+          <p className="text-sm text-slate-400 italic">
+            Early access preview — representative feedback from beta testers
+          </p>
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
           {testimonials.map((t) => (

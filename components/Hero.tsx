@@ -23,6 +23,12 @@ export default function Hero() {
             Get started
           </Link>
           <Link
+            href="/sign-in?demo=true"
+            className="bg-brand-100 hover:bg-brand-200 text-brand-700 font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg border border-brand-300 transition-colors text-center"
+          >
+            Try Demo
+          </Link>
+          <Link
             href="/sign-in"
             className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg border border-slate-300 transition-colors text-center"
           >
@@ -31,7 +37,10 @@ export default function Hero() {
         </div>
 
         <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-slate-500">
-          Free to start. No credit card required.
+          Free to start. No credit card required.{" "}
+          <span className="inline-block mt-1 sm:mt-0 sm:ml-2 text-brand-600">
+            Demo mode available for quick preview.
+          </span>
         </p>
       </div>
     </section>
