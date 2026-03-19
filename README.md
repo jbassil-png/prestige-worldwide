@@ -14,7 +14,10 @@ Prestige Worldwide is an AI-powered personal finance tool for people with assets
 - **Daily AI spotlight** — a fresh insight each day based on your specific plan
 - **Personalised news feed** — AI-curated financial news relevant to your countries and account types _(planned: portfolio-specific news for stocks you own)_
 - **Streaming AI chat** — ask questions about your plan in context
-- **Currency toggle** — view all balances in residence currency, retirement currency, or native currencies
+- **Currency toggle** — view all balances in residence currency, retirement currency, or native currencies with helpful tooltips
+- **Account management** — clear visibility of connected accounts with prominent management controls
+- **Demo mode** — showcase all features with sample data for presentations and demonstrations
+- **Analytics tracking** — PostHog integration for key user actions (sign-ups, bank connections, chat interactions)
 - **Works without credentials** — every external service has a stub/mock fallback for local development
 
 ---
@@ -30,6 +33,7 @@ Prestige Worldwide is an AI-powered personal finance tool for people with assets
 | Bank Connectivity | Plaid |
 | AI Orchestration | n8n (webhooks) |
 | LLM Provider | OpenRouter (Claude, Gemini Flash, Perplexity Sonar Pro) |
+| Analytics | PostHog |
 | FX Rates | exchangerate-api.com |
 
 ---
@@ -69,6 +73,10 @@ N8N_AI_PROXY_WEBHOOK_URL=
 # OpenRouter — optional, used for insight, news, and chat fallback
 OPENROUTER_API_KEY=
 OPENROUTER_MODEL=anthropic/claude-3.5-haiku
+
+# PostHog — optional, used for analytics tracking
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 # FX rates — optional, falls back to hardcoded approximate rates
 FX_API_KEY=
@@ -217,3 +225,72 @@ curl -X POST https://jbassil.app.n8n.cloud/webhook/plan-generation \
       "max_tokens": 150
     }'
   ```
+
+---
+
+## Recent Improvements
+
+### Dashboard UX Enhancements (March 2026)
+
+**Account Management Visibility**
+- Added prominent "Your Financial Snapshot" header above metrics
+- Display connected account count with green checkmark badge
+- "Manage accounts" button with settings icon for easy access
+- Clear data source attribution showing Plaid sync status
+- Account management controls visible for all users with connected accounts
+
+**Currency Toggle Improvements**
+- Custom CSS tooltips with dark background and high contrast
+- Smooth fade-in animations for better visibility
+- Tooltips positioned below buttons to avoid browser frame conflicts
+- Clear explanations of what each currency mode displays
+
+**Demo Mode for Presentations**
+- Introduction banner explaining Prestige Worldwide's value proposition
+- Feature overview panel highlighting key capabilities
+- Demo news items showcasing news feed functionality
+- Helpful guidance for chat interactions
+- Self-explanatory UI for first-time visitors
+
+**Plaid Integration Fixes**
+- Fixed z-index conflicts preventing Plaid popup visibility
+- Plaid modal now renders at z-index 99999, above all other content
+- Smooth connection experience without UI obstruction
+
+**Analytics Integration**
+- PostHog tracking for key user actions
+- Events tracked: sign-ups, bank connections, chat interactions
+- Foundation for data-driven product improvements
+
+---
+
+## Production Status
+
+**Current Version:** Live on Vercel
+**Last Updated:** March 2026
+**Status:** MVP Ready 🚀
+
+**What's Working:**
+- ✅ Complete authentication flow (sign-up, sign-in, password reset)
+- ✅ 3-step onboarding wizard with Plaid integration
+- ✅ AI-powered financial plan generation with market data
+- ✅ Real-time streaming chat with Claude
+- ✅ Personalized news feed
+- ✅ Multi-currency support with live FX rates
+- ✅ Demo mode for presentations
+- ✅ Analytics tracking with PostHog
+- ✅ Mobile-responsive design
+- ✅ Comprehensive error handling
+
+**Known Limitations:**
+- Plaid in sandbox mode (demo accounts only)
+- N8N integration optional (falls back to OpenRouter)
+- No Row Level Security on Supabase tables (planned for production)
+- Manual market data fetching (automation planned)
+
+**Next Steps:**
+- Visual theming system ("Dream Lifestyle Modes")
+- Geographic AI advisors (country-specific expertise)
+- Automated testing infrastructure
+- Production Plaid deployment
+- Real-time balance refresh
