@@ -9,7 +9,99 @@
 
 ---
 
-### Session: Mar 19, 2026 — Dashboard UX Refinement & Account Management Visibility 🎨
+### Session: Mar 19, 2026 (Evening) — Landing Page Review & MVP Checklist Planning 📋
+
+**Branch:** `claude/start-planning-gWIXp`
+
+**What Was Accomplished:**
+1. ✅ **Evaluated Deployment Architecture**
+   - Discussed pros/cons of keeping landing page in monorepo vs. splitting to separate Vercel deployment
+   - **Decision:** Keep current setup (single Next.js app on Vercel) for simplicity and tight integration
+   - **Rationale:** Small team, shared design system, Next.js code-splitting already optimized, can split later if needed
+
+2. ✅ **Comprehensive Landing Page Audit**
+   - Reviewed all landing page components: Hero, Navbar, Features, ProblemStatement, HowItWorks, SocialProof, CTASection, Footer
+   - Identified 20 potential improvements across Critical Fixes, High-Impact, Content, Conversion, Technical/SEO, and Nice-to-haves
+   - Prioritized into 3 phases: MVP Ready (Phase 1), Pre-Launch (Phase 2), Post-Launch (Phase 3)
+
+3. ✅ **Created MVP Checklist for Review-Ready Landing Page**
+   - **Phase 1 Requirements (Critical for sharing with reviewers):**
+     1. Fix footer links (Privacy, Terms, Contact pages)
+     2. Handle testimonials section (add disclaimer or remove fake testimonials)
+     3. Add demo mode CTA to Hero section
+     4. Add SEO meta tags (title, description, Open Graph)
+     5. Create shared demo account for reviewers
+     6. Update documentation with demo account instructions
+
+4. ✅ **Documented Current Project State**
+   - Updated SESSION_NOTES.md with today's session
+   - Captured MVP checklist status
+   - Documented decision to focus on Phase 1 requirements only
+
+**Key Insights:**
+
+**Deployment Strategy:**
+- Current setup (monorepo on Vercel) is optimal for MVP stage
+- Splitting landing page only makes sense when:
+  - Landing page traffic >> app traffic (100x+)
+  - Marketing team ships daily landing page changes
+  - Need specialized A/B testing tools
+  - Need global CDN edge optimization
+
+**Landing Page Priorities:**
+- Focus on legal compliance (Privacy, Terms) and trust signals first
+- Demo account critical for allowing reviewers to access dashboard
+- SEO meta tags important for shareability and search visibility
+- Testimonials need disclaimer or removal to maintain credibility
+
+**Review Sharing Strategy:**
+- Landing page: Public URL (anyone can view)
+- Dashboard: Protected by auth, requires demo account or signup
+- Vercel preview deployments: Best for sharing specific PR changes
+
+**Technical Decisions:**
+- Keep landing page components in same codebase as dashboard
+- Leverage Next.js App Router metadata for SEO
+- Use shared Tailwind theme and components
+- Single deployment pipeline for simplicity
+
+**Files Reviewed (No Changes):**
+- `app/page.tsx` - Landing page entry point
+- `components/Hero.tsx` - Hero section with CTAs
+- `components/Navbar.tsx` - Top navigation
+- `components/Features.tsx` - Feature cards
+- `components/ProblemStatement.tsx` - Problem section
+- `components/HowItWorks.tsx` - How it works steps
+- `components/SocialProof.tsx` - Testimonials (has TODO for real testimonials)
+- `components/CTASection.tsx` - Final CTA
+- `components/Footer.tsx` - Footer with placeholder links
+- `README.md` - Project documentation
+- `.env.example` - Environment variables
+
+**Current State:**
+- Landing page functional but needs Phase 1 fixes before sharing
+- No code changes made this session (review and planning only)
+- MVP checklist created and ready to execute
+- Documentation updated with current status
+
+**Next Steps (Resume Here Next Session):**
+1. 🎯 **Execute Phase 1 MVP Checklist:**
+   - [ ] Fix footer links (Privacy, Terms, Contact pages)
+   - [ ] Handle testimonials section (add disclaimer or remove)
+   - [ ] Add demo mode CTA to Hero section
+   - [ ] Add SEO meta tags to landing page
+   - [ ] Create shared demo account for reviewers
+   - [ ] Update documentation with demo account instructions
+
+2. 🎯 **After Phase 1 Completion:**
+   - Test all links and CTAs
+   - Verify demo account works end-to-end
+   - Share with reviewers for feedback
+   - Consider Phase 2 improvements (trust signals, screenshots, FAQ)
+
+---
+
+### Session: Mar 19, 2026 (Earlier) — Dashboard UX Refinement & Account Management Visibility 🎨
 
 **Branch:** `claude/start-planning-gWIXp`
 
