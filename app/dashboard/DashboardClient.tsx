@@ -43,9 +43,17 @@ export default function DashboardClient({
   }, []);
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push("/sign-in");
-    router.refresh();
+    try {
+      await supabase.auth.signOut();
+      // Use replace to avoid adding to browser history
+      router.replace("/sign-in");
+      // Force a hard refresh to ensure cookies are cleared
+      window.location.href = "/sign-in";
+    } catch (error) {
+      console.error("Sign out error:", error);
+      // Force redirect anyway
+      window.location.href = "/sign-in";
+    }
   }
 
   async function handleRefreshPlan() {
