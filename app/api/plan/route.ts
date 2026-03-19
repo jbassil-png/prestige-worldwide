@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
 
   // ── n8n webhook ─────────────────────────────────────────────────────────────
   // When you have n8n running, set N8N_WEBHOOK_URL in your .env.local file.
@@ -35,6 +36,13 @@ export async function POST(req: NextRequest) {
   // ─────────────────────────────────────────────────────────────────────────────
   const stub = buildStubPlan(body);
   return NextResponse.json(stub);
+  } catch (error) {
+    console.error("Plan generation error:", error);
+    return NextResponse.json(
+      { error: "Unable to generate your plan. Please try again." },
+      { status: 500 }
+    );
+  }
 }
 
 function buildStubPlan(input: {
