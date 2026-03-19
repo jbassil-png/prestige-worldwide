@@ -9,9 +9,9 @@ function Tooltip({ children, text }: { children: React.ReactNode; text: string }
   return (
     <div className="group/tooltip relative">
       {children}
-      <div className="invisible group-hover/tooltip:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50 opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+      <div className="invisible group-hover/tooltip:visible absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-[9999] opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none shadow-lg">
         {text}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-gray-900"></div>
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-px border-4 border-transparent border-b-gray-900"></div>
       </div>
     </div>
   );
