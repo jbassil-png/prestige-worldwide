@@ -32,9 +32,11 @@ function Skeleton() {
 export default function NewsPanel({ initialItems, plan }: Props) {
   const [items, setItems] = useState<NewsItem[]>(initialItems);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function refresh() {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/news", {
         method: "POST",
@@ -43,6 +45,9 @@ export default function NewsPanel({ initialItems, plan }: Props) {
       });
       const data = await res.json();
       setItems(data.items ?? []);
+    } catch (err) {
+      console.error("News refresh error:", err);
+      setError("Couldn't refresh news. Showing cached items.");
     } finally {
       setLoading(false);
     }
@@ -60,6 +65,12 @@ export default function NewsPanel({ initialItems, plan }: Props) {
           {loading ? "Refreshing…" : "Refresh"}
         </button>
       </div>
+
+      {error && (
+        <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+          {error}
+        </div>
+      )}
 
       {loading ? (
         <Skeleton />
