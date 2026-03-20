@@ -10,6 +10,7 @@ import PortfolioNewsPanel from "@/components/PortfolioNewsPanel";
 import ChatPanel from "@/components/ChatPanel";
 import { createClient } from "@/lib/supabase/client";
 import type { PortfolioNewsItem } from "@/app/api/portfolio-news/route";
+import posthog from "posthog-js";
 
 interface Holding {
   id: string;
@@ -87,6 +88,13 @@ export default function DashboardClient({
         await supabase.from("user_plans").insert({ user_id: user.id, plan: { ...updated, meta } });
       }
       setPlan({ ...updated, meta });
+
+      // Track successful plan refresh
+      if (posthog.__loaded) {
+        posthog.capture('plan_refreshed', {
+          has_meta: !!meta && Object.keys(meta).length > 0,
+        });
+      }
     } catch (err) {
       console.error("handleRefreshPlan:", err);
       setRefreshError("Couldn't refresh your plan. Please try again.");

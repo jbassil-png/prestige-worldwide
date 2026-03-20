@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
@@ -20,6 +20,13 @@ export default function OnboardingPage() {
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Track when user starts onboarding
+  useEffect(() => {
+    if (posthog.__loaded) {
+      posthog.capture('onboarding_started');
+    }
+  }, []);
 
   async function handleGoals(goals: GoalsData) {
     setGenerating(true);
@@ -50,6 +57,13 @@ export default function OnboardingPage() {
 
       if (!planRes.ok) throw new Error("Plan generation failed");
       const plan = await planRes.json();
+
+      // Track successful plan generation
+      posthog.capture('plan_generated', {
+        countries_count: payload.countries.length,
+        accounts_count: payload.accounts.length,
+        years_to_retirement: payload.retirementAge - payload.currentAge,
+      });
 
       // Persist plan to Supabase (best-effort — works with or without Supabase configured)
       const supabase = createClient();
