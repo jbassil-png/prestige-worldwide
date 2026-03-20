@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type NewsItem = {
   headline: string;
@@ -33,6 +33,12 @@ export default function NewsPanel({ initialItems, plan }: Props) {
   const [items, setItems] = useState<NewsItem[]>(initialItems);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialItems.length === 0) {
+      refresh();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function refresh() {
     setLoading(true);
