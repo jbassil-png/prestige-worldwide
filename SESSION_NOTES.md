@@ -9,6 +9,111 @@
 
 ---
 
+### Session: Mar 20, 2026 — Account Management & Detail Views Planning 📊
+
+**Branch:** `claude/start-planning-gWIXp`
+
+**What Was Accomplished:**
+1. ✅ **Explored Codebase for Account Management**
+   - Reviewed current `/accounts` page implementation
+   - Analyzed dashboard Financial Snapshot component
+   - Examined database schema (`user_accounts`, `plaid_items`, `plan_history`)
+   - Identified gaps in user control and data visibility
+
+2. ✅ **Created Comprehensive Feature Proposal**
+   - Discussed user requirements: account removal, country updates, detail views
+   - Refined scope based on user feedback:
+     - Hard delete accounts (not soft delete)
+     - Auto-regenerate plan when countries change
+     - Limit plan history to last 10 plans
+     - Show only balance history (no transactions yet)
+     - Keep settings simple (just countries and age)
+
+3. ✅ **Documented Features in Backlog**
+   - Added detailed feature specification to `docs/BACKLOG.md`
+   - Included technical requirements (database schema, API endpoints, file structure)
+   - Defined acceptance criteria for all sub-features
+   - Prioritized as High (core UX improvement)
+
+4. ✅ **Partial Implementation Started (PAUSED)**
+   - Created database migration: `supabase/migrations/20260320_add_user_profiles.sql`
+   - Created DELETE endpoint: `app/api/accounts/[id]/route.ts`
+   - Created profile endpoint: `app/api/profile/route.ts`
+   - Started updating `AccountsClient.tsx` (incomplete)
+   - **User requested pause:** Don't implement yet, focus on documentation
+
+**Key Decisions:**
+
+| Topic | Decision | Rationale |
+|-------|----------|-----------|
+| Account deletion | Hard delete | Simpler, user wants complete removal |
+| Plan regeneration | Auto-generate when countries change | Better UX, no manual trigger needed |
+| Plan history | Limit to last 10 | Avoid clutter, recent history most relevant |
+| Account details | Balance history only | Defer transactions to future phase |
+| Settings scope | Countries + age only | Keep it simple, avoid scope creep |
+
+**Proposed Architecture:**
+
+**New Database Table:**
+```sql
+user_profiles (
+  user_id, residence_country, retirement_country,
+  current_age, retirement_age, timestamps
+)
+```
+
+**New API Endpoints:**
+- `DELETE /api/accounts/[id]` - Remove account (hard delete)
+- `GET/PUT /api/profile` - Fetch/update user profile
+
+**New Pages:**
+- `/settings` - Manage profile and countries
+- `/accounts/[id]` - Individual account detail + balance history
+- `/plan` - Expanded current plan view
+- `/plan/history` - Last 10 historical plans
+
+**Enhanced Navigation:**
+- Financial Snapshot metrics → clickable → `/plan`
+- Settings icon in dashboard header
+- Breadcrumbs on detail pages
+
+**Files Created (Partial - Implementation Paused):**
+- `supabase/migrations/20260320_add_user_profiles.sql` ✅
+- `app/api/accounts/[id]/route.ts` ✅
+- `app/api/profile/route.ts` ✅
+- `app/accounts/AccountsClient.tsx` (partially modified, needs completion)
+
+**Documentation Updated:**
+- `docs/BACKLOG.md` - Added Feature Request #1 with full specification
+
+**Current State:**
+- Feature fully scoped and documented
+- Database schema designed
+- API endpoints partially implemented (not tested)
+- Frontend changes not started
+- **Ready to implement** when greenlit
+
+**Next Steps (Resume Here Next Session):**
+1. 🎯 **Review and finalize feature scope** (if any changes needed)
+2. 🎯 **Complete implementation:**
+   - Finish `AccountsClient.tsx` updates (remove button + handlers)
+   - Create `/settings` page
+   - Create `/accounts/[id]` detail page
+   - Create `/plan` and `/plan/history` pages
+   - Update `PlanView.tsx` to make metrics clickable
+   - Update dashboard header with settings link
+3. 🎯 **Test all features end-to-end**
+4. 🎯 **Commit and create PR**
+
+**Learning Outcomes:**
+- How to scope features collaboratively
+- Importance of discussing before implementing
+- Breaking down complex UX improvements into manageable chunks
+- Database schema design for user profile management
+- API design for CRUD operations
+
+---
+
 ### Session: Mar 19, 2026 (Evening) — Landing Page Review & MVP Checklist Planning 📋
 
 **Branch:** `claude/start-planning-gWIXp`
