@@ -51,7 +51,118 @@ This document tracks non-critical issues and improvements identified during test
 
 ## Feature Requests
 
-### 1. Portfolio-Aware News Feed (Major Enhancement)
+### 1. Account Management & Detail Views (High Priority - UX Enhancement)
+**Vision:** Give users complete control over their accounts and deep visibility into their financial data.
+
+**Current Limitations:**
+- Users can add accounts but cannot remove them
+- No ability to update countries when user relocates
+- Financial Snapshot metrics are static (not clickable/explorable)
+- No way to view individual account details or balance history
+- No way to compare financial plans over time
+
+**Proposed Features:**
+
+#### A. Account Removal
+- Add "Remove" button to each account card in `/accounts`
+- **Strategy:** Hard delete (not soft delete)
+- Confirmation dialog before deletion
+- Auto-remove associated `plaid_items` if no other accounts use it
+- Suggest plan regeneration after account removal
+
+#### B. User Settings/Profile Page (`/settings`)
+- Allow users to update:
+  - Residence country (affects currency display and tax advice)
+  - Retirement country (affects retirement planning)
+  - Current age and retirement age
+- **Strategy:** Auto-regenerate plan when countries change
+- Store in new `user_profiles` table (separate from plan metadata)
+- **Why separate:** Plan metadata is immutable history; profile is current state
+
+#### C. Account Detail Page (`/accounts/[id]`)
+- Account overview (institution, type, balance, currency)
+- Balance history chart (from `user_balance_history` table)
+- Account-specific recommendations from current plan
+- Quick actions: refresh balance, remove account
+
+#### D. Financial Plan Details (`/plan`)
+- Expanded view of current plan metrics
+- Interactive charts for projections
+- Detailed breakdown by account and country
+- Full recommendation list with filtering (category/priority)
+- Optional: Export plan as PDF
+
+#### E. Plan History (`/plan/history`)
+- **Limit:** Show last 10 plans (not all history)
+- Compare plans side-by-side
+- See what triggered each plan (onboarding, balance change, etc.)
+- Track how projections changed over time
+
+#### F. Enhanced Navigation
+- Make Financial Snapshot metrics clickable → navigate to `/plan`
+- Add account links in recommendations
+- Settings icon in header navigation
+- Breadcrumb navigation on detail pages
+
+**Technical Requirements:**
+
+**Database Changes:**
+```sql
+-- New table for user profile
+CREATE TABLE user_profiles (
+  user_id uuid PRIMARY KEY REFERENCES auth.users(id),
+  residence_country text NOT NULL,
+  retirement_country text NOT NULL,
+  current_age integer NOT NULL,
+  retirement_age integer NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+```
+
+**New API Endpoints:**
+- `DELETE /api/accounts/[id]` - Remove account
+- `GET/PUT /api/profile` - Fetch/update user profile
+
+**New Pages:**
+- `/settings` - User profile and country management
+- `/accounts/[id]` - Individual account detail view
+- `/plan` - Current plan detail view
+- `/plan/history` - Historical plans (last 10)
+
+**Files to Modify:**
+- `app/accounts/AccountsClient.tsx` - Add remove button
+- `components/PlanView.tsx` - Make metrics clickable
+- `app/dashboard/DashboardClient.tsx` - Add settings link to header
+
+**Location:**
+- Database migration: `supabase/migrations/20260320_add_user_profiles.sql`
+- API routes: `app/api/accounts/[id]/route.ts`, `app/api/profile/route.ts`
+- Pages: `app/settings/`, `app/accounts/[id]/`, `app/plan/`
+
+**Impact:**
+- Addresses major user pain point when relocating countries
+- Provides transparency into financial data sources
+- Enables users to explore their plan in depth
+- Gives users full control over connected accounts
+
+**Priority:** High (core UX improvement)
+**Effort:** Medium (5-6 new files, 3-4 modified files, 1 migration)
+
+**Acceptance Criteria:**
+- [ ] User can remove accounts from `/accounts` page
+- [ ] User can update countries and age in `/settings`
+- [ ] Plan auto-regenerates when countries change
+- [ ] User can view individual account details at `/accounts/[id]`
+- [ ] User can see balance history chart for each account
+- [ ] User can view expanded plan details at `/plan`
+- [ ] User can view last 10 historical plans at `/plan/history`
+- [ ] Financial Snapshot metrics are clickable and navigate to plan details
+- [ ] Settings link appears in dashboard header
+
+---
+
+### 2. Portfolio-Aware News Feed (Major Enhancement)
 **Vision:** Replace generic country/account news with ticker-specific news for stocks/assets the user actually owns.
 
 **Current Implementation:**
