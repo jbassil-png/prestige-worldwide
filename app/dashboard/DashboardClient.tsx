@@ -6,12 +6,22 @@ import Link from "next/link";
 import CurrencyToggle, { type CurrencyMode } from "@/components/CurrencyToggle";
 import PlanView, { type Plan } from "@/components/PlanView";
 import NewsPanel from "@/components/NewsPanel";
+import PortfolioNewsPanel from "@/components/PortfolioNewsPanel";
 import ChatPanel from "@/components/ChatPanel";
 import { createClient } from "@/lib/supabase/client";
+import type { PortfolioNewsItem } from "@/app/api/portfolio-news/route";
+
+interface Holding {
+  id: string;
+  ticker: string;
+  asset_type: string;
+}
 
 interface Props {
   initialPlan?: Plan;
   initialNews?: object[];
+  initialHoldings?: Holding[];
+  initialPortfolioNews?: PortfolioNewsItem[];
   residenceCurrency?: string;
   retirementCurrency?: string;
 }
@@ -19,6 +29,8 @@ interface Props {
 export default function DashboardClient({
   initialPlan,
   initialNews = [],
+  initialHoldings = [],
+  initialPortfolioNews = [],
   residenceCurrency = "USD",
   retirementCurrency = "USD",
 }: Props) {
@@ -211,14 +223,21 @@ export default function DashboardClient({
           </div>
 
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-            <NewsPanel
-              initialItems={isDemoMode ? (demoNewsItems as never[]) : (initialNews as never[])}
-              plan={plan}
-            />
-            {isDemoMode && (
-              <p className="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-100">
-                💡 <strong>Note:</strong> Connect your accounts to receive personalized news based on your portfolio and countries.
-              </p>
+            {isDemoMode ? (
+              <>
+                <NewsPanel
+                  initialItems={demoNewsItems as never[]}
+                  plan={plan}
+                />
+                <p className="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-100">
+                  💡 <strong>Note:</strong> Connect your accounts to track holdings and get ticker-specific news.
+                </p>
+              </>
+            ) : (
+              <PortfolioNewsPanel
+                initialHoldings={initialHoldings}
+                initialNews={initialPortfolioNews}
+              />
             )}
           </div>
         </div>
