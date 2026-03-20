@@ -4,6 +4,7 @@ import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -17,6 +18,14 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         person_profiles: 'identified_only',
         capture_pageview: false, // We'll capture manually for better control
         capture_pageleave: true,
+      });
+
+      // Identify any already-authenticated user (e.g. returning visitors, magic link arrivals)
+      const supabase = createClient();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user && !posthog._isIdentified()) {
+          posthog.identify(session.user.id, { email: session.user.email });
+        }
       });
     }
   }, []);

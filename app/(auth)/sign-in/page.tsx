@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import posthog from "posthog-js";
 
 function SignInForm() {
   const router = useRouter();
@@ -26,12 +27,17 @@ function SignInForm() {
     setError(null);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    if (data.user) {
+      posthog.identify(data.user.id, { email: data.user.email });
+      posthog.capture('user_signed_in', { method: 'email_password' });
     }
 
     // Refresh server components so the new session is visible, then navigate
