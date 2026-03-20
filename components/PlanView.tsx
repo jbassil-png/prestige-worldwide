@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { CurrencyMode } from "./CurrencyToggle";
 
@@ -162,10 +163,17 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
 
       <div className="grid grid-cols-2 gap-3">
         {metricCards.map((m) => (
-          <div key={m.label} className="bg-gray-50 rounded-xl p-4 border border-gray-100 relative">
+          <Link
+            key={m.label}
+            href="/plan"
+            className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:border-brand-300 hover:bg-brand-50 transition group block"
+          >
             <p className="text-xs text-gray-500 mb-1">{m.label}</p>
             <p className="text-lg font-bold text-gray-900">{m.value}</p>
-          </div>
+            <p className="text-[10px] text-brand-500 opacity-0 group-hover:opacity-100 transition mt-1">
+              View details →
+            </p>
+          </Link>
         ))}
       </div>
 
