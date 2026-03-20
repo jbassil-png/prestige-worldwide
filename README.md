@@ -558,10 +558,19 @@ We welcome contributions! Here's how you can help:
 
 Additional documentation is available in the [`docs/`](docs/) folder:
 
+**📋 Planning & Development:**
+- [IMPLEMENTATION_ROADMAP.md](docs/IMPLEMENTATION_ROADMAP.md) — **Prioritized feature roadmap and task breakdown**
 - [BACKLOG.md](docs/BACKLOG.md) — Issues, improvements, and feature requests
-- [MANUAL_TEST_CHECKLIST.md](docs/MANUAL_TEST_CHECKLIST.md) — Manual testing checklist
-- [MOBILE_TESTING.md](docs/MOBILE_TESTING.md) — **Automated mobile testing guide with Playwright**
+
+**🎯 Feature Specifications:**
+- [FEATURE_ACCOUNT_MANAGEMENT.md](docs/FEATURE_ACCOUNT_MANAGEMENT.md) — Account management & detail views spec
 - [FEATURE_PORTFOLIO_NEWS.md](docs/FEATURE_PORTFOLIO_NEWS.md) — Portfolio-aware news feed specification
+
+**🧪 Testing:**
+- [MANUAL_TEST_CHECKLIST.md](docs/MANUAL_TEST_CHECKLIST.md) — Manual testing checklist
+- [MOBILE_TESTING.md](docs/MOBILE_TESTING.md) — Automated mobile testing guide with Playwright
+
+**🔧 Setup Guides:**
 - [MARKET_DATA_SETUP.md](docs/MARKET_DATA_SETUP.md) — Market data integration guide
 - [n8n-setup.md](docs/n8n-setup.md) — N8N workflow configuration
 - [n8n-workflows.md](docs/n8n-workflows.md) — N8N workflow documentation
