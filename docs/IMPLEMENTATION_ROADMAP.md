@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last Updated:** 2026-03-20
-**Current Phase:** Phase 1 - Foundation & Quick Wins
+**Current Phase:** Phase 2 - Differentiation & Quality
 
 ---
 
@@ -23,7 +23,7 @@ This roadmap outlines the prioritized implementation order for Prestige Worldwid
 **Goal:** Fix critical bugs and enable core user control
 
 ### ✅ Task 1: Fix Bug #2 - News API Empty Array
-**Status:** 🎯 NEXT UP (Start here!)
+**Status:** ✅ COMPLETE
 **Priority:** Medium
 **Effort:** 30 minutes
 **Owner:** TBD
@@ -39,9 +39,9 @@ This roadmap outlines the prioritized implementation order for Prestige Worldwid
 - File: `app/api/news/route.ts`
 
 **Acceptance Criteria:**
-- [ ] When `OPENROUTER_API_KEY` is missing, API returns stub news
-- [ ] Demo mode shows populated news panel
-- [ ] No console errors
+- [x] When `OPENROUTER_API_KEY` is missing, API returns stub news
+- [x] Demo mode shows populated news panel
+- [x] No console errors
 
 **Files to Modify:**
 - `app/api/news/route.ts`
@@ -51,8 +51,8 @@ This roadmap outlines the prioritized implementation order for Prestige Worldwid
 
 ---
 
-### Task 2: Account Management & Detail Views
-**Status:** ⏳ Pending (after Task 1)
+### ✅ Task 2: Account Management & Detail Views
+**Status:** ✅ COMPLETE
 **Priority:** High
 **Effort:** ~16 hours (4 sessions)
 **Owner:** TBD
@@ -62,18 +62,18 @@ Enable users to manage accounts, update profile, and explore financial data in d
 
 **Sub-tasks:**
 
-#### Session 1: Settings Page & Profile API (4 hours)
+#### Session 1: Settings Page & Profile API (4 hours) ✅
 **Goal:** Users can update countries and ages
 
-- [ ] Build `/settings` page (frontend)
+- [x] Build `/settings` page (frontend)
   - Country selectors (residence, retirement)
   - Age inputs (current, retirement)
   - Save/Cancel buttons
   - Success/error states
-- [ ] Test `GET /api/profile` endpoint (already implemented)
-- [ ] Test `PUT /api/profile` endpoint (already implemented)
-- [ ] Verify plan auto-regenerates on country change
-- [ ] Add "Settings" link to dashboard header
+- [x] Test `GET /api/profile` endpoint (already implemented)
+- [x] Test `PUT /api/profile` endpoint (already implemented)
+- [x] Verify plan auto-regenerates on country change
+- [x] Add "Settings" link to dashboard header
 
 **Files to Create:**
 - `app/settings/page.tsx`
@@ -83,15 +83,15 @@ Enable users to manage accounts, update profile, and explore financial data in d
 
 ---
 
-#### Session 2: Account Removal & Detail Page (4 hours)
+#### Session 2: Account Removal & Detail Page (4 hours) ✅
 **Goal:** Users can remove accounts and view individual account details
 
-- [ ] Update `AccountsClient.tsx` to add remove button
+- [x] Update `AccountsClient.tsx` to add remove button
   - Confirmation modal before deletion
   - Call `DELETE /api/accounts/[id]`
   - Update local state after successful deletion
   - Show "Regenerate plan" suggestion
-- [ ] Create `/accounts/[id]` detail page
+- [x] Create `/accounts/[id]` detail page
   - Account overview (institution, type, balance)
   - Balance history chart (query `user_balance_history`)
   - Account-specific recommendations
@@ -105,19 +105,19 @@ Enable users to manage accounts, update profile, and explore financial data in d
 
 ---
 
-#### Session 3: Plan Detail & History Pages (4 hours)
+#### Session 3: Plan Detail & History Pages (4 hours) ✅
 **Goal:** Users can explore plan details and view historical plans
 
-- [ ] Create `/plan` page (current plan detail view)
+- [x] Create `/plan` page (current plan detail view)
   - Expanded metrics with larger cards
   - Interactive charts for projections (optional)
   - Full recommendation list with filters (category/priority)
   - Account breakdown table
-- [ ] Create `/plan/history` page
+- [x] Create `/plan/history` page
   - Query `plan_history` (limit 10, DESC)
   - Display: date, trigger reason, key metrics
   - Expandable detail view for each plan
-- [ ] Update `PlanView.tsx` to make metrics clickable
+- [x] Update `PlanView.tsx` to make metrics clickable
   - Wrap metric cards in `<Link>` to `/plan`
   - Add hover state and "View details" icon
 
@@ -130,19 +130,19 @@ Enable users to manage accounts, update profile, and explore financial data in d
 
 ---
 
-#### Session 4: Testing & Polish (4 hours)
+#### Session 4: Testing & Polish (4 hours) ✅
 **Goal:** Ensure all features work end-to-end
 
-- [ ] Manual testing checklist (from FEATURE_ACCOUNT_MANAGEMENT.md)
+- [x] Manual testing checklist (from FEATURE_ACCOUNT_MANAGEMENT.md)
   - Remove account flow
   - Update profile flow
   - View account details
   - Navigate to plan detail
   - View plan history
-- [ ] Fix any bugs found
-- [ ] Polish UI/UX (loading states, error messages, transitions)
-- [ ] Update documentation
-- [ ] Create PR with comprehensive description
+- [x] Fix any bugs found
+- [x] Polish UI/UX (loading states, error messages, transitions)
+- [x] Update documentation
+- [x] Create PR with comprehensive description
 
 **Deliverables:**
 - All acceptance criteria met (see FEATURE_ACCOUNT_MANAGEMENT.md)
@@ -229,8 +229,8 @@ Set up automated testing to ensure code quality as project grows.
 **Timeline:** Week 4+
 **Goal:** Build differentiating AI-powered features
 
-### Task 5: Portfolio-Aware News Feed
-**Status:** 📋 Planned
+### ✅ Task 5: Portfolio-Aware News Feed
+**Status:** ✅ COMPLETE (Phases 1–3)
 **Priority:** High (major enhancement)
 **Effort:** ~20-24 hours
 **Owner:** TBD
@@ -245,12 +245,12 @@ Replace generic country/account news with ticker-specific news for stocks/assets
 - Auto-detect from Plaid holdings data
 
 **Sub-tasks:**
-- [ ] Design portfolio tracking schema (tickers, holdings)
-- [ ] Integrate Finnhub or Alpha Vantage News API
-- [ ] Build N8N workflow for news aggregation
-- [ ] Create portfolio management UI
-- [ ] Update news panel to show ticker-specific news
-- [ ] Add news filtering and categorization
+- [x] Design portfolio tracking schema (tickers, holdings)
+- [x] Integrate Alpha Vantage NEWS_SENTIMENT API (direct — no N8N needed)
+- [x] Build holdings management UI (inline ticker chips in PortfolioNewsPanel)
+- [x] Update news panel to show ticker-specific news with sentiment
+- [x] Add 30-minute cache via user_portfolio_news table
+- [ ] Add news filtering and categorization (Phase 4 — deferred)
 
 **Reference:**
 - Full specification: `docs/FEATURE_PORTFOLIO_NEWS.md`
@@ -397,12 +397,12 @@ Track these metrics as features are rolled out:
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| **Phase 1** | 🎯 **Active** | 0% (Starting Task 1) |
-| Phase 2 | 📋 Planned | 0% |
-| Phase 3 | 📋 Planned | 0% |
+| **Phase 1** | ✅ **Complete** | 100% (Tasks 1 + 2 done) |
+| **Phase 2** | 🎯 **Active** | 0% (Task 3 or 4 next) |
+| Phase 3 | 🔀 **Partial** | Task 5 complete; Task 6 (AI Advisors) pending |
 | Phase 4 | 📋 Planned | 0% |
 
-**Next Session: Start with Task 1 (Fix News Bug)** 🚀
+**Next Session: Phase 2 — Task 3 (Visual Theming) or Task 4 (Testing Infrastructure)** 🚀
 
 ---
 

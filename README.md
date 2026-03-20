@@ -25,7 +25,7 @@ Prestige Worldwide is an AI-powered personal finance tool for people with assets
 - 🏦 **Real bank connectivity** — Plaid integration for live account data
 - 🤖 **AI-powered planning** — Personalized financial recommendations using Claude and Gemini
 - 💱 **Multi-currency** — View balances in any currency with live exchange rates
-- 📰 **Personalized news** — AI-curated financial news relevant to your situation
+- 📈 **Portfolio news** — Ticker-specific news for stocks and ETFs you own, powered by Alpha Vantage
 - 💬 **Streaming chat** — Ask questions about your plan in real-time
 
 ---
@@ -73,8 +73,11 @@ The demo account includes sample cross-border financial data to showcase all fea
 | **Multi-country onboarding** | Select countries and account types (401k, RRSP, TFSA, ISA, SIPP, CPF, Superannuation, etc.) | ✅ Production |
 | **Bank account connectivity** | Link real accounts via Plaid (US, CA, GB) or enter balances manually | ✅ Production |
 | **AI financial plan** | Personalized recommendations across retirement, tax, currency, and estate planning | ✅ Production |
+| **Plan detail & history** | Expanded plan view with filters, account breakdown, and last 10 historical plans | ✅ Production |
+| **Account management** | Remove accounts, view balance history, per-account recommendations | ✅ Production |
+| **User settings** | Update residence/retirement countries and ages; auto-regenerates plan on change | ✅ Production |
+| **Portfolio news feed** | Ticker-specific news for owned stocks/ETFs with sentiment scores (Alpha Vantage) | ✅ Production |
 | **Daily AI spotlight** | Fresh insights each day based on your specific plan | ✅ Production |
-| **Personalized news feed** | AI-curated financial news relevant to your countries and portfolio | ✅ Production |
 | **Streaming AI chat** | Ask questions about your plan with real-time responses | ✅ Production |
 | **Currency toggle** | View all balances in residence, retirement, or native currencies | ✅ Production |
 | **Demo mode** | Showcase features with sample data for presentations | ✅ Production |
@@ -103,6 +106,7 @@ The demo account includes sample cross-border financial data to showcase all fea
 | LLM Provider | OpenRouter (Claude, Gemini Flash, Perplexity Sonar Pro) |
 | Analytics | PostHog |
 | FX Rates | exchangerate-api.com |
+| Market & News Data | Alpha Vantage |
 | Deployment | Vercel |
 
 ---
@@ -118,6 +122,7 @@ Before you begin, ensure you have:
 **Optional but recommended:**
 - Plaid account for bank connectivity — [Get sandbox credentials](https://dashboard.plaid.com)
 - OpenRouter API key for AI features — [Get key](https://openrouter.ai/keys)
+- Alpha Vantage API key for portfolio news — [Get free key](https://www.alphavantage.co/support/#api-key)
 - PostHog account for analytics — [Sign up](https://posthog.com)
 
 ---
@@ -156,6 +161,9 @@ PLAID_ENV=sandbox
 # OpenRouter (AI features) — Get from: https://openrouter.ai/keys
 OPENROUTER_API_KEY=your_openrouter_key
 OPENROUTER_MODEL=anthropic/claude-3.5-haiku
+
+# Alpha Vantage (portfolio news + market data) — Get from: https://www.alphavantage.co
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key
 
 # PostHog (analytics) — Get from: https://app.posthog.com
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
@@ -201,7 +209,17 @@ create table plaid_items (
 );
 ```
 
-> **Production Note:** Add Row Level Security (RLS) policies before deploying to production. See [Supabase RLS documentation](https://supabase.com/docs/guides/auth/row-level-security).
+**`user_profiles` table** (run migration `20260320_add_user_profiles.sql`):
+```sql
+-- See supabase/migrations/20260320_add_user_profiles.sql
+```
+
+**`user_holdings` + `user_portfolio_news` tables** (run migration `20260320_add_portfolio_news.sql`):
+```sql
+-- See supabase/migrations/20260320_add_portfolio_news.sql
+```
+
+> **Tip:** All migrations in `supabase/migrations/` can be run directly in the Supabase SQL Editor. They include RLS policies and indexes.
 
 ### 4. Run the Development Server
 
@@ -247,21 +265,36 @@ app/
 ├── page.tsx                     # Public marketing landing page
 ├── (auth)/                      # Sign-in and sign-up pages
 ├── onboarding/                  # 3-step onboarding wizard
-│   └── steps/
-│       ├── StepCountries.tsx    # Country + account type selection
-│       ├── StepConnect.tsx      # Plaid link or manual balance entry
-│       └── StepGoals.tsx        # Age, goals, and notes
-├── dashboard/                   # Authenticated dashboard (plan, chat, news)
+├── dashboard/                   # Main authenticated dashboard
+├── settings/                    # User profile & country management
+├── accounts/
+│   └── [id]/                    # Individual account detail + balance history
+├── plan/
+│   ├── page.tsx                 # Full plan detail view with filters
+│   └── history/                 # Last 10 historical plans (expandable)
 └── api/
-    ├── plan/                    # Generate financial plan
+    ├── plan/                    # Generate / regenerate financial plan
+    ├── plan/chat/               # Streaming plan chat
+    ├── plan/regenerate/         # Manual plan refresh
     ├── chat/                    # Streaming AI chat
+    ├── holdings/                # GET/POST/DELETE user portfolio tickers
+    ├── portfolio-news/          # Ticker-specific news (Alpha Vantage)
+    ├── accounts/[id]/           # Account CRUD (DELETE = remove)
+    ├── profile/                 # GET/PUT user profile
     ├── ai-proxy/                # Generic AI proxy (N8N → OpenRouter)
     ├── insight/                 # Daily spotlight insight
-    ├── news/                    # Personalized news feed
+    ├── news/                    # LLM-generated plan news (demo mode)
     ├── fx/                      # Live exchange rates
+    ├── balance-refresh/         # Refresh Plaid account balances
     └── plaid/                   # Plaid Link token + token exchange
-components/                      # Shared UI components
+components/
+├── PortfolioNewsPanel.tsx       # Holdings management + ticker news feed
+├── NewsPanel.tsx                # LLM news (demo mode only)
+├── PlanView.tsx                 # Financial snapshot (clickable metrics)
+├── ChatPanel.tsx                # Streaming chat UI
+└── CurrencyToggle.tsx           # Residence / retirement / native currency
 lib/supabase/                    # Supabase client helpers (browser + server)
+supabase/migrations/             # SQL migrations (run in Supabase SQL Editor)
 middleware.ts                    # Auth guard for /dashboard and /onboarding
 ```
 
@@ -391,10 +424,14 @@ The Plaid integration is fully implemented for real bank account connectivity.
 - ✅ Without the key, hardcoded approximate rates are used
 - ✅ Verify exchangerate-api.com is accessible
 
-**News panel shows empty:**
-- ✅ This is a known issue when `OPENROUTER_API_KEY` is not set
-- ✅ Add OpenRouter API key to enable AI-curated news
-- ✅ Check `docs/BACKLOG.md` for more details
+**Portfolio news panel shows empty (no news items):**
+- ✅ Add at least one ticker via the `+ Add ticker` input in the news panel
+- ✅ Set `ALPHA_VANTAGE_API_KEY` in `.env.local` for live news (stubs shown without it)
+- ✅ Alpha Vantage free tier: 25 requests/day — cached for 30 min per user
+
+**Legacy LLM news panel empty (demo mode only):**
+- ✅ Add `OPENROUTER_API_KEY` to enable AI-curated news in demo mode
+- ✅ Without the key, stub news items are shown automatically
 
 ### Need More Help?
 
@@ -407,38 +444,42 @@ The Plaid integration is fully implemented for real bank account connectivity.
 ## Production Status
 
 **Current Version:** Live on Vercel
-**Last Updated:** March 19, 2026
-**Status:** Dashboard MVP Ready 🚀 | Landing Page Improvements In Progress 📋
+**Last Updated:** March 20, 2026
+**Status:** Feature-Rich MVP 🚀
 
 ### What's Working
 
 - ✅ Complete authentication flow (sign-up, sign-in, password reset)
 - ✅ 3-step onboarding wizard with Plaid integration
 - ✅ AI-powered financial plan generation with market data
+- ✅ Plan detail view with recommendation filters and account breakdown
+- ✅ Plan history (last 10 plans, expandable, trigger reason badges)
+- ✅ Account management (remove accounts, view balance history, per-account recommendations)
+- ✅ User settings (update countries + ages, auto-regenerates plan)
+- ✅ Portfolio news feed (ticker chips, Alpha Vantage NEWS_SENTIMENT, sentiment scores)
 - ✅ Real-time streaming chat with Claude
-- ✅ Personalized news feed
 - ✅ Multi-currency support with live FX rates
 - ✅ Demo mode for presentations
 - ✅ Analytics tracking with PostHog
 - ✅ Mobile-responsive design
-- ✅ Comprehensive error handling
+- ✅ Loading skeletons and error boundaries on all key pages
 
 ### Known Limitations
 
 - Plaid in sandbox mode (demo accounts only)
 - N8N integration optional (falls back to OpenRouter)
-- No Row Level Security on Supabase tables (planned for production)
+- Alpha Vantage free tier: 25 requests/day (30-min cache mitigates this)
 - Manual market data fetching (automation planned)
 
 ### Roadmap
 
-- 📊 Portfolio-aware news feed (ticker-specific news for owned stocks)
-- 🎨 Visual theming system ("Dream Lifestyle Modes")
-- 🌍 Geographic AI advisors (country-specific expertise)
-- ✅ ~~Automated testing infrastructure~~ **COMPLETE** - Mobile E2E testing with Playwright
-- 🔐 Production-grade security (RLS, API rate limiting)
+- 🎨 Visual theming system ("Dream Lifestyle Modes" — Swiss Alps, Gaudy Miami, Clooney's Positano)
+- 🧪 Automated testing infrastructure (Vitest unit + integration tests)
+- 🌍 Geographic AI advisors (country-specific expertise, multi-agent N8N)
+- 🔐 Production-grade security (RLS review, API rate limiting)
 - 🚀 Production Plaid deployment
-- ⚡ Real-time balance refresh
+- ✅ ~~Portfolio-aware news feed~~ **COMPLETE** (2026-03-20)
+- ✅ ~~Account management & detail views~~ **COMPLETE** (2026-03-20)
 
 See [docs/BACKLOG.md](docs/BACKLOG.md) for full feature backlog.
 
