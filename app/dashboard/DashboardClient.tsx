@@ -7,6 +7,7 @@ import PlanView, { type Plan } from "@/components/PlanView";
 import NewsPanel from "@/components/NewsPanel";
 import ChatPanel from "@/components/ChatPanel";
 import { createClient } from "@/lib/supabase/client";
+import posthog from "posthog-js";
 
 interface Props {
   initialPlan?: Plan;
@@ -74,6 +75,13 @@ export default function DashboardClient({
         await supabase.from("user_plans").insert({ user_id: user.id, plan: { ...updated, meta } });
       }
       setPlan({ ...updated, meta });
+
+      // Track successful plan refresh
+      if (posthog.__loaded) {
+        posthog.capture('plan_refreshed', {
+          has_meta: !!meta && Object.keys(meta).length > 0,
+        });
+      }
     } catch (err) {
       console.error("handleRefreshPlan:", err);
       setRefreshError("Couldn't refresh your plan. Please try again.");
