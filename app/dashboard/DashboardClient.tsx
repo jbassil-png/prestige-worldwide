@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import CurrencyToggle, { type CurrencyMode } from "@/components/CurrencyToggle";
 import PlanView, { type Plan } from "@/components/PlanView";
 import NewsPanel from "@/components/NewsPanel";
@@ -130,6 +131,12 @@ export default function DashboardClient({
             retirementCurrency={retirementCurrency}
             onChange={setCurrencyMode}
           />
+          <Link
+            href="/settings"
+            className="text-xs text-gray-500 hover:text-brand-600 transition whitespace-nowrap"
+          >
+            Settings
+          </Link>
           <button
             onClick={handleRefreshPlan}
             disabled={refreshing}
