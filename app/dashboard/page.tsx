@@ -1,78 +1,77 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import PlanView, { type Plan } from "@/components/PlanView";
-import NewsPanel from "@/components/NewsPanel";
-import ChatPanel from "@/components/ChatPanel";
+import type { Plan } from "@/components/PlanView";
+import type { PortfolioNewsItem } from "@/app/api/portfolio-news/route";
 import DashboardClient from "./DashboardClient";
 
-export const dynamic = 'force-dynamic'; // Skip during static export
+export const dynamic = 'force-dynamic';
+
+function resolveCurrency(country: string | undefined): string {
+  if (country === "Canada") return "CAD";
+  if (country === "United Kingdom") return "GBP";
+  if (country === "Singapore") return "SGD";
+  return "USD";
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  let plan: Plan | null = null;
-  let newsItems: object[] = [];
+  if (!user) return <DashboardClient />;
 
-  if (user) {
-    // Fetch latest plan
-    const { data: planRow } = await supabase
-      .from("user_plans")
-      .select("plan")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
+  // Fetch latest plan
+  const { data: planRow } = await supabase
+    .from("user_plans")
+    .select("plan")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
 
-    if (!planRow) {
-      redirect("/onboarding");
-    }
+  if (!planRow) redirect("/onboarding");
 
-    plan = planRow.plan as Plan;
+  const plan = planRow.plan as Plan;
+  const meta = (plan as Plan & { meta?: { residenceCountry?: string; retirementCountry?: string } }).meta;
 
-    // Fetch cached news (< 24h)
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const { data: newsRow } = await supabase
+  // Fetch in parallel: legacy LLM news, holdings, portfolio news cache
+  const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+  const oneDayAgo    = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+  const [newsRow, holdingsRows, portfolioNewsRow] = await Promise.all([
+    supabase
       .from("user_news")
       .select("items")
       .eq("user_id", user.id)
       .gte("fetched_at", oneDayAgo)
       .order("fetched_at", { ascending: false })
       .limit(1)
-      .single();
-
-    newsItems = (newsRow?.items as object[]) ?? [];
-  }
-
-  // No Supabase session (dev mode without credentials): DashboardClient reads sessionStorage
-  if (!user) {
-    return <DashboardClient />;
-  }
-
-  const residenceCurrency =
-    (plan as Plan & { meta?: { residenceCountry?: string } }).meta?.residenceCountry === "Canada"
-      ? "CAD"
-      : (plan as Plan & { meta?: { residenceCountry?: string } }).meta?.residenceCountry === "United Kingdom"
-      ? "GBP"
-      : (plan as Plan & { meta?: { residenceCountry?: string } }).meta?.residenceCountry === "Singapore"
-      ? "SGD"
-      : "USD";
-
-  const retirementCurrency =
-    (plan as Plan & { meta?: { retirementCountry?: string } }).meta?.retirementCountry === "Canada"
-      ? "CAD"
-      : (plan as Plan & { meta?: { retirementCountry?: string } }).meta?.retirementCountry === "United Kingdom"
-      ? "GBP"
-      : (plan as Plan & { meta?: { retirementCountry?: string } }).meta?.retirementCountry === "Singapore"
-      ? "SGD"
-      : "USD";
+      .single()
+      .then((r) => r.data),
+    supabase
+      .from("user_holdings")
+      .select("id, ticker, asset_type, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("user_portfolio_news")
+      .select("items")
+      .eq("user_id", user.id)
+      .gte("fetched_at", thirtyMinsAgo)
+      .order("fetched_at", { ascending: false })
+      .limit(1)
+      .single()
+      .then((r) => r.data),
+  ]);
 
   return (
     <DashboardClient
-      initialPlan={plan!}
-      initialNews={newsItems}
-      residenceCurrency={residenceCurrency}
-      retirementCurrency={retirementCurrency}
+      initialPlan={plan}
+      initialNews={(newsRow?.items as object[]) ?? []}
+      initialHoldings={holdingsRows}
+      initialPortfolioNews={(portfolioNewsRow?.items as PortfolioNewsItem[]) ?? []}
+      residenceCurrency={resolveCurrency(meta?.residenceCountry)}
+      retirementCurrency={resolveCurrency(meta?.retirementCountry)}
     />
   );
 }

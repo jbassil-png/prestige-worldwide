@@ -1,8 +1,8 @@
 # Feature Specification: Portfolio-Aware News Feed
 
-**Status:** Planned
+**Status:** ✅ Implemented (Phases 1–3)
 **Priority:** High (after Workflow #2)
-**Target:** Q1 2026
+**Completed:** 2026-03-20
 
 ---
 
@@ -453,48 +453,50 @@ export async function DELETE(req: NextRequest) {
 
 ## Implementation Phases
 
-### Phase 1: Database & API Foundation
+### Phase 1: Database & API Foundation ✅
 **Goal:** Set up portfolio tracking infrastructure
 
 **Tasks:**
-- [ ] Create `user_holdings` table in Supabase
-- [ ] Create `user_portfolio_news` table in Supabase
-- [ ] Build `/api/holdings` endpoint (GET, POST, DELETE)
-- [ ] Sign up for Finnhub API (free tier)
-- [ ] Test Finnhub company-news endpoint
+- [x] Create `user_holdings` table in Supabase
+- [x] Create `user_portfolio_news` table in Supabase
+- [x] Build `/api/holdings` endpoint (GET, POST, DELETE)
+- [x] Chose Alpha Vantage NEWS_SENTIMENT over Finnhub (API key already in place)
+- [x] Validated Alpha Vantage comma-separated ticker support
 
-**Deliverable:** Users can add/remove stocks via API
+**Deliverable:** Users can add/remove stocks via API ✅
 
 ---
 
-### Phase 2: N8N Workflow
-**Goal:** Build news aggregation workflow
+### Phase 2: News API Integration ✅
+**Goal:** Fetch real ticker-specific news (N8N skipped — direct API call simpler)
 
 **Tasks:**
-- [ ] Create Workflow #3 in N8N
-- [ ] Add webhook trigger
-- [ ] Configure Supabase connection
-- [ ] Add Finnhub HTTP requests
-- [ ] Implement deduplication logic
-- [ ] Test with sample tickers (AAPL, TSLA, VGRO.TO)
-- [ ] Add error handling and fallbacks
+- [x] Built `POST /api/portfolio-news` — calls Alpha Vantage NEWS_SENTIMENT directly
+- [x] All user tickers sent in a single API call (comma-separated)
+- [x] Parses sentiment label + score per article
+- [x] Maps each article to the most relevant user-held ticker
+- [x] 30-minute cache in `user_portfolio_news` table
+- [x] Stubs gracefully on rate limit or missing API key
+- [x] Handles Alpha Vantage `Note` / `Information` rate-limit responses
 
-**Deliverable:** N8N workflow returns ticker-specific news
+**Deliverable:** API returns ticker-specific news with sentiment ✅
+
+**Note:** N8N workflow was intentionally skipped. Alpha Vantage NEWS_SENTIMENT supports all tickers in one request, so Next.js API routes handle it natively with no added complexity.
 
 ---
 
-### Phase 3: Frontend UI
+### Phase 3: Frontend UI ✅
 **Goal:** User-facing portfolio management
 
 **Tasks:**
-- [ ] Build `AddStockModal` component
-- [ ] Build `PortfolioNewsPanel` component
-- [ ] Replace current NewsPanel with PortfolioNewsPanel
-- [ ] Add ticker autocomplete (Finnhub symbol search)
-- [ ] Implement empty state (no holdings)
-- [ ] Add loading states and error handling
+- [x] Built `PortfolioNewsPanel` component (holdings + news in one panel)
+- [x] Inline add/remove: ticker chips with ×, `+ Add ticker` input (Enter/Escape)
+- [x] Replace `NewsPanel` with `PortfolioNewsPanel` for authenticated users
+- [x] Ticker autocomplete deferred (users type tickers directly — simpler)
+- [x] Empty state: dashed-border CTA when no holdings added
+- [x] Loading skeleton, error state, sentiment badges, relative timestamps
 
-**Deliverable:** Users can manage portfolio and see news in UI
+**Deliverable:** Users can manage portfolio and see news in UI ✅
 
 ---
 

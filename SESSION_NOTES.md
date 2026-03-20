@@ -9,6 +9,78 @@
 
 ---
 
+### Session: Mar 20, 2026 (Afternoon) — Task 2 Polish + Task 5 Portfolio News 🚀
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 2, Session 4: Testing & Polish**
+   - Added `loading.tsx` skeletons for `/plan` and `/plan/history` (matching page layouts)
+   - Added `error.tsx` boundaries for both routes (Try again + nav link)
+   - Fixed `PlanDetailClient`: `ratesLoading` state prevents USD flash while FX fetches; `.catch()` on FX fetch; `planDate` widened to `string | null`
+   - Fixed `PlanHistoryClient`: `entry.plan?.metrics` now optional-chained with `?? 0` / `?? "—"` fallbacks for legacy entries
+
+2. ✅ **Task 5: Portfolio-Aware News Feed (full implementation)**
+
+   **Database (`supabase/migrations/20260320_add_portfolio_news.sql`):**
+   - `user_holdings` table: ticker per user, UNIQUE(user_id, ticker), RLS-protected
+   - `user_portfolio_news` table: JSONB cache blob per user, indexed on `(user_id, fetched_at DESC)`
+
+   **API — `GET/POST/DELETE /api/holdings`:**
+   - Validates ticker format (`/^[A-Z0-9.\-]{1,12}$/`)
+   - 409 on duplicate ticker, RLS enforces ownership at DB level
+
+   **API — `POST /api/portfolio-news`:**
+   - Fetches all user tickers in **one** Alpha Vantage `NEWS_SENTIMENT` call
+   - Parses sentiment label + score; maps each article to most relevant user-held ticker
+   - 30-minute cache via `user_portfolio_news`; stubs gracefully when rate-limited or no API key
+
+   **Component — `PortfolioNewsPanel`:**
+   - Inline holdings management: ticker chips with × remove, `+ Add ticker` input (Enter/Escape)
+   - Colour-coded sentiment dots (green = bullish, red = bearish, gray = neutral)
+   - Relative timestamps, source attribution, external links
+   - Auto-refreshes news after any holdings change; skeleton loader while fetching
+   - Empty state with dashed-border CTA when no holdings exist
+
+   **Dashboard wiring:**
+   - `app/dashboard/page.tsx` fetches holdings + portfolio news in parallel server-side
+   - `DashboardClient` renders `PortfolioNewsPanel` for authenticated users; demo mode keeps existing LLM `NewsPanel`
+
+**Key Decisions:**
+
+| Topic | Decision | Rationale |
+|-------|----------|-----------|
+| Task order | Skipped Task 3 (Theming) + Task 4 (Testing) | User prioritised portfolio news as higher value |
+| News API | Alpha Vantage over Finnhub | API key already in place, free tier sufficient |
+| N8N | Skipped entirely for this feature | Next.js API routes can do all three steps natively; N8N adds complexity with no benefit |
+| API call strategy | One call for all tickers | Alpha Vantage accepts comma-separated tickers; avoids hitting 5 req/min limit |
+| Cache TTL | 30 minutes | Balances freshness vs. Alpha Vantage's 25 req/day hard cap |
+
+**Files Created:**
+- `supabase/migrations/20260320_add_portfolio_news.sql`
+- `app/api/holdings/route.ts`
+- `app/api/portfolio-news/route.ts`
+- `components/PortfolioNewsPanel.tsx`
+- `app/plan/loading.tsx`
+- `app/plan/error.tsx`
+- `app/plan/history/loading.tsx`
+- `app/plan/history/error.tsx`
+
+**Files Modified:**
+- `app/plan/PlanDetailClient.tsx` (ratesLoading, FX catch, null planDate)
+- `app/plan/history/PlanHistoryClient.tsx` (metrics null guard)
+- `app/dashboard/page.tsx` (parallel fetch: holdings + portfolio news)
+- `app/dashboard/DashboardClient.tsx` (PortfolioNewsPanel swap)
+
+**Remaining To-Do (manual):**
+- Run `20260320_add_portfolio_news.sql` in Supabase SQL Editor
+- Add `ALPHA_VANTAGE_API_KEY` to environment variables (Vercel + `.env.local`)
+
+**Current Phase:** Phase 2 begins (Visual Theming or Testing Infrastructure next)
+
+---
+
 ### Session: Mar 20, 2026 — Account Management & Detail Views Planning 📊
 
 **Branch:** `claude/start-planning-gWIXp`

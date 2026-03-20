@@ -51,7 +51,7 @@ This document tracks non-critical issues and improvements identified during test
 
 ## Feature Requests
 
-### 1. Account Management & Detail Views (High Priority - UX Enhancement)
+### ✅ 1. Account Management & Detail Views — COMPLETE (2026-03-20)
 **Vision:** Give users complete control over their accounts and deep visibility into their financial data.
 
 **Current Limitations:**
@@ -150,19 +150,19 @@ CREATE TABLE user_profiles (
 **Effort:** Medium (5-6 new files, 3-4 modified files, 1 migration)
 
 **Acceptance Criteria:**
-- [ ] User can remove accounts from `/accounts` page
-- [ ] User can update countries and age in `/settings`
-- [ ] Plan auto-regenerates when countries change
-- [ ] User can view individual account details at `/accounts/[id]`
-- [ ] User can see balance history chart for each account
-- [ ] User can view expanded plan details at `/plan`
-- [ ] User can view last 10 historical plans at `/plan/history`
-- [ ] Financial Snapshot metrics are clickable and navigate to plan details
-- [ ] Settings link appears in dashboard header
+- [x] User can remove accounts from `/accounts` page
+- [x] User can update countries and age in `/settings`
+- [x] Plan auto-regenerates when countries change
+- [x] User can view individual account details at `/accounts/[id]`
+- [x] User can see balance history chart for each account
+- [x] User can view expanded plan details at `/plan`
+- [x] User can view last 10 historical plans at `/plan/history`
+- [x] Financial Snapshot metrics are clickable and navigate to plan details
+- [x] Settings link appears in dashboard header
 
 ---
 
-### 2. Portfolio-Aware News Feed (Major Enhancement)
+### ✅ 2. Portfolio-Aware News Feed — COMPLETE (Phases 1–3, 2026-03-20)
 **Vision:** Replace generic country/account news with ticker-specific news for stocks/assets the user actually owns.
 
 **Current Implementation:**

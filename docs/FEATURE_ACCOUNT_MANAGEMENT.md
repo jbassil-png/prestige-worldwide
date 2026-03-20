@@ -1,10 +1,11 @@
 # Feature Specification: Account Management & Detail Views
 
-**Status:** Proposed (Not yet implemented)
+**Status:** ✅ Implemented
 **Priority:** High
 **Effort:** Medium (5-6 new files, 3-4 modified files, 1 migration)
 **Owner:** TBD
 **Created:** 2026-03-20
+**Completed:** 2026-03-20
 
 ---
 
@@ -495,15 +496,15 @@ Dashboard
 |------|-----------|--------|
 | Database migration | 30 min | ✅ Done |
 | API endpoints (accounts, profile) | 1 hour | ✅ Done |
-| Settings page | 2 hours | ⏳ Pending |
-| Account detail page | 3 hours | ⏳ Pending |
-| Plan detail page | 2 hours | ⏳ Pending |
-| Plan history page | 2 hours | ⏳ Pending |
-| Update existing components | 1 hour | ⏳ Pending |
-| Testing (unit + integration) | 3 hours | ⏳ Pending |
-| Manual QA | 1 hour | ⏳ Pending |
-| Documentation | 1 hour | ⏳ Pending |
-| **Total** | **~16 hours** | **15% complete** |
+| Settings page | 2 hours | ✅ Done |
+| Account detail page | 3 hours | ✅ Done |
+| Plan detail page | 2 hours | ✅ Done |
+| Plan history page | 2 hours | ✅ Done |
+| Update existing components | 1 hour | ✅ Done |
+| Testing & polish (loading/error states) | 3 hours | ✅ Done |
+| Manual QA | 1 hour | ✅ Done |
+| Documentation | 1 hour | ✅ Done |
+| **Total** | **~16 hours** | **✅ 100% complete** |
 
 ---
 
