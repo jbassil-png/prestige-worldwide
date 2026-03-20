@@ -94,16 +94,22 @@ user_profiles (
 - **Ready to implement** when greenlit
 
 **Next Steps (Resume Here Next Session):**
-1. 🎯 **Review and finalize feature scope** (if any changes needed)
-2. 🎯 **Complete implementation:**
-   - Finish `AccountsClient.tsx` updates (remove button + handlers)
-   - Create `/settings` page
-   - Create `/accounts/[id]` detail page
-   - Create `/plan` and `/plan/history` pages
-   - Update `PlanView.tsx` to make metrics clickable
-   - Update dashboard header with settings link
-3. 🎯 **Test all features end-to-end**
-4. 🎯 **Commit and create PR**
+
+**📋 IMPORTANT: Follow the Implementation Roadmap**
+- **File:** `docs/IMPLEMENTATION_ROADMAP.md`
+- **Current Phase:** Phase 1 - Foundation & Quick Wins
+- **Next Task:** Task 1 - Fix Bug #2 (News API Empty Array)
+- **Estimated Time:** 30 minutes
+
+**Task 1 Details:**
+- File to debug: `app/api/news/route.ts` (lines 46-47)
+- Problem: Fallback to stub news not triggering when OPENROUTER_API_KEY is missing
+- Expected: Should return STUB_NEWS instead of empty array
+- Acceptance: Demo mode shows populated news panel
+
+**After Task 1, move to Task 2:**
+- Account Management & Detail Views implementation (4 sessions)
+- Start with Session 1: Settings page + Profile API testing
 
 **Learning Outcomes:**
 - How to scope features collaboratively
