@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import Image from "next/image";
-
 export default function Hero() {
   return (
     <section className="w-full pt-24 sm:pt-32 pb-16 sm:pb-24 px-3 sm:px-4 md:px-6 bg-gradient-to-b from-brand-50 to-white">
@@ -51,14 +49,12 @@ export default function Hero() {
                 prestige-worldwide.app/dashboard
               </div>
             </div>
-            {/* Screenshot goes here - using Image component for optimization */}
+            {/* Screenshot - using img tag for Safari compatibility with SVG */}
             <div className="absolute top-8 left-0 right-0 bottom-0">
-              <Image
+              <img
                 src="/dashboard-screenshot.svg"
                 alt="Prestige Worldwide Dashboard showing cross-border financial plan with retirement accounts, AI recommendations, and personalized news feed"
-                fill
-                className="object-cover object-top"
-                priority
+                className="w-full h-full object-cover object-top"
               />
             </div>
           </div>
