@@ -58,7 +58,7 @@ function PlanEntryCard({ entry }: { entry: HistoryEntry }) {
     label: entry.trigger_reason,
     style: "bg-gray-50 text-gray-600 border-gray-200",
   };
-  const m = entry.plan.metrics;
+  const m = entry.plan?.metrics;
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden">
@@ -79,28 +79,32 @@ function PlanEntryCard({ entry }: { entry: HistoryEntry }) {
                 {trigger.label}
               </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <p className="text-xs text-gray-400">Net worth</p>
-                <p className="text-sm font-bold text-gray-900">{formatMoney(m.netWorthUsd)}</p>
+            {m ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <p className="text-xs text-gray-400">Net worth</p>
+                  <p className="text-sm font-bold text-gray-900">{formatMoney(m.netWorthUsd ?? 0)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Yrs to retirement</p>
+                  <p className="text-sm font-bold text-gray-900">{m.yearsToRetirement ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Projected balance</p>
+                  <p className="text-sm font-bold text-gray-900">
+                    {formatMoney(m.projectedRetirementBalanceUsd ?? 0)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Annual income</p>
+                  <p className="text-sm font-bold text-gray-900">
+                    {formatMoney(m.estimatedAnnualIncomeAtRetirement ?? 0)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-gray-400">Yrs to retirement</p>
-                <p className="text-sm font-bold text-gray-900">{m.yearsToRetirement}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Projected balance</p>
-                <p className="text-sm font-bold text-gray-900">
-                  {formatMoney(m.projectedRetirementBalanceUsd)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Annual income</p>
-                <p className="text-sm font-bold text-gray-900">
-                  {formatMoney(m.estimatedAnnualIncomeAtRetirement)}
-                </p>
-              </div>
-            </div>
+            ) : (
+              <p className="text-xs text-gray-400">Metrics unavailable for this plan version.</p>
+            )}
           </div>
           <span className="text-gray-400 text-sm shrink-0 mt-0.5">
             {expanded ? "▲" : "▼"}

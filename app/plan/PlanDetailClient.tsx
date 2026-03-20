@@ -17,7 +17,7 @@ interface Account {
 
 interface Props {
   plan: Plan;
-  planDate: string;
+  planDate: string | null;
   accounts: Account[];
   residenceCurrency: string;
   retirementCurrency: string;
@@ -51,6 +51,7 @@ export default function PlanDetailClient({
   retirementCurrency,
 }: Props) {
   const [rates, setRates] = useState<Record<string, number>>({ USD: 1 });
+  const [ratesLoading, setRatesLoading] = useState(true);
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
@@ -58,10 +59,19 @@ export default function PlanDetailClient({
     const targets = [residenceCurrency, retirementCurrency]
       .filter((c) => c !== "USD")
       .join(",");
-    if (!targets) return;
+    if (!targets) {
+      setRatesLoading(false);
+      return;
+    }
     fetch(`/api/fx?base=USD&targets=${targets}`)
       .then((r) => r.json())
-      .then((d) => setRates({ USD: 1, ...d.rates }));
+      .then((d) => {
+        if (d.rates) setRates({ USD: 1, ...d.rates });
+      })
+      .catch(() => {
+        // Silently fall back to USD rates
+      })
+      .finally(() => setRatesLoading(false));
   }, [residenceCurrency, retirementCurrency]);
 
   function formatMoney(usd: number, currency: string) {
@@ -73,7 +83,8 @@ export default function PlanDetailClient({
     }).format(usd * rate);
   }
 
-  function formatDate(dateString: string) {
+  function formatDate(dateString: string | null) {
+    if (!dateString) return "Unknown date";
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
@@ -168,11 +179,14 @@ export default function PlanDetailClient({
                 className="bg-gray-50 rounded-xl p-4 border border-gray-100"
               >
                 <p className="text-xs text-gray-500 mb-1">{card.label}</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {card.value ??
-                    formatMoney(card.usd!, residenceCurrency)}
-                </p>
-                {card.usd !== undefined && residenceCurrency !== "USD" && (
+                {ratesLoading && card.usd !== undefined ? (
+                  <div className="h-7 w-28 bg-gray-200 rounded animate-pulse mt-1" />
+                ) : (
+                  <p className="text-xl font-bold text-gray-900">
+                    {card.value ?? formatMoney(card.usd!, residenceCurrency)}
+                  </p>
+                )}
+                {!ratesLoading && card.usd !== undefined && residenceCurrency !== "USD" && (
                   <p className="text-xs text-gray-400 mt-0.5">
                     {formatMoney(card.usd, "USD")} USD
                   </p>
