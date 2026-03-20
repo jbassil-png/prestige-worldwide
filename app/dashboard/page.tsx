@@ -5,6 +5,8 @@ import NewsPanel from "@/components/NewsPanel";
 import ChatPanel from "@/components/ChatPanel";
 import DashboardClient from "./DashboardClient";
 
+export const dynamic = 'force-dynamic'; // Skip during static export
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
