@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { encrypt } from "@/lib/encrypt";
 
 const MOCK_ACCOUNTS = [
   { name: "Chase Checking", type: "401(k)", balanceUsd: 85000, currency: "USD", institution: "Chase" },
@@ -8,6 +9,13 @@ const MOCK_ACCOUNTS = [
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     if (!process.env.PLAID_CLIENT_ID) {
       return NextResponse.json({ accounts: MOCK_ACCOUNTS });
     }
@@ -33,17 +41,11 @@ export async function POST(req: NextRequest) {
 
     const balancesRes = await plaid.accountsBalanceGet({ access_token: accessToken });
 
-    // Store the access token server-side
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const firstAccount = balancesRes.data.item;
-      await supabase.from("plaid_items").insert({
-        user_id: user.id,
-        access_token: accessToken,
-        institution: firstAccount?.institution_id ?? null,
-      });
-    }
+    await supabase.from("plaid_items").insert({
+      user_id: user.id,
+      access_token: encrypt(accessToken),
+      institution: balancesRes.data.item?.institution_id ?? null,
+    });
 
     const accounts = balancesRes.data.accounts.map((a) => ({
       name: a.name,

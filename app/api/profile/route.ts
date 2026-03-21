@@ -114,7 +114,8 @@ export async function PUT(request: Request) {
     };
 
     // Generate new plan
-    const planRes = await fetch(`${request.url.replace("/api/profile", "/api/plan")}`, {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const planRes = await fetch(`${appUrl}/api/plan`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(planPayload),
