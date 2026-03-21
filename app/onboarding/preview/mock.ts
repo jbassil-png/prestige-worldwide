@@ -23,9 +23,10 @@ export const MOCK_ACCOUNTS: Account[] = [
 ];
 
 export const MOCK_GOALS: GoalsData = {
+  goalTypes: ["retirement", "tax"],
   retirementYear: 2055,
   residenceCountry: "United States",
   retirementCountry: "Canada",
   retirementGoal: { targetYear: 2055, targetAmountUsd: 2000000 },
-  notes: "Planning to retire in British Columbia.",
+  notes: "US-Canadian dual citizen living in Toronto. Planning to retire in British Columbia.",
 };
