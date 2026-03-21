@@ -1,0 +1,31 @@
+import type { CountrySelection } from "../steps/StepCountries";
+import type { Account } from "../steps/StepConnect";
+import type { GoalsData } from "../steps/StepGoals";
+
+export const MOCK_SELECTIONS: CountrySelection[] = [
+  {
+    country: "United States",
+    countryCode: "US",
+    accountTypes: ["401(k)", "IRA / Roth IRA"],
+  },
+  {
+    country: "Canada",
+    countryCode: "CA",
+    accountTypes: ["RRSP", "TFSA"],
+  },
+];
+
+export const MOCK_ACCOUNTS: Account[] = [
+  { name: "401(k) (United States)", type: "401(k)", balanceUsd: 124000, currency: "USD" },
+  { name: "IRA / Roth IRA (United States)", type: "IRA / Roth IRA", balanceUsd: 38000, currency: "USD" },
+  { name: "RRSP (Canada)", type: "RRSP", balanceUsd: 67000, currency: "CAD" },
+  { name: "TFSA (Canada)", type: "TFSA", balanceUsd: 31000, currency: "CAD" },
+];
+
+export const MOCK_GOALS: GoalsData = {
+  retirementYear: 2055,
+  residenceCountry: "United States",
+  retirementCountry: "Canada",
+  retirementGoal: { targetYear: 2055, targetAmountUsd: 2000000 },
+  notes: "Planning to retire in British Columbia.",
+};
