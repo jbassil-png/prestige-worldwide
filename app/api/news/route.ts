@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (user && !forceRefresh) {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data: cached } = await supabase
-      .from("user_news")
+      .from("user_portfolio_news")
       .select("items")
       .eq("user_id", user.id)
       .gte("fetched_at", oneDayAgo)
@@ -81,7 +81,7 @@ Return ONLY a JSON array with this exact shape (no markdown, no extra text):
 
     // Cache to Supabase
     if (user) {
-      await supabase.from("user_news").insert({ user_id: user.id, items });
+      await supabase.from("user_portfolio_news").insert({ user_id: user.id, items });
     }
 
     return NextResponse.json({ items });

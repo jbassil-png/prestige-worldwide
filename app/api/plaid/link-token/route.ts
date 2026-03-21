@@ -24,7 +24,12 @@ export async function POST() {
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id ?? "anonymous";
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = user.id;
 
     const response = await client.linkTokenCreate({
       user: { client_user_id: userId },
