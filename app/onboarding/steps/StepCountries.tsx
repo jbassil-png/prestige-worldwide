@@ -21,10 +21,13 @@ export type CountrySelection = {
 
 interface Props {
   onNext: (selections: CountrySelection[]) => void;
+  initialValues?: CountrySelection[];
 }
 
-export default function StepCountries({ onNext }: Props) {
-  const [selected, setSelected] = useState<Record<string, string[]>>({});
+export default function StepCountries({ onNext, initialValues }: Props) {
+  const [selected, setSelected] = useState<Record<string, string[]>>(
+    () => Object.fromEntries((initialValues ?? []).map((s) => [s.countryCode, s.accountTypes]))
+  );
 
   function toggleCountry(code: string) {
     setSelected((prev) => {

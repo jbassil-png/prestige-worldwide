@@ -22,6 +22,7 @@ interface Props {
   selections: CountrySelection[];
   onNext: (accounts: Account[]) => void;
   onBack: () => void;
+  initialValues?: Account[];
 }
 
 // Stub mock accounts used when Plaid is not configured
@@ -209,9 +210,9 @@ function ManualEntry({ selections, onAccounts }: { selections: CountrySelection[
   );
 }
 
-export default function StepConnect({ selections, onNext, onBack }: Props) {
+export default function StepConnect({ selections, onNext, onBack, initialValues }: Props) {
   const [tab, setTab] = useState<"plaid" | "manual">("plaid");
-  const [accounts, setAccounts] = useState<Account[] | null>(null);
+  const [accounts, setAccounts] = useState<Account[] | null>(initialValues ?? null);
 
   if (accounts) {
     return (

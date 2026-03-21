@@ -39,6 +39,7 @@ interface Props {
   onNext: (goals: GoalsData) => void;
   onBack?: () => void;
   loading?: boolean;
+  initialValues?: GoalsData;
 }
 
 function formatAmount(val: string): string {
@@ -51,24 +52,30 @@ function parseAmount(val: string): number {
   return parseInt(val.replace(/,/g, ""), 10) || 0;
 }
 
-export default function StepGoals({ countrySelections = [], onNext, onBack, loading }: Props) {
+export default function StepGoals({ countrySelections = [], onNext, onBack, loading, initialValues }: Props) {
   // Country options: prefer selections already made, fall back to the full list
   const countryOptions =
     countrySelections.length > 0
       ? countrySelections.map((s) => s.country)
       : COUNTRIES.filter((c) => c.code !== "OTHER").map((c) => c.label);
 
-  const [goalTypes, setGoalTypes] = useState<GoalTypeId[]>([]);
-  const [notes, setNotes] = useState("");
+  const [goalTypes, setGoalTypes] = useState<GoalTypeId[]>(initialValues?.goalTypes ?? []);
+  const [notes, setNotes] = useState(initialValues?.notes ?? "");
   const [residenceCountry, setResidenceCountry] = useState(
-    countryOptions.length === 1 ? countryOptions[0] : ""
+    initialValues?.residenceCountry ?? (countryOptions.length === 1 ? countryOptions[0] : "")
   );
   const [retirementCountry, setRetirementCountry] = useState(
-    countryOptions.length === 1 ? countryOptions[0] : ""
+    initialValues?.retirementCountry ?? (countryOptions.length === 1 ? countryOptions[0] : "")
   );
-  const [goalEnabled, setGoalEnabled] = useState(true);
-  const [retirementYear, setRetirementYear] = useState(String(DEFAULT_RETIREMENT_YEAR));
-  const [targetAmountDisplay, setTargetAmountDisplay] = useState("2,000,000");
+  const [goalEnabled, setGoalEnabled] = useState(initialValues ? initialValues.retirementGoal !== null : true);
+  const [retirementYear, setRetirementYear] = useState(
+    String(initialValues?.retirementYear ?? initialValues?.retirementGoal?.targetYear ?? DEFAULT_RETIREMENT_YEAR)
+  );
+  const [targetAmountDisplay, setTargetAmountDisplay] = useState(
+    initialValues?.retirementGoal
+      ? initialValues.retirementGoal.targetAmountUsd.toLocaleString("en-US")
+      : "2,000,000"
+  );
 
   const hasRetirement = goalTypes.includes("retirement");
   const yearsAway = parseInt(retirementYear) - CURRENT_YEAR;
