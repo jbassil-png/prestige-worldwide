@@ -1,17 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-/**
- * POST /api/plan/chat
- *
- * Streams chat responses about the user's financial plan.
- * Integrates with n8n workflow that calls OpenRouter/Claude.
- *
- * Request body:
- * {
- *   messages: [{ role: "user", content: "What if I retire at 60?" }],
- *   planContext: { asset_allocation: {...}, projections: {...} }
- * }
- */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -24,43 +12,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const webhookUrl = process.env.N8N_CHAT_WEBHOOK_URL;
-
-    if (!webhookUrl) {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
-        { error: "N8N_CHAT_WEBHOOK_URL not configured" },
+        { error: "OPENROUTER_API_KEY not configured" },
         { status: 503 }
       );
     }
 
-    // Call n8n workflow
-    const n8nRes = await fetch(webhookUrl, {
+    const model = process.env.OPENROUTER_MODEL ?? "anthropic/claude-3.5-haiku";
+
+    const systemPrompt = planContext
+      ? `You are a helpful cross-border financial planning assistant for Prestige Worldwide.
+The user's current financial plan context:\n\n${JSON.stringify(planContext, null, 2)}\n\nAnswer questions about their plan, explain recommendations, and provide general guidance. Always note you are not a licensed financial adviser.`
+      : "You are a helpful cross-border financial planning assistant.";
+
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, planContext }),
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://prestigeworldwide.app",
+      },
+      body: JSON.stringify({
+        model,
+        stream: true,
+        messages: [{ role: "system", content: systemPrompt }, ...messages],
+      }),
     });
 
-    if (!n8nRes.ok) {
-      throw new Error(`n8n responded with ${n8nRes.status}`);
-    }
-
-    // Check if response is streaming
-    const contentType = n8nRes.headers.get("content-type");
-    if (contentType?.includes("text/event-stream") || contentType?.includes("application/stream")) {
-      // Stream the response back to the client
-      return new Response(n8nRes.body, {
-        headers: {
-          "Content-Type": "text/event-stream",
-          "Cache-Control": "no-cache",
-          "Connection": "keep-alive",
-        },
-      });
-    }
-
-    // If not streaming, return JSON
-    const data = await n8nRes.json();
-    return NextResponse.json(data);
-
+    return new Response(res.body, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      },
+    });
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json(

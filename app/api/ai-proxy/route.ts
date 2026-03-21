@@ -4,49 +4,41 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // ── N8N webhook ──────────────────────────────────────────────────────────────
-    const webhookUrl = process.env.N8N_AI_PROXY_WEBHOOK_URL;
-
-    if (!webhookUrl) {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
-        { error: "N8N_AI_PROXY_WEBHOOK_URL not configured" },
+        { error: "OPENROUTER_API_KEY not configured" },
         { status: 500 }
       );
     }
 
-    try {
-    const n8nRes = await fetch(webhookUrl, {
+    const { stream = false, ...rest } = body;
+    const model = rest.model ?? process.env.OPENROUTER_MODEL ?? "anthropic/claude-3.5-haiku";
+
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://prestigeworldwide.app",
+      },
+      body: JSON.stringify({ ...rest, model, stream }),
     });
 
-    if (!n8nRes.ok) {
-      throw new Error(`N8N responded with ${n8nRes.status}`);
+    if (!res.ok) {
+      throw new Error(`OpenRouter responded with ${res.status}`);
     }
 
-    // Proxy the response (streaming or JSON)
-    const contentType = n8nRes.headers.get("content-type") ?? "";
-    if (contentType.includes("text/event-stream")) {
-      return new Response(n8nRes.body, {
-        headers: {
-          "Content-Type": "text/event-stream",
-          "Cache-Control": "no-cache",
-        },
+    if (stream) {
+      return new Response(res.body, {
+        headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
       });
     }
 
-    const data = await n8nRes.json();
+    const data = await res.json();
     return NextResponse.json(data);
-    } catch (err) {
-      console.error("N8N AI proxy webhook error:", err);
-      return NextResponse.json(
-        { error: "Failed to proxy request to N8N" },
-        { status: 500 }
-      );
-    }
   } catch (error) {
-    console.error("AI proxy API error:", error);
+    console.error("AI proxy error:", error);
     return NextResponse.json(
       { error: "Unable to process request. Please try again." },
       { status: 500 }
