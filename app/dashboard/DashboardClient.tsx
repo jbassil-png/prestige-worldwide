@@ -25,6 +25,7 @@ interface Props {
   initialPortfolioNews?: PortfolioNewsItem[];
   residenceCurrency?: string;
   retirementCurrency?: string;
+  initialTheme?: string;
 }
 
 export default function DashboardClient({
@@ -34,6 +35,7 @@ export default function DashboardClient({
   initialPortfolioNews = [],
   residenceCurrency = "USD",
   retirementCurrency = "USD",
+  initialTheme,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -42,6 +44,12 @@ export default function DashboardClient({
   const [currencyMode, setCurrencyMode] = useState<CurrencyMode>("residence");
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+
+  // Apply theme — server prop takes precedence; fall back to sessionStorage
+  useEffect(() => {
+    const theme = initialTheme ?? sessionStorage.getItem("pw_theme") ?? "swiss-alps";
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [initialTheme]);
 
   // Dev mode: load plan from sessionStorage if no server-side plan was passed
   useEffect(() => {

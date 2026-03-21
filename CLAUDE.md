@@ -15,29 +15,22 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**Persist theme** (task 8) — write the chosen theme to a `user_preferences` Supabase table; fall back to `sessionStorage` for the no-auth path.
+**Task 9: OpenRouter model wiring** — but read the approach note before diving in.
 
-### Confirmed approach
-- **Column view** — all 4 steps stacked vertically, visible without clicking through the flow
-- **Real components** — uses `StepCountries`, `StepConnect`, `StepGoals` with mock props; Step 4 is a placeholder
-- **Mock data** — US + Canada scenario, pre-filled so every step is in a valid/submittable state
-- **No API calls** — `onNext` handlers are intercepted; plan generation is stubbed
-- **Accessible in production** (not dev-only gated)
-- **Theme placeholder** — Step 4 shows three named cards: Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 — no full UI yet, just the shape
+### Approach for task 9 (important)
+Do NOT proceed with task 9 autonomously. The user wants to work through this collaboratively:
+- Walk through what OpenRouter is and how it works
+- Review the model options together (plan gen, chat, insights) before touching code
+- Agree on each model before wiring it in
+- Go slowly — this is a learning exercise as much as an engineering one
 
-### Preview display order (differs from wizard order)
-1. Goals (`StepGoals`)
-2. Assets (`StepCountries`)
-3. Style (`ThemePlaceholder`)
-4. Connect (`StepConnect`)
+Start by asking the user where they'd like to begin: an overview of OpenRouter, or a look at the current `/api/plan` route to understand what's already wired.
 
-The wizard's step order (Countries → Connect → Goals → Style) is the live flow. The preview reorders for a better top-to-bottom reading experience — "why you're here" before "what you have".
-
-### Files
-```
-app/onboarding/preview/page.tsx   ← preview shell (column view + step navigator)
-app/onboarding/preview/mock.ts    ← MOCK_SELECTIONS, MOCK_ACCOUNTS, MOCK_GOALS
-```
+### What task 9 covers
+- `OPENROUTER_PLAN_MODEL` env var controlling which model generates the plan
+- Confirming JSON mode (`response_format: { type: "json_object" }`) is in place
+- Validating plan output shape is consistent and useful
+- Reviewing chat (`/api/chat`) and insights (`/api/insight`) model choices too
 
 ---
 
@@ -54,10 +47,11 @@ In order:
 | 5 | ~~**`StepStyle` component**~~ | ✅ DONE — three cards with colour bar, swatches, tagline, mood, font name |
 | 6 | ~~**Wire Step 4 into wizard + horizontal scroll**~~ | ✅ DONE — 4-step wizard; Goals stores data, Style triggers plan gen; horizontal slide track (0.45s cubic-bezier); theme stored to sessionStorage |
 | 7 | ~~**Full-screen loading reveal**~~ | ↳ moved to `docs/POLISH_BACKLOG.md` |
-| 8 | **Persist theme** | CURRENT — `user_preferences` Supabase table; sessionStorage fallback for no-auth path |
-| 9 | **OpenRouter model wiring** | `OPENROUTER_PLAN_MODEL` env var, JSON mode, validate plan output quality |
+| 8 | ~~**Persist theme**~~ | ✅ DONE — `user_preferences` table + RLS; upserted on plan gen; applied via `data-theme` on dashboard load |
+| 9 | **OpenRouter model wiring** | NEXT — collaborative/learning session; do not proceed autonomously. See "Current Task" above. |
 | 10 | **`initialValues` props on step components** | Seam for re-entry flow |
 | 11 | **Re-entry flow** | `/setup` route, "Update my setup" dashboard entry point |
+| 12 | **Dashboard plan display UX** | Layout, cards, and presentation of the AI plan output — separate from re-entry; needs its own design pass |
 
 ---
 

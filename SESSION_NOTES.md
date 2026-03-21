@@ -9,6 +9,76 @@
 
 ---
 
+### Session: Mar 21, 2026 (Night, cont.) — Task 8 Complete + Docs
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 8 — Persist theme**
+   - Migration: `user_preferences` table (`user_id` PK, `theme` text with CHECK constraint on valid values, RLS policies, `updated_at` trigger)
+   - `onboarding/page.tsx`: upsert to `user_preferences` in parallel with plan insert for auth'd users; `sessionStorage` (`pw_theme`) retained for no-auth path
+   - `dashboard/page.tsx`: fetches `user_preferences.theme` in the parallel data fetch; passes as `initialTheme` prop
+   - `DashboardClient.tsx`: on mount, applies `data-theme` to `document.documentElement`; server prop takes precedence over `sessionStorage` fallback
+
+2. ✅ **Task 12 added** — Dashboard plan display UX (layout, cards, plan output presentation) — tracked but not yet scoped
+
+3. ✅ **Documentation finalised for handoff** — `CLAUDE.md` current task updated; task 9 flagged as collaborative/learning session
+
+**Files Changed:**
+- `supabase/migrations/20260321b_add_user_preferences.sql` — new migration
+- `app/onboarding/page.tsx` — parallel upsert of theme preference
+- `app/dashboard/page.tsx` — fetch theme; pass `initialTheme`
+- `app/dashboard/DashboardClient.tsx` — apply `data-theme` on mount
+- `CLAUDE.md` — tasks 8 done; task 9 approach note; task 12 added
+- `SESSION_NOTES.md` — this entry
+
+**Stopping point / next session:**
+Task 9 — OpenRouter model wiring. **This must be done collaboratively.** The user wants to learn about OpenRouter and the available models before any code is written. Start by asking where they'd like to begin — overview of OpenRouter, or a look at the current API routes.
+
+---
+
+### Session: Mar 21, 2026 (Night) — Theme System, StepStyle, Wizard Wiring
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Preview page cleanup** — step order confirmed as intentional (Goals → Assets → Style → Connect); `MOCK_SELECTIONS` passed to `StepGoals` to scope country dropdowns to US+CA; spec updated in `CLAUDE.md`
+
+2. ✅ **Theme design decision (task 3)** — palettes and typography locked in for all three themes:
+   - Swiss Alps Retreat ❄️: slate/ice palette, DM Serif Display + DM Sans
+   - Gaudy Miami 🌴: pink/gold palette, Syne + DM Sans
+   - Clooney's Positano 🇮🇹: linen/terracotta palette, Cormorant Garamond + Lato
+   - Default: Swiss Alps Retreat
+
+3. ✅ **Theme token system (task 4)** — CSS custom properties (`--color-bg`, `--color-primary`, `--font-heading`, etc.) in `globals.css` per `[data-theme]` selector; all 5 Google Fonts loaded via `next/font/google` in `layout.tsx` with CSS variable output; Tailwind `theme-*` colour utilities + `font-heading`/`font-body` added to `tailwind.config.ts`
+
+4. ✅ **`StepStyle` component (task 5)** — three-card theme selector with gradient colour bar, swatches, tagline, mood copy, font name; skip defaults to Swiss Alps; `loading` prop added
+
+5. ✅ **Wizard wiring + horizontal scroll (task 6)** — `page.tsx` is now a 4-step wizard (Countries → Connect → Goals → Style); `WizardData` gains `goals` field; Goals `onNext` stores data and advances; Style `onNext` triggers plan gen; theme written to `sessionStorage` as `pw_theme`; horizontal slide track with `0.45s cubic-bezier` transition; fixed progress header with `backdrop-blur`
+
+6. ✅ **Task 7 (loading reveal) deferred** — moved to `docs/POLISH_BACKLOG.md`
+
+7. ✅ **Task 12 added to roadmap** — Dashboard plan display UX (layout, cards, plan output presentation)
+
+8. ✅ **`docs/POLISH_BACKLOG.md` created** — running list of deferred polish items
+
+**Files Changed:**
+- `app/layout.tsx` — Google Fonts + `data-theme="swiss-alps"` default
+- `app/globals.css` — CSS custom properties per theme
+- `tailwind.config.ts` — `theme-*` utilities + `font-heading`/`font-body`
+- `app/onboarding/page.tsx` — 4-step wizard with horizontal scroll
+- `app/onboarding/steps/StepStyle.tsx` — new component + `loading` prop
+- `app/onboarding/preview/page.tsx` — uses real `StepStyle`; `MOCK_SELECTIONS` passed to `StepGoals`
+- `CLAUDE.md` — tasks 1/3/4/5/6/7 marked done; task 8 current; task 12 added
+- `docs/POLISH_BACKLOG.md` — created
+- `SESSION_NOTES.md` — this entry
+
+**Next up:** Task 8 — persist theme to `user_preferences` Supabase table; apply theme on dashboard load
+
+---
+
 ### Session: Mar 21, 2026 (Evening) — Bug Fix + Roadmap: Horizontal Scroll
 
 **Branch:** `claude/review-documentation-rgCPT`
