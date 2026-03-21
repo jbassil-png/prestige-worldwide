@@ -148,7 +148,21 @@ function StepSection({
 export default function OnboardingPreviewPage() {
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
-      {/* Banner */}
+      {/* Hero */}
+      <div className="max-w-lg mx-auto mb-10 text-center">
+        <p className="text-xs font-semibold uppercase tracking-widest text-brand-500 mb-3">
+          Prestige Worldwide
+        </p>
+        <h1 className="text-3xl font-bold text-gray-900 leading-snug">
+          Your money doesn&apos;t stop<br />at borders.
+        </h1>
+        <p className="mt-3 text-base text-gray-500 leading-relaxed">
+          Built for expats, dual citizens, and global citizens with assets in more than one country —
+          so you can finally see your full financial picture in one place.
+        </p>
+      </div>
+
+      {/* Preview notice */}
       <div className="max-w-lg mx-auto mb-8">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-start gap-3">
           <span className="text-lg shrink-0">🔍</span>
