@@ -186,6 +186,74 @@ See detailed specification: `docs/FEATURE_PORTFOLIO_NEWS.md`
 
 ---
 
+## Feature Requests
+
+### 3. Post-Onboarding Re-entry Flows
+**Vision:** When returning users want to add accounts, change countries, or edit goals, the experience should feel like a natural continuation of onboarding — not a separate admin panel.
+
+**Current state:** Users go to `/settings` for country/retirement changes and `/accounts` for account management. These UIs are functional but don't share the component language of onboarding.
+
+**Proposed:**
+- "Add countries" and "Add accounts" actions on the dashboard that open flows reusing `StepCountries` and `StepConnect`
+- Goal editing that renders the same goal card UI as `StepGoals`
+- Entry points from the dashboard ("Connect another account", "Add a goal")
+- Dev-mode "Reset onboarding" button in settings
+
+**Reference:** `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`
+**Priority:** Medium
+**Effort:** Medium (~4-6 hours)
+
+---
+
+### 4. Scheduled Check-in Email Delivery
+**Vision:** When `next_checkin_at` arrives, send the user an email prompting them to review their portfolio.
+
+**Current state:** `user_checkin_schedule` table tracks the schedule and is writable from settings. No emails are sent yet.
+
+**Proposed:**
+- Vercel cron job (daily) that queries for users whose `next_checkin_at <= now()`
+- Sends a Resend email: "It's time for your [quarterly / biannual] portfolio review"
+- Updates `last_checkin_at` and sets next `next_checkin_at`
+- Email includes: current net worth snapshot, any significant balance changes, link to dashboard
+
+**Priority:** Medium
+**Effort:** Medium (~3-4 hours)
+
+---
+
+### 5. Goal Account Linking UI
+**Vision:** Users can drag or assign accounts to goals so the unallocated bucket shrinks meaningfully.
+
+**Current state:** `user_goals.linked_account_ids` column exists in the DB. The unallocated bucket calculation is approximate (net worth minus goal target, capped).
+
+**Proposed:**
+- On the goals/plan page, show each goal with an "Add accounts" action
+- Multi-select from user's connected accounts
+- Update `linked_account_ids` array
+- Unallocated bucket = net worth minus sum of balances in linked accounts
+
+**Priority:** Medium
+**Effort:** Small-Medium (~3-4 hours)
+
+---
+
 ## Technical Debt
 
-_(Empty - will add as needed)_
+### 1. user_profiles — drop legacy age columns
+The `current_age` and `retirement_age` columns in `user_profiles` were made nullable in migration `20260321`. Once we confirm no active users have data in those columns, they can be dropped in a follow-up migration.
+
+**Migration needed:**
+```sql
+ALTER TABLE user_profiles
+  DROP COLUMN IF EXISTS current_age,
+  DROP COLUMN IF EXISTS retirement_age;
+```
+
+**Priority:** Low (housekeeping)
+
+---
+
+### 2. PlanView Plan type — forward compatibility
+`PlanView.tsx` and `PlanDetailClient.tsx` both define local `Plan` / `Metrics` types. As the plan schema grows (goals, on-track status, check-in metadata), these types should be centralised in a shared `types/plan.ts` file.
+
+**Priority:** Low

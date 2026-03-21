@@ -1,7 +1,7 @@
 # Implementation Roadmap
 
 **Status:** Active
-**Last Updated:** 2026-03-20
+**Last Updated:** 2026-03-21
 **Current Phase:** Phase 2 - Differentiation & Quality
 
 ---
@@ -15,6 +15,9 @@ This roadmap outlines the prioritized implementation order for Prestige Worldwid
 - ✅ Foundation before advanced features
 - ✅ Learning opportunities balanced with user value
 - ✅ Test as we grow
+- ✅ Progressive disclosure — surface power features without burdening simple users
+
+See `docs/PRODUCT_PRINCIPLES.md` for the full product philosophy guiding UX decisions.
 
 ---
 
@@ -24,137 +27,11 @@ This roadmap outlines the prioritized implementation order for Prestige Worldwid
 
 ### ✅ Task 1: Fix Bug #2 - News API Empty Array
 **Status:** ✅ COMPLETE
-**Priority:** Medium
-**Effort:** 30 minutes
-**Owner:** TBD
-
-**Problem:**
-- `/api/news` returns empty array when `OPENROUTER_API_KEY` is not configured
-- Should return stub news data instead
-- Fallback logic (lines 46-47) not triggering correctly
-
-**Solution:**
-- Debug why `STUB_NEWS` fallback isn't working
-- Likely issue: condition check needs adjustment
-- File: `app/api/news/route.ts`
-
-**Acceptance Criteria:**
-- [x] When `OPENROUTER_API_KEY` is missing, API returns stub news
-- [x] Demo mode shows populated news panel
-- [x] No console errors
-
-**Files to Modify:**
-- `app/api/news/route.ts`
-
-**Reference:**
-- Bug documented in `docs/BACKLOG.md` (Bug Fixes → #1)
-
----
 
 ### ✅ Task 2: Account Management & Detail Views
-**Status:** ✅ COMPLETE
-**Priority:** High
-**Effort:** ~16 hours (4 sessions)
-**Owner:** TBD
+**Status:** ✅ COMPLETE (2026-03-20)
 
-**Overview:**
-Enable users to manage accounts, update profile, and explore financial data in depth.
-
-**Sub-tasks:**
-
-#### Session 1: Settings Page & Profile API (4 hours) ✅
-**Goal:** Users can update countries and ages
-
-- [x] Build `/settings` page (frontend)
-  - Country selectors (residence, retirement)
-  - Age inputs (current, retirement)
-  - Save/Cancel buttons
-  - Success/error states
-- [x] Test `GET /api/profile` endpoint (already implemented)
-- [x] Test `PUT /api/profile` endpoint (already implemented)
-- [x] Verify plan auto-regenerates on country change
-- [x] Add "Settings" link to dashboard header
-
-**Files to Create:**
-- `app/settings/page.tsx`
-
-**Files to Modify:**
-- `app/dashboard/DashboardClient.tsx` (add settings link)
-
----
-
-#### Session 2: Account Removal & Detail Page (4 hours) ✅
-**Goal:** Users can remove accounts and view individual account details
-
-- [x] Update `AccountsClient.tsx` to add remove button
-  - Confirmation modal before deletion
-  - Call `DELETE /api/accounts/[id]`
-  - Update local state after successful deletion
-  - Show "Regenerate plan" suggestion
-- [x] Create `/accounts/[id]` detail page
-  - Account overview (institution, type, balance)
-  - Balance history chart (query `user_balance_history`)
-  - Account-specific recommendations
-  - Quick actions: remove account, back button
-
-**Files to Create:**
-- `app/accounts/[id]/page.tsx`
-
-**Files to Modify:**
-- `app/accounts/AccountsClient.tsx`
-
----
-
-#### Session 3: Plan Detail & History Pages (4 hours) ✅
-**Goal:** Users can explore plan details and view historical plans
-
-- [x] Create `/plan` page (current plan detail view)
-  - Expanded metrics with larger cards
-  - Interactive charts for projections (optional)
-  - Full recommendation list with filters (category/priority)
-  - Account breakdown table
-- [x] Create `/plan/history` page
-  - Query `plan_history` (limit 10, DESC)
-  - Display: date, trigger reason, key metrics
-  - Expandable detail view for each plan
-- [x] Update `PlanView.tsx` to make metrics clickable
-  - Wrap metric cards in `<Link>` to `/plan`
-  - Add hover state and "View details" icon
-
-**Files to Create:**
-- `app/plan/page.tsx`
-- `app/plan/history/page.tsx`
-
-**Files to Modify:**
-- `components/PlanView.tsx`
-
----
-
-#### Session 4: Testing & Polish (4 hours) ✅
-**Goal:** Ensure all features work end-to-end
-
-- [x] Manual testing checklist (from FEATURE_ACCOUNT_MANAGEMENT.md)
-  - Remove account flow
-  - Update profile flow
-  - View account details
-  - Navigate to plan detail
-  - View plan history
-- [x] Fix any bugs found
-- [x] Polish UI/UX (loading states, error messages, transitions)
-- [x] Update documentation
-- [x] Create PR with comprehensive description
-
-**Deliverables:**
-- All acceptance criteria met (see FEATURE_ACCOUNT_MANAGEMENT.md)
-- Pull request created and ready for review
-
----
-
-**Reference:**
-- Full specification: `docs/FEATURE_ACCOUNT_MANAGEMENT.md`
-- Backlog entry: `docs/BACKLOG.md` (Feature Request #1)
-- Database schema: `supabase/migrations/20260320_add_user_profiles.sql`
-- API endpoints: `app/api/accounts/[id]/route.ts`, `app/api/profile/route.ts`
+Full spec: `docs/FEATURE_ACCOUNT_MANAGEMENT.md`
 
 ---
 
@@ -162,11 +39,40 @@ Enable users to manage accounts, update profile, and explore financial data in d
 **Timeline:** Week 2-3
 **Goal:** Make product stand out and ensure code quality
 
-### Task 3: Visual Theming System
+### ✅ Task 3: Goals, Check-ins & Progressive Onboarding
+**Status:** ✅ COMPLETE (2026-03-21)
+**Priority:** High (core product UX)
+
+**Overview:**
+Redesign the goals layer so the tool works for both simple account-trackers and goal-oriented planners, without making either feel like a second-class experience.
+
+**Changes delivered:**
+- **Retirement year (not age):** Onboarding and settings now ask for a target retirement year (e.g. 2055) instead of current age + retirement age. Simpler, more intuitive, forward-looking.
+- **Default retirement goal card:** Step 3 of onboarding shows a pre-populated retirement goal ($2M / target year) that users can edit inline. Removes blank-slate anxiety. Users who don't want it can remove it or skip entirely.
+- **Skip path:** "Skip for now — I just want to track my accounts" option in Step 3. No guilt messaging. Users land on a fully functional dashboard with an "Unlock more" nudge.
+- **On-track status:** Dashboard shows a retirement goal progress bar with on-track badge (On track / Review needed / Off track) based on 7% CAGR projection vs. goal target.
+- **Unallocated bucket:** Funds not tied to any goal are shown in a distinct "Unallocated" bucket — a first-class concept, not a gap to fill.
+- **Check-in schedule:** Twice-per-year default, configurable in Settings (Monthly / Quarterly / Twice a year / Annually). Not part of onboarding.
+- **"Unlock more" nudge:** Shown on dashboard for users without a retirement goal — warm, non-judgmental CTA to add one.
+- **Consistent post-onboarding UI:** Settings page uses the same country selectors, retirement year field, and check-in controls that mirror the onboarding experience. See `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`.
+
+**Files changed:**
+- `app/onboarding/steps/StepGoals.tsx` — redesigned
+- `app/onboarding/page.tsx` — updated payload
+- `app/api/plan/route.ts` — retirementYear, on-track calc, optional goals
+- `app/api/profile/route.ts` — retirement_year support
+- `app/api/checkin-schedule/route.ts` — new endpoint
+- `app/settings/page.tsx` — retirement year + check-in frequency
+- `components/PlanView.tsx` — goal progress, unallocated bucket, nudge
+- `app/plan/PlanDetailClient.tsx` — null-safe metrics
+- `supabase/migrations/20260321_add_goals_and_checkins.sql` — new tables
+
+---
+
+### Task 4: Visual Theming System
 **Status:** 📋 Planned
 **Priority:** High (differentiating feature)
 **Effort:** ~8-12 hours
-**Owner:** TBD
 
 **Overview:**
 Three aspirational lifestyle themes that transform the entire app's visual presentation.
@@ -185,43 +91,23 @@ Three aspirational lifestyle themes that transform the entire app's visual prese
 - [ ] Apply theme to all components
 - [ ] Test theme switching across all pages
 
-**Reference:**
-- Full specification: `SESSION_NOTES.md` → Planned Feature: Visual Theming System
-- Design resources: Awwwards, Behance, Dribbble, luxury hotel sites
-
 ---
 
-### Task 4: Testing Infrastructure
+### Task 5: Testing Infrastructure
 **Status:** 📋 Planned
 **Priority:** Medium (technical foundation)
 **Effort:** ~6-8 hours
-**Owner:** TBD
-
-**Overview:**
-Set up automated testing to ensure code quality as project grows.
 
 **Sub-tasks:**
 - [ ] Install and configure Vitest
-- [ ] Create test structure (`__tests__` or `.test.ts` files)
-- [ ] Write unit tests for market data fetchers
-  - `fetchQuote()` function
-  - `fetchTreasuryYield()` function
-  - Error handling and rate limiting
+- [ ] Write unit tests for plan calculations (on-track logic, CAGR projections)
 - [ ] Write integration tests for API routes
-  - `/api/plan`
-  - `/api/chat`
-  - `/api/news`
-  - `/api/accounts/[id]`
+  - `/api/plan` (with and without retirement goal)
+  - `/api/checkin-schedule`
   - `/api/profile`
+  - `/api/accounts/[id]`
 - [ ] Add test scripts to `package.json`
-  - `npm test` - run all tests
-  - `npm run test:watch` - watch mode
-  - `npm run test:coverage` - coverage report
 - [ ] Document testing setup in README
-
-**Reference:**
-- Pending session notes (Feb 27, 2026)
-- Manual test checklist: `docs/MANUAL_TEST_CHECKLIST.md`
 
 ---
 
@@ -229,151 +115,113 @@ Set up automated testing to ensure code quality as project grows.
 **Timeline:** Week 4+
 **Goal:** Build differentiating AI-powered features
 
-### ✅ Task 5: Portfolio-Aware News Feed
-**Status:** ✅ COMPLETE (Phases 1–3)
-**Priority:** High (major enhancement)
-**Effort:** ~20-24 hours
-**Owner:** TBD
+### ✅ Task 6: Portfolio-Aware News Feed
+**Status:** ✅ COMPLETE (Phases 1–3, 2026-03-20)
 
-**Overview:**
-Replace generic country/account news with ticker-specific news for stocks/assets the user actually owns.
-
-**Key Changes:**
-- Users add stocks/ETFs they own (AAPL, TSLA, VGRO.TO, etc.)
-- Fetch real financial news from Finnhub or Alpha Vantage
-- Show news about companies/assets in user's portfolio
-- Auto-detect from Plaid holdings data
-
-**Sub-tasks:**
-- [x] Design portfolio tracking schema (tickers, holdings)
-- [x] Integrate Alpha Vantage NEWS_SENTIMENT API (direct — no N8N needed)
-- [x] Build holdings management UI (inline ticker chips in PortfolioNewsPanel)
-- [x] Update news panel to show ticker-specific news with sentiment
-- [x] Add 30-minute cache via user_portfolio_news table
-- [ ] Add news filtering and categorization (Phase 4 — deferred)
-
-**Reference:**
-- Full specification: `docs/FEATURE_PORTFOLIO_NEWS.md`
-- Backlog entry: `docs/BACKLOG.md` (Feature Request #2)
+Full spec: `docs/FEATURE_PORTFOLIO_NEWS.md`
 
 ---
 
-### Task 6: Geographic AI Advisors
+### Task 7: Geographic AI Advisors
 **Status:** 📋 Planned
 **Priority:** High (differentiating feature)
 **Effort:** ~24-32 hours
-**Owner:** TBD
 
 **Overview:**
 Country-specific AI advisors (Gordon for Canada, Brad for USA, etc.) that provide localized financial expertise.
-
-**Key Features:**
-- Auto-detect advisors from user's connected accounts
-- One-on-one chat with individual advisors
-- Group chat with all advisors (multi-agent)
-- Advisors adapt visual identity to user's chosen theme
 
 **Sub-tasks:**
 - [ ] Design advisor database schema
 - [ ] Create advisor system prompts (personality, expertise)
 - [ ] Build advisor detection logic (from Plaid accounts)
 - [ ] Implement N8N multi-agent workflow
-  - Parallel OpenRouter calls
-  - Response merging
-  - Context management
 - [ ] Build advisor selector UI
 - [ ] Create advisor introduction flow
 - [ ] Integrate with visual theming system
 
-**Reference:**
-- Full specification: `SESSION_NOTES.md` → Planned Feature: Geographic AI Advisors
-- Multi-agent AI learning objectives
+---
+
+### Task 8: Goal Account Linking
+**Status:** 📋 Planned
+**Priority:** Medium
+**Effort:** ~4-6 hours
+
+**Overview:**
+Allow users to link specific accounts to specific goals so the unallocated bucket shrinks over time.
+
+**Sub-tasks:**
+- [ ] UI to assign accounts to goals (drag or select)
+- [ ] Update `user_goals.linked_account_ids` array
+- [ ] Update PlanView unallocated bucket calculation to use real links
+- [ ] Show per-goal allocation on plan detail page
+
+---
+
+### Task 9: Post-Onboarding Re-entry Flows
+**Status:** 📋 Planned
+**Priority:** Medium
+**Effort:** ~4-6 hours
+
+**Overview:**
+When returning users want to add accounts, change countries, or add goals, the UI should feel
+continuous with what they saw in onboarding. See `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`.
+
+**Sub-tasks:**
+- [ ] "Add countries" flow that reuses `StepCountries` component
+- [ ] "Add accounts" flow that reuses `StepConnect` component
+- [ ] "Edit goals" modal/page that reuses `StepGoals` layout
+- [ ] Add these as quick-action entry points from the dashboard
+- [ ] Dev utility: "Reset onboarding" button in settings (dev/staging only)
 
 ---
 
 ## Phase 4: Polish
 **Timeline:** Ongoing
-**Goal:** Address remaining bugs and enhancements
 
-### Task 7: Fix Bug #1 - Sign-up Redirect
+### Task 10: Fix Bug #1 - Sign-up Redirect
 **Status:** 📋 Planned
 **Priority:** Low
-**Effort:** 1 hour
-**Owner:** TBD
 
-**Problem:**
-- When authenticated user navigates to `/sign-up`, they're silently redirected to `/dashboard`
-- No explanation or user feedback
-
-**Solution:**
-- Add query parameter when redirecting (`?already_signed_in=true`)
-- Display friendly message or toast notification
-
-**Reference:**
-- `docs/BACKLOG.md` (UX Improvements → #1)
-
----
-
-### Task 8: Additional Enhancements
+### Task 11: Additional Enhancements
 **Status:** 📋 Planned
-**Priority:** Various
-**Effort:** TBD
 
-**Future enhancements from feature specs:**
 - Transaction history (from Plaid Transactions API)
 - Plan comparison tool (side-by-side)
 - PDF export for plans
-- Email notifications (plan regeneration alerts)
+- Email notifications for check-in reminders
 - Account nicknames (user-defined labels)
-- Account goals (savings targets per account)
 - What-if analysis (simulate changes before applying)
-- Multi-currency dashboard view
-
-**Reference:**
-- See "Future Enhancements" sections in feature specs
+- Scheduled check-in email delivery (via Resend + cron)
 
 ---
 
-## Alternative Path: N8N-First Approach
+## Current Status Summary
 
-If primary goal is to **advance N8N and AI skills**, consider this order instead:
+| Phase | Status | Progress |
+|-------|--------|----------|
+| **Phase 1** | ✅ **Complete** | 100% |
+| **Phase 2** | 🎯 **Active** | Task 3 ✅ done; Task 4/5 next |
+| Phase 3 | 🔀 **Partial** | Task 6 ✅ done; Tasks 7-9 pending |
+| Phase 4 | 📋 Planned | 0% |
 
-1. ✅ Fix News Bug (30 min)
-2. Build N8N Workflow #2: Plan Generation
-3. Geographic AI Advisors (multi-agent N8N)
-4. Account Management & Detail Views
-5. Visual Theming
-6. Portfolio-Aware News Feed
-
-**Trade-off:** Learn advanced AI faster but defer core UX improvements.
+**Next Session: Phase 2 — Task 4 (Visual Theming) or Task 5 (Testing Infrastructure)** 🚀
 
 ---
 
-## Success Metrics
+## Dev Utilities
 
-Track these metrics as features are rolled out:
+### Relaunching the Onboarding Flow
 
-**Adoption:**
-- % of users who visit `/settings` within first week
-- % of users who remove at least one account
-- % of users who click into account details
-- % of users who change visual theme
+During development, you may need to re-run onboarding to test changes:
 
-**Engagement:**
-- Average time spent on account detail page
-- % of users who view plan history
-- Click-through rate on Financial Snapshot metrics
-- Chat interactions with geographic advisors
+**Option A — Reset via Supabase:**
+Delete the user's row from `user_plans` in the Supabase dashboard, then navigate to `/onboarding`.
 
-**Satisfaction:**
-- Reduction in support requests (account removal, country changes)
-- User feedback on new features
-- Net Promoter Score (NPS)
+**Option B — URL shortcut (dev only):**
+Navigate directly to `/onboarding`. Middleware only redirects to `/onboarding` when there is no plan; if you manually visit it, it will load.
 
-**Targets:**
-- 60%+ of active users explore account details within 2 weeks
-- 40%+ of users who relocate update their countries
-- 80%+ satisfaction rating on post-feature surveys
+**Option C — Add a reset button (recommended for active iteration):**
+In `app/settings/page.tsx`, add a dev-mode "Reset onboarding" button that clears `user_plans` and redirects to `/onboarding`. This is tracked as Task 9.
 
 ---
 
@@ -382,34 +230,22 @@ Track these metrics as features are rolled out:
 **At the start of each session:**
 1. Read this roadmap to understand current task
 2. Review relevant feature spec (linked in task description)
-3. Read SESSION_NOTES.md for recent context
+3. Read `SESSION_NOTES.md` for recent context
 4. Begin implementation
 
 **At the end of each session:**
 1. Update task status in this roadmap (checkboxes)
-2. Document progress in SESSION_NOTES.md
+2. Document progress in `SESSION_NOTES.md`
 3. Commit and push changes
 4. Update "Last Updated" date at top of this file
 
 ---
 
-## Current Status Summary
-
-| Phase | Status | Progress |
-|-------|--------|----------|
-| **Phase 1** | ✅ **Complete** | 100% (Tasks 1 + 2 done) |
-| **Phase 2** | 🎯 **Active** | 0% (Task 3 or 4 next) |
-| Phase 3 | 🔀 **Partial** | Task 5 complete; Task 6 (AI Advisors) pending |
-| Phase 4 | 📋 Planned | 0% |
-
-**Next Session: Phase 2 — Task 3 (Visual Theming) or Task 4 (Testing Infrastructure)** 🚀
-
----
-
 ## Related Documents
 
+- [Product Principles](./PRODUCT_PRINCIPLES.md) - UX philosophy and design decisions
 - [Backlog](./BACKLOG.md) - All feature requests and bugs
 - [Session Notes](../SESSION_NOTES.md) - Development history
-- [Feature: Account Management](./FEATURE_ACCOUNT_MANAGEMENT.md) - Full spec for Phase 1, Task 2
-- [Feature: Portfolio News](./FEATURE_PORTFOLIO_NEWS.md) - Full spec for Phase 3, Task 5
-- [Manual Test Checklist](./MANUAL_TEST_CHECKLIST.md) - QA checklist
+- [Feature: Account Management](./FEATURE_ACCOUNT_MANAGEMENT.md)
+- [Feature: Portfolio News](./FEATURE_PORTFOLIO_NEWS.md)
+- [Manual Test Checklist](./MANUAL_TEST_CHECKLIST.md)

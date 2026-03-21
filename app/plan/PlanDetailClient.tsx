@@ -102,21 +102,33 @@ export default function PlanDetailClient({
       usd: m.netWorthUsd,
       sub: "across all accounts",
     },
-    {
-      label: "Years to retirement",
-      value: String(m.yearsToRetirement),
-      sub: "at target age",
-    },
-    {
-      label: "Projected balance",
-      usd: m.projectedRetirementBalanceUsd,
-      sub: "at retirement (7% CAGR)",
-    },
-    {
-      label: "Annual retirement income",
-      usd: m.estimatedAnnualIncomeAtRetirement,
-      sub: "estimated (4% rule)",
-    },
+    ...(m.yearsToRetirement !== null
+      ? [
+          {
+            label: "Years to retirement",
+            value: String(m.yearsToRetirement),
+            sub: m.retirementYear ? `Target year: ${m.retirementYear}` : "at target year",
+          },
+        ]
+      : []),
+    ...(m.projectedRetirementBalanceUsd !== null
+      ? [
+          {
+            label: "Projected balance",
+            usd: m.projectedRetirementBalanceUsd,
+            sub: "at retirement (7% CAGR)",
+          },
+        ]
+      : []),
+    ...(m.estimatedAnnualIncomeAtRetirement !== null
+      ? [
+          {
+            label: "Annual retirement income",
+            usd: m.estimatedAnnualIncomeAtRetirement,
+            sub: "estimated (4% rule)",
+          },
+        ]
+      : []),
   ];
 
   const allCategories = Array.from(
@@ -186,7 +198,7 @@ export default function PlanDetailClient({
                     {card.value ?? formatMoney(card.usd!, residenceCurrency)}
                   </p>
                 )}
-                {!ratesLoading && card.usd !== undefined && residenceCurrency !== "USD" && (
+                {!ratesLoading && card.usd != null && residenceCurrency !== "USD" && (
                   <p className="text-xs text-gray-400 mt-0.5">
                     {formatMoney(card.usd, "USD")} USD
                   </p>

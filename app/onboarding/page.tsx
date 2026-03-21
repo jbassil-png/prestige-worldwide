@@ -33,6 +33,7 @@ export default function OnboardingPage() {
     setError(null);
 
     try {
+      const currentYear = new Date().getFullYear();
       const payload = {
         countries: wizardData.selections!.map((s) => s.country),
         accounts: wizardData.accounts!.map((a) => ({
@@ -41,9 +42,8 @@ export default function OnboardingPage() {
           balanceUsd: a.balanceUsd,
           currency: a.currency,
         })),
-        goals: goals.goals,
-        currentAge: goals.currentAge,
-        retirementAge: goals.retirementAge,
+        retirementYear: goals.retirementYear,
+        retirementGoal: goals.retirementGoal,
         residenceCountry: goals.residenceCountry,
         retirementCountry: goals.retirementCountry,
         notes: goals.notes,
@@ -62,7 +62,8 @@ export default function OnboardingPage() {
       posthog.capture('plan_generated', {
         countries_count: payload.countries.length,
         accounts_count: payload.accounts.length,
-        years_to_retirement: payload.retirementAge - payload.currentAge,
+        years_to_retirement: goals.retirementYear ? goals.retirementYear - currentYear : null,
+        has_retirement_goal: !!goals.retirementGoal,
       });
 
       // Persist plan to Supabase (best-effort — works with or without Supabase configured)
@@ -82,8 +83,8 @@ export default function OnboardingPage() {
       posthog.capture('onboarding_completed', {
         countries_count: payload.countries.length,
         accounts_count: payload.accounts.length,
-        goals_count: payload.goals.length,
-        years_to_retirement: payload.retirementAge - payload.currentAge,
+        has_retirement_goal: !!goals.retirementGoal,
+        years_to_retirement: goals.retirementYear ? goals.retirementYear - new Date().getFullYear() : null,
       });
 
       router.push("/dashboard");
