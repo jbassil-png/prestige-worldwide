@@ -5,38 +5,46 @@ import { useRouter } from "next/navigation";
 import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
 import StepGoals, { type GoalsData } from "./steps/StepGoals";
+import StepStyle, { type StyleData } from "./steps/StepStyle";
 import { createClient } from "@/lib/supabase/client";
 import posthog from "posthog-js";
 
 type WizardData = {
   selections: CountrySelection[];
   accounts: Account[];
+  goals: GoalsData;
 };
+
+const STEPS = ["Countries", "Connect", "Goals", "Style"] as const;
+type StepNum = 1 | 2 | 3 | 4;
 
 export default function OnboardingPage() {
   const router = useRouter();
 
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<StepNum>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Track when user starts onboarding
   useEffect(() => {
     if (posthog.__loaded) {
-      posthog.capture('onboarding_started');
+      posthog.capture("onboarding_started");
     }
   }, []);
 
-  async function handleGoals(goals: GoalsData) {
+  async function handleStyle(data: StyleData) {
+    const { goals, selections, accounts } = wizardData as WizardData;
     setGenerating(true);
     setError(null);
+
+    // Persist theme choice immediately (best-effort, task 8 will add DB layer)
+    sessionStorage.setItem("pw_theme", data.theme);
 
     try {
       const currentYear = new Date().getFullYear();
       const payload = {
-        countries: wizardData.selections!.map((s) => s.country),
-        accounts: wizardData.accounts!.map((a) => ({
+        countries: selections.map((s) => s.country),
+        accounts: accounts.map((a) => ({
           type: a.type,
           country: a.countryCode,
           balanceUsd: a.balanceUsd,
@@ -58,33 +66,38 @@ export default function OnboardingPage() {
       if (!planRes.ok) throw new Error("Plan generation failed");
       const plan = await planRes.json();
 
-      // Track successful plan generation
-      posthog.capture('plan_generated', {
+      posthog.capture("plan_generated", {
         countries_count: payload.countries.length,
         accounts_count: payload.accounts.length,
-        years_to_retirement: goals.retirementYear ? goals.retirementYear - currentYear : null,
+        years_to_retirement: goals.retirementYear
+          ? goals.retirementYear - currentYear
+          : null,
         has_retirement_goal: !!goals.retirementGoal,
+        theme: data.theme,
       });
 
-      // Persist plan to Supabase (best-effort — works with or without Supabase configured)
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (user) {
         await supabase.from("user_plans").insert({
           user_id: user.id,
           plan: { ...plan, meta: payload },
         });
       } else {
-        // No Supabase session — store in sessionStorage so dashboard can read it
         sessionStorage.setItem("pw_plan", JSON.stringify({ ...plan, meta: payload }));
       }
 
-      // Track onboarding completion
-      posthog.capture('onboarding_completed', {
+      posthog.capture("onboarding_completed", {
         countries_count: payload.countries.length,
         accounts_count: payload.accounts.length,
         has_retirement_goal: !!goals.retirementGoal,
-        years_to_retirement: goals.retirementYear ? goals.retirementYear - new Date().getFullYear() : null,
+        years_to_retirement: goals.retirementYear
+          ? goals.retirementYear - currentYear
+          : null,
+        theme: data.theme,
       });
 
       router.push("/dashboard");
@@ -94,90 +107,127 @@ export default function OnboardingPage() {
     }
   }
 
-  const steps = ["Countries", "Connect", "Goals"];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-        {/* Header */}
-        <div className="mb-6 text-center">
-          <span className="text-xl font-bold text-brand-700">Prestige Worldwide</span>
-        </div>
+    <div className="min-h-screen overflow-hidden relative bg-gradient-to-br from-brand-50 to-white">
+      {/* ── Fixed progress header ─────────────────────────────────────── */}
+      <header className="fixed top-0 inset-x-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
+        <div className="max-w-lg mx-auto px-4 py-3">
+          <div className="mb-2 text-center">
+            <span className="text-sm font-bold text-brand-700">Prestige Worldwide</span>
+          </div>
 
-        {/* Progress bar */}
-        <div className="flex items-center gap-2 mb-8">
-          {steps.map((label, i) => {
-            const stepNum = (i + 1) as 1 | 2 | 3;
-            const isActive = step === stepNum;
-            const isDone = step > stepNum;
-            return (
-              <div key={label} className="flex items-center gap-2 flex-1">
-                <div className="flex flex-col items-center flex-1">
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition ${
-                      isDone
-                        ? "bg-brand-600 text-white"
-                        : isActive
-                        ? "bg-brand-600 text-white ring-2 ring-brand-200"
-                        : "bg-gray-100 text-gray-400"
-                    }`}
-                  >
-                    {isDone ? "✓" : stepNum}
+          <div className="flex items-center gap-1.5">
+            {STEPS.map((label, i) => {
+              const stepNum = (i + 1) as StepNum;
+              const isActive = step === stepNum;
+              const isDone = step > stepNum;
+              return (
+                <div key={label} className="flex items-center gap-1.5 flex-1">
+                  <div className="flex flex-col items-center flex-1">
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+                        isDone
+                          ? "bg-brand-600 text-white"
+                          : isActive
+                          ? "bg-brand-600 text-white ring-2 ring-brand-200"
+                          : "bg-gray-100 text-gray-400"
+                      }`}
+                    >
+                      {isDone ? "✓" : stepNum}
+                    </div>
+                    <span
+                      className={`text-xs mt-0.5 font-medium transition-colors ${
+                        isActive
+                          ? "text-brand-700"
+                          : isDone
+                          ? "text-brand-500"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {label}
+                    </span>
                   </div>
-                  <span
-                    className={`text-xs mt-1 font-medium ${
-                      isActive ? "text-brand-700" : isDone ? "text-brand-500" : "text-gray-400"
-                    }`}
-                  >
-                    {label}
-                  </span>
+                  {i < STEPS.length - 1 && (
+                    <div
+                      className={`h-0.5 flex-1 mb-4 transition-colors ${
+                        isDone ? "bg-brand-500" : "bg-gray-200"
+                      }`}
+                    />
+                  )}
                 </div>
-                {i < steps.length - 1 && (
-                  <div
-                    className={`h-0.5 flex-1 transition ${
-                      isDone ? "bg-brand-500" : "bg-gray-200"
-                    }`}
-                  />
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
+      </header>
 
-        {error && (
-          <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+      {error && (
+        <div className="fixed top-28 inset-x-0 z-20 flex justify-center px-4">
+          <div className="w-full max-w-lg text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
             {error}
           </div>
-        )}
+        </div>
+      )}
 
-        {step === 1 && (
-          <StepCountries
-            onNext={(selections) => {
-              setWizardData((p) => ({ ...p, selections }));
-              setStep(2);
-            }}
-          />
-        )}
+      {/* ── Horizontal slide track ────────────────────────────────────── */}
+      <div
+        className="flex will-change-transform"
+        style={{
+          width: `${STEPS.length * 100}%`,
+          transform: `translateX(calc(-${(step - 1) * (100 / STEPS.length)}%))`,
+          transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      >
+        {/* Step 1 — Countries */}
+        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+            <StepCountries
+              onNext={(selections) => {
+                setWizardData((p) => ({ ...p, selections }));
+                setStep(2);
+              }}
+            />
+          </div>
+        </div>
 
-        {step === 2 && wizardData.selections && (
-          <StepConnect
-            selections={wizardData.selections}
-            onNext={(accounts) => {
-              setWizardData((p) => ({ ...p, accounts }));
-              setStep(3);
-            }}
-            onBack={() => setStep(1)}
-          />
-        )}
+        {/* Step 2 — Connect */}
+        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+            <StepConnect
+              selections={wizardData.selections ?? []}
+              onNext={(accounts) => {
+                setWizardData((p) => ({ ...p, accounts }));
+                setStep(3);
+              }}
+              onBack={() => setStep(1)}
+            />
+          </div>
+        </div>
 
-        {step === 3 && wizardData.selections && (
-          <StepGoals
-            countrySelections={wizardData.selections}
-            onNext={handleGoals}
-            onBack={() => setStep(2)}
-            loading={generating}
-          />
-        )}
+        {/* Step 3 — Goals */}
+        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+            <StepGoals
+              countrySelections={wizardData.selections}
+              onNext={(goals) => {
+                setWizardData((p) => ({ ...p, goals }));
+                setStep(4);
+              }}
+              onBack={() => setStep(2)}
+            />
+          </div>
+        </div>
+
+        {/* Step 4 — Style */}
+        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+            <StepStyle
+              onNext={handleStyle}
+              onBack={() => setStep(3)}
+              loading={generating}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
