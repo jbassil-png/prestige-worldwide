@@ -512,3 +512,13 @@ Once your system is running:
 - Claude (Anthropic AI)
 - Alpha Vantage (Market Data)
 - Plaid (Banking)
+
+---
+
+## 🔧 Open Items / In Progress
+
+### Plaid Integration (WIP)
+Still sorting through the Plaid integration. Key decisions pending:
+- Confirm which Plaid products to request during app registration (currently using `transactions` in link token creation, but only balance data is actually fetched — need to reconcile)
+- Complete Plaid developer application (use case: personal finance app, retrieving account balances to generate personalized financial plans)
+- Verify sandbox → production promotion steps once integration is finalized
