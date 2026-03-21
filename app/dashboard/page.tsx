@@ -33,11 +33,17 @@ export default async function DashboardPage() {
   const plan = planRow.plan as Plan;
   const meta = (plan as Plan & { meta?: { residenceCountry?: string; retirementCountry?: string } }).meta;
 
-  // Fetch in parallel: legacy LLM news, holdings, portfolio news cache
+  // Fetch in parallel: theme prefs, legacy LLM news, holdings, portfolio news cache
   const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
   const oneDayAgo    = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const [newsRow, holdingsRows, portfolioNewsRow] = await Promise.all([
+  const [prefsRow, newsRow, holdingsRows, portfolioNewsRow] = await Promise.all([
+    supabase
+      .from("user_preferences")
+      .select("theme")
+      .eq("user_id", user.id)
+      .single()
+      .then((r) => r.data),
     supabase
       .from("user_news")
       .select("items")
@@ -72,6 +78,7 @@ export default async function DashboardPage() {
       initialPortfolioNews={(portfolioNewsRow?.items as PortfolioNewsItem[]) ?? []}
       residenceCurrency={resolveCurrency(meta?.residenceCountry)}
       retirementCurrency={resolveCurrency(meta?.retirementCountry)}
+      initialTheme={prefsRow?.theme ?? "swiss-alps"}
     />
   );
 }

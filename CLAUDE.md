@@ -58,6 +58,7 @@ In order:
 | 9 | **OpenRouter model wiring** | `OPENROUTER_PLAN_MODEL` env var, JSON mode, validate plan output quality |
 | 10 | **`initialValues` props on step components** | Seam for re-entry flow |
 | 11 | **Re-entry flow** | `/setup` route, "Update my setup" dashboard entry point |
+| 12 | **Dashboard plan display UX** | Layout, cards, and presentation of the AI plan output — separate from re-entry; needs its own design pass |
 
 ---
 

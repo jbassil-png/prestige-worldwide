@@ -37,7 +37,7 @@ export default function OnboardingPage() {
     setGenerating(true);
     setError(null);
 
-    // Persist theme choice immediately (best-effort, task 8 will add DB layer)
+    // Persist theme — sessionStorage for no-auth path; Supabase for auth'd users
     sessionStorage.setItem("pw_theme", data.theme);
 
     try {
@@ -82,10 +82,16 @@ export default function OnboardingPage() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        await supabase.from("user_plans").insert({
-          user_id: user.id,
-          plan: { ...plan, meta: payload },
-        });
+        await Promise.all([
+          supabase.from("user_plans").insert({
+            user_id: user.id,
+            plan: { ...plan, meta: payload },
+          }),
+          supabase.from("user_preferences").upsert(
+            { user_id: user.id, theme: data.theme },
+            { onConflict: "user_id" }
+          ),
+        ]);
       } else {
         sessionStorage.setItem("pw_plan", JSON.stringify({ ...plan, meta: payload }));
       }
