@@ -17,6 +17,8 @@ const config: Config = {
           "Arial",
           "sans-serif",
         ],
+        heading: ["var(--font-heading)"],
+        body:    ["var(--font-body)"],
       },
       colors: {
         brand: {
@@ -36,10 +38,6 @@ const config: Config = {
           border:  "var(--color-border)",
           text:    "var(--color-text)",
         },
-      },
-      fontFamily: {
-        heading: "var(--font-heading)",
-        body:    "var(--font-body)",
       },
     },
   },
