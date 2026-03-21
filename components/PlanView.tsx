@@ -5,11 +5,19 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { CurrencyMode } from "./CurrencyToggle";
 
+type RetirementGoal = {
+  targetYear: number;
+  targetAmountUsd: number;
+};
+
 type Metrics = {
   netWorthUsd: number;
-  yearsToRetirement: number;
-  projectedRetirementBalanceUsd: number;
-  estimatedAnnualIncomeAtRetirement: number;
+  yearsToRetirement: number | null;
+  retirementYear: number | null;
+  projectedRetirementBalanceUsd: number | null;
+  estimatedAnnualIncomeAtRetirement: number | null;
+  retirementGoal: RetirementGoal | null;
+  onTrackStatus: "on_track" | "at_risk" | "off_track" | null;
 };
 
 type Recommendation = {
@@ -50,6 +58,24 @@ const CATEGORY_ICONS: Record<string, string> = {
   Investment: "📈",
 };
 
+const ON_TRACK_CONFIG = {
+  on_track: {
+    label: "On track",
+    className: "bg-green-50 text-green-700 border-green-200",
+    dot: "bg-green-500",
+  },
+  at_risk: {
+    label: "Review needed",
+    className: "bg-amber-50 text-amber-700 border-amber-200",
+    dot: "bg-amber-400",
+  },
+  off_track: {
+    label: "Off track",
+    className: "bg-red-50 text-red-700 border-red-200",
+    dot: "bg-red-500",
+  },
+};
+
 function formatMoney(usd: number, mode: CurrencyMode, rates: Record<string, number>, residenceCur: string, retirementCur: string) {
   if (mode === "native") {
     return `~$${(usd / 1000).toFixed(0)}k USD equiv.`;
@@ -70,15 +96,16 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
   const [accountCount, setAccountCount] = useState<number>(0);
   const supabase = createClient();
 
+  const { metrics } = plan;
+  const hasRetirementGoal = !!metrics.retirementGoal;
+
   useEffect(() => {
-    // Fetch FX rates once
     fetch(`/api/fx?base=USD&targets=${residenceCurrency},${retirementCurrency}`)
       .then((r) => r.json())
       .then((d) => setRates({ USD: 1, ...d.rates }));
   }, [residenceCurrency, retirementCurrency]);
 
   useEffect(() => {
-    // Fetch insight
     fetch("/api/insight", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -89,7 +116,6 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
   }, [plan]);
 
   useEffect(() => {
-    // Fetch connected account count
     async function fetchAccountCount() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -106,11 +132,18 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
   const fmt = (usd: number) =>
     formatMoney(usd, currencyMode, rates, residenceCurrency, retirementCurrency);
 
+  // Build metric cards — only include retirement cards if we have the data
   const metricCards = [
-    { label: "Net worth", value: fmt(plan.metrics.netWorthUsd) },
-    { label: "Years to retirement", value: String(plan.metrics.yearsToRetirement) },
-    { label: "Projected balance", value: fmt(plan.metrics.projectedRetirementBalanceUsd) },
-    { label: "Annual income at retirement", value: fmt(plan.metrics.estimatedAnnualIncomeAtRetirement) },
+    { label: "Net worth", value: fmt(metrics.netWorthUsd) },
+    ...(metrics.yearsToRetirement !== null
+      ? [{ label: "Years to retirement", value: String(metrics.yearsToRetirement) }]
+      : []),
+    ...(metrics.projectedRetirementBalanceUsd !== null
+      ? [{ label: "Projected balance", value: fmt(metrics.projectedRetirementBalanceUsd) }]
+      : []),
+    ...(metrics.estimatedAnnualIncomeAtRetirement !== null
+      ? [{ label: "Annual income at retirement", value: fmt(metrics.estimatedAnnualIncomeAtRetirement) }]
+      : []),
   ];
 
   const byPriority = ["high", "medium", "low"];
@@ -120,6 +153,12 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
       items: plan.recommendations.filter((r) => r.priority === p),
     }))
     .filter((g) => g.items.length > 0);
+
+  // Unallocated: net worth with no goal assigned (all funds, until goal-linking is set up)
+  const allocatedAmount = metrics.retirementGoal
+    ? Math.min(metrics.netWorthUsd, metrics.retirementGoal.targetAmountUsd)
+    : 0;
+  const unallocatedAmount = metrics.netWorthUsd - allocatedAmount;
 
   return (
     <div className="space-y-6">
@@ -176,6 +215,101 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
           </Link>
         ))}
       </div>
+
+      {/* Retirement goal progress */}
+      {hasRetirementGoal && metrics.retirementGoal && metrics.projectedRetirementBalanceUsd !== null && (
+        <div className="border border-gray-100 rounded-xl overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🏦</span>
+              <span className="text-sm font-semibold text-gray-800">
+                Retirement {metrics.retirementYear ? `· ${metrics.retirementYear}` : ""}
+              </span>
+            </div>
+            {metrics.onTrackStatus && (
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${ON_TRACK_CONFIG[metrics.onTrackStatus].className}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${ON_TRACK_CONFIG[metrics.onTrackStatus].dot}`} />
+                {ON_TRACK_CONFIG[metrics.onTrackStatus].label}
+              </span>
+            )}
+          </div>
+          <div className="px-4 py-4 bg-white space-y-3">
+            {/* Progress bar */}
+            {(() => {
+              const target = metrics.retirementGoal.targetAmountUsd;
+              const projected = metrics.projectedRetirementBalanceUsd!;
+              const progress = Math.min(100, Math.round((projected / target) * 100));
+              return (
+                <>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>Projected: {fmt(projected)}</span>
+                    <span>Goal: {fmt(target)}</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        metrics.onTrackStatus === "on_track"
+                          ? "bg-green-500"
+                          : metrics.onTrackStatus === "at_risk"
+                          ? "bg-amber-400"
+                          : "bg-red-400"
+                      }`}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    {progress >= 100
+                      ? "Projected to meet or exceed your goal at current trajectory (7% CAGR assumed)."
+                      : `Projected to reach ${progress}% of your goal. Consider reviewing your contributions.`}
+                  </p>
+                </>
+              );
+            })()}
+            <Link
+              href="/plan"
+              className="text-xs text-brand-600 hover:underline font-medium"
+            >
+              View full breakdown →
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Unallocated funds bucket */}
+      <div className="border border-dashed border-gray-200 rounded-xl px-4 py-4">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">🪣</span>
+            <span className="text-sm font-semibold text-gray-700">Unallocated</span>
+          </div>
+          <span className="text-sm font-bold text-gray-900">
+            {fmt(unallocatedAmount > 0 ? unallocatedAmount : metrics.netWorthUsd)}
+          </span>
+        </div>
+        <p className="text-xs text-gray-400 leading-relaxed">
+          {hasRetirementGoal
+            ? "Funds not yet assigned to a specific goal. Link accounts to goals to track allocation."
+            : "All your current assets. Add goals to see how your money is working toward them."}
+        </p>
+      </div>
+
+      {/* Enhance your plan nudge — shown when no retirement goal */}
+      {!hasRetirementGoal && (
+        <div className="bg-brand-50 border border-brand-100 rounded-xl px-4 py-4">
+          <p className="text-xs font-semibold text-brand-700 mb-1">Unlock more from your plan</p>
+          <p className="text-sm text-brand-900 mb-3 leading-relaxed">
+            Add a retirement goal to see if you&apos;re on track, get a projected timeline, and uncover optimisation opportunities.
+          </p>
+          <Link
+            href="/settings"
+            className="inline-block text-xs font-semibold text-brand-700 border border-brand-300 rounded-lg px-3 py-1.5 hover:bg-brand-100 transition"
+          >
+            Set a retirement goal →
+          </Link>
+        </div>
+      )}
 
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-gray-700">Recommendations</h3>

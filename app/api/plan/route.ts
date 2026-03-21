@@ -15,34 +15,78 @@ export async function POST(req: NextRequest) {
   }
 }
 
+type RetirementGoal = {
+  targetYear: number;
+  targetAmountUsd: number;
+};
+
 function buildStubPlan(input: {
   countries: string[];
   accounts: { type: string; country: string; balanceUsd: number }[];
-  goals: string[];
-  retirementAge: number;
-  currentAge: number;
+  retirementYear?: number | null;
+  retirementGoal?: RetirementGoal | null;
+  residenceCountry?: string;
+  retirementCountry?: string;
+  notes?: string;
 }) {
   const totalBalance = input.accounts.reduce((s, a) => s + a.balanceUsd, 0);
-  const yearsToRetirement = input.retirementAge - input.currentAge;
+  const currentYear = new Date().getFullYear();
+  const yearsToRetirement = input.retirementYear
+    ? input.retirementYear - currentYear
+    : null;
+
+  const projectedRetirementBalance = yearsToRetirement && yearsToRetirement > 0
+    ? Math.round(totalBalance * Math.pow(1.07, yearsToRetirement))
+    : null;
+
+  const estimatedAnnualIncome = projectedRetirementBalance
+    ? Math.round(projectedRetirementBalance * 0.04)
+    : null;
+
+  // On-track: projected balance vs goal target (with 80% threshold for "at risk")
+  let onTrackStatus: "on_track" | "at_risk" | "off_track" | null = null;
+  if (projectedRetirementBalance !== null && input.retirementGoal) {
+    const target = input.retirementGoal.targetAmountUsd;
+    if (projectedRetirementBalance >= target) {
+      onTrackStatus = "on_track";
+    } else if (projectedRetirementBalance >= target * 0.8) {
+      onTrackStatus = "at_risk";
+    } else {
+      onTrackStatus = "off_track";
+    }
+  }
+
+  const retirementDesc = yearsToRetirement
+    ? `With ${yearsToRetirement} years until your target retirement in ${input.retirementYear}`
+    : "With your current portfolio";
+
+  const countryList = input.countries.join(", ");
 
   return {
-    summary: `Based on your accounts across ${input.countries.join(", ")}, you have an estimated net worth of $${totalBalance.toLocaleString()} USD. With ${yearsToRetirement} years until your target retirement age of ${input.retirementAge}, here is a high-level plan.`,
+    summary: `Based on your accounts across ${countryList}, you have an estimated net worth of $${totalBalance.toLocaleString()} USD. ${retirementDesc}, here is a high-level plan.`,
     metrics: {
       netWorthUsd: totalBalance,
       yearsToRetirement,
-      projectedRetirementBalanceUsd: Math.round(totalBalance * Math.pow(1.07, yearsToRetirement)),
-      estimatedAnnualIncomeAtRetirement: Math.round(totalBalance * Math.pow(1.07, yearsToRetirement) * 0.04),
+      retirementYear: input.retirementYear ?? null,
+      projectedRetirementBalanceUsd: projectedRetirementBalance,
+      estimatedAnnualIncomeAtRetirement: estimatedAnnualIncome,
+      retirementGoal: input.retirementGoal ?? null,
+      onTrackStatus,
     },
     recommendations: [
-      {
-        category: "Retirement",
-        priority: "high",
-        text: `Maximise contributions to your tax-advantaged accounts in each jurisdiction. With ${yearsToRetirement} years of growth, compounding has a significant impact.`,
-      },
+      ...(yearsToRetirement
+        ? [
+            {
+              category: "Retirement",
+              priority: "high",
+              text: `Maximise contributions to your tax-advantaged accounts in each jurisdiction. With ${yearsToRetirement} years of growth, compounding has a significant impact.`,
+            },
+          ]
+        : []),
       {
         category: "Tax",
         priority: "high",
-        text: `Review applicable tax treaties between ${input.countries.join(" and ")}. Double-taxation agreements may significantly reduce your overall tax burden.`,
+        text: `Review applicable tax treaties between ${countryList}. Double-taxation agreements may significantly reduce your overall tax burden.`,
       },
       {
         category: "Currency",

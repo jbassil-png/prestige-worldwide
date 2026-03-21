@@ -36,21 +36,23 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const { residence_country, retirement_country, current_age, retirement_age } = body;
+    const { residence_country, retirement_country, retirement_year } = body;
 
-    // Validate input
-    if (!residence_country || !retirement_country || !current_age || !retirement_age) {
+    if (!residence_country || !retirement_country) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    if (current_age < 18 || retirement_age <= current_age) {
-      return NextResponse.json(
-        { error: "Invalid age values" },
-        { status: 400 }
-      );
+    const currentYear = new Date().getFullYear();
+    if (retirement_year !== null && retirement_year !== undefined) {
+      if (retirement_year <= currentYear || retirement_year > currentYear + 60) {
+        return NextResponse.json(
+          { error: "Invalid retirement year" },
+          { status: 400 }
+        );
+      }
     }
 
     // Upsert profile
@@ -60,8 +62,7 @@ export async function PUT(request: Request) {
         user_id: user.id,
         residence_country,
         retirement_country,
-        current_age,
-        retirement_age,
+        retirement_year: retirement_year ?? null,
       })
       .select()
       .single();
@@ -75,7 +76,6 @@ export async function PUT(request: Request) {
     }
 
     // Auto-regenerate plan with updated profile
-    // Fetch user's current accounts
     const { data: accounts } = await supabase
       .from("user_accounts")
       .select("*")
@@ -85,7 +85,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ profile, planRegenerated: false });
     }
 
-    // Get latest plan to extract goals
+    // Get latest plan to carry forward retirement goal
     const { data: latestPlanRow } = await supabase
       .from("user_plans")
       .select("plan")
@@ -94,26 +94,23 @@ export async function PUT(request: Request) {
       .limit(1)
       .single();
 
-    const existingMeta = (latestPlanRow?.plan as { meta?: any })?.meta || {};
+    const existingMeta = (latestPlanRow?.plan as { meta?: Record<string, unknown> })?.meta || {};
 
-    // Prepare plan payload
     const planPayload = {
       countries: [residence_country, retirement_country],
-      accounts: accounts.map((a: any) => ({
+      accounts: accounts.map((a: Record<string, unknown>) => ({
         type: a.account_type || a.type,
         country: residence_country,
         balanceUsd: a.current_balance || a.balance,
         currency: a.currency,
       })),
-      goals: existingMeta.goals || [],
-      currentAge: current_age,
-      retirementAge: retirement_age,
+      retirementYear: retirement_year ?? null,
+      retirementGoal: (existingMeta.retirementGoal as Record<string, unknown>) ?? null,
       residenceCountry: residence_country,
       retirementCountry: retirement_country,
-      notes: existingMeta.notes || "",
+      notes: (existingMeta.notes as string) || "",
     };
 
-    // Generate new plan
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
     const planRes = await fetch(`${appUrl}/api/plan`, {
       method: "POST",
