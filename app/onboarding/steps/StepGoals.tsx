@@ -120,32 +120,77 @@ export default function StepGoals({ countrySelections = [], onNext, onBack, load
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-gray-800">What are you planning for?</h2>
+        <h2 className="text-lg font-semibold text-gray-800">Let&apos;s get to know your situation</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Select everything that applies — we&apos;ll tailor your plan accordingly.
+          A few quick questions so we can personalise your plan.
         </p>
       </div>
 
+      {/* Country fields — lead the form */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Where do you live today?
+          </label>
+          <select
+            required
+            value={residenceCountry}
+            onChange={(e) => {
+              setResidenceCountry(e.target.value);
+              if (!retirementCountry) setRetirementCountry(e.target.value);
+            }}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">Select country</option>
+            {countryOptions.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Where do you plan to retire?
+          </label>
+          <select
+            value={retirementCountry}
+            onChange={(e) => setRetirementCountry(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">Not sure yet</option>
+            {countryOptions.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Goal type chips */}
-      <div className="flex flex-wrap gap-2">
-        {GOAL_TYPES.map((g) => {
-          const isSelected = goalTypes.includes(g.id);
-          return (
-            <button
-              key={g.id}
-              type="button"
-              onClick={() => toggleGoalType(g.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition ${
-                isSelected
-                  ? "bg-brand-600 border-brand-600 text-white"
-                  : "bg-white border-gray-300 text-gray-700 hover:border-brand-400"
-              }`}
-            >
-              <span>{g.emoji}</span>
-              {g.label}
-            </button>
-          );
-        })}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          What are you planning for?{" "}
+          <span className="text-gray-400 font-normal">Select all that apply.</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {GOAL_TYPES.map((g) => {
+            const isSelected = goalTypes.includes(g.id);
+            return (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => toggleGoalType(g.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition ${
+                  isSelected
+                    ? "bg-brand-600 border-brand-600 text-white"
+                    : "bg-white border-gray-300 text-gray-700 hover:border-brand-400"
+                }`}
+              >
+                <span>{g.emoji}</span>
+                {g.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Financial situation — prominent text field */}
@@ -166,46 +211,9 @@ export default function StepGoals({ countrySelections = [], onNext, onBack, load
         </p>
       </div>
 
-      {/* Residence country */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Current country of residence
-        </label>
-        <select
-          required
-          value={residenceCountry}
-          onChange={(e) => {
-            setResidenceCountry(e.target.value);
-            if (!retirementCountry) setRetirementCountry(e.target.value);
-          }}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">Select country</option>
-          {countryOptions.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-      </div>
-
       {/* Retirement-specific fields — only when retirement is selected */}
       {hasRetirement && (
         <>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Projected retirement country{" "}
-              <span className="text-gray-400">(optional)</span>
-            </label>
-            <select
-              value={retirementCountry}
-              onChange={(e) => setRetirementCountry(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            >
-              <option value="">Same as residence</option>
-              {countryOptions.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
 
           <div className="border border-gray-200 rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
