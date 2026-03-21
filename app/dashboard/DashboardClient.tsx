@@ -160,6 +160,12 @@ export default function DashboardClient({
             onChange={setCurrencyMode}
           />
           <Link
+            href="/setup"
+            className="text-xs text-gray-500 hover:text-brand-600 transition whitespace-nowrap"
+          >
+            Update my setup
+          </Link>
+          <Link
             href="/settings"
             className="text-xs text-gray-500 hover:text-brand-600 transition whitespace-nowrap"
           >

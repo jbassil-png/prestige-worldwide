@@ -1,13 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import StepCountries, { type CountrySelection } from "./steps/StepCountries";
-import StepConnect, { type Account } from "./steps/StepConnect";
-import StepGoals, { type GoalsData } from "./steps/StepGoals";
-import StepStyle, { type StyleData } from "./steps/StepStyle";
+import StepCountries, { type CountrySelection } from "@/app/onboarding/steps/StepCountries";
+import StepConnect, { type Account } from "@/app/onboarding/steps/StepConnect";
+import StepGoals, { type GoalsData } from "@/app/onboarding/steps/StepGoals";
+import StepStyle, { type StyleData, type ThemeId } from "@/app/onboarding/steps/StepStyle";
 import { createClient } from "@/lib/supabase/client";
-import posthog from "posthog-js";
+
+export type SetupMeta = {
+  selections?: CountrySelection[];
+  accounts?: Account[];
+  goals?: GoalsData;
+  theme?: ThemeId;
+  // Legacy fields from plans generated before the enriched meta format
+  residenceCountry?: string;
+  retirementCountry?: string;
+  retirementYear?: number | null;
+  retirementGoal?: { targetYear: number; targetAmountUsd: number } | null;
+  notes?: string;
+};
+
+interface Props {
+  initialData: SetupMeta;
+}
 
 type WizardData = {
   selections: CountrySelection[];
@@ -18,7 +34,7 @@ type WizardData = {
 const STEPS = ["Countries", "Connect", "Goals", "Style"] as const;
 type StepNum = 1 | 2 | 3 | 4;
 
-export default function OnboardingPage() {
+export default function SetupClient({ initialData }: Props) {
   const router = useRouter();
 
   const [step, setStep] = useState<StepNum>(1);
@@ -26,22 +42,14 @@ export default function OnboardingPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (posthog.__loaded) {
-      posthog.capture("onboarding_started");
-    }
-  }, []);
-
   async function handleStyle(data: StyleData) {
     const { goals, selections, accounts } = wizardData as WizardData;
     setGenerating(true);
     setError(null);
 
-    // Persist theme — sessionStorage for no-auth path; Supabase for auth'd users
     sessionStorage.setItem("pw_theme", data.theme);
 
     try {
-      const currentYear = new Date().getFullYear();
       const payload = {
         countries: selections.map((s) => s.country),
         accounts: accounts.map((a) => ({
@@ -66,22 +74,10 @@ export default function OnboardingPage() {
       if (!planRes.ok) throw new Error("Plan generation failed");
       const plan = await planRes.json();
 
-      posthog.capture("plan_generated", {
-        countries_count: payload.countries.length,
-        accounts_count: payload.accounts.length,
-        years_to_retirement: goals.retirementYear
-          ? goals.retirementYear - currentYear
-          : null,
-        has_retirement_goal: !!goals.retirementGoal,
-        theme: data.theme,
-      });
+      const meta = { ...payload, selections, accounts, goals, theme: data.theme };
 
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const meta = { ...payload, selections, accounts, goals, theme: data.theme };
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
         await Promise.all([
@@ -98,16 +94,6 @@ export default function OnboardingPage() {
         sessionStorage.setItem("pw_plan", JSON.stringify({ ...plan, meta }));
       }
 
-      posthog.capture("onboarding_completed", {
-        countries_count: payload.countries.length,
-        accounts_count: payload.accounts.length,
-        has_retirement_goal: !!goals.retirementGoal,
-        years_to_retirement: goals.retirementYear
-          ? goals.retirementYear - currentYear
-          : null,
-        theme: data.theme,
-      });
-
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -120,8 +106,14 @@ export default function OnboardingPage() {
       {/* ── Fixed progress header ─────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-lg mx-auto px-4 py-3">
-          <div className="mb-2 text-center">
-            <span className="text-sm font-bold text-brand-700">Prestige Worldwide</span>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-bold text-brand-700">Update your setup</span>
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="text-xs text-gray-400 hover:text-gray-600 transition"
+            >
+              Cancel
+            </button>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -190,6 +182,7 @@ export default function OnboardingPage() {
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
             <StepCountries
+              initialValues={initialData.selections}
               onNext={(selections) => {
                 setWizardData((p) => ({ ...p, selections }));
                 setStep(2);
@@ -202,7 +195,8 @@ export default function OnboardingPage() {
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
             <StepConnect
-              selections={wizardData.selections ?? []}
+              selections={wizardData.selections ?? initialData.selections ?? []}
+              initialValues={initialData.accounts}
               onNext={(accounts) => {
                 setWizardData((p) => ({ ...p, accounts }));
                 setStep(3);
@@ -216,7 +210,8 @@ export default function OnboardingPage() {
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
             <StepGoals
-              countrySelections={wizardData.selections}
+              countrySelections={wizardData.selections ?? initialData.selections}
+              initialValues={initialData.goals}
               onNext={(goals) => {
                 setWizardData((p) => ({ ...p, goals }));
                 setStep(4);
@@ -230,6 +225,7 @@ export default function OnboardingPage() {
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
             <StepStyle
+              initialValues={initialData.theme ? { theme: initialData.theme } : undefined}
               onNext={handleStyle}
               onBack={() => setStep(3)}
               loading={generating}
