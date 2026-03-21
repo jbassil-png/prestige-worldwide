@@ -473,11 +473,12 @@ The Plaid integration is fully implemented for real bank account connectivity.
 
 ### Roadmap
 
-- 🎨 Visual theming system ("Dream Lifestyle Modes" — Swiss Alps, Gaudy Miami, Clooney's Positano)
-- 🧪 Automated testing infrastructure (Vitest unit + integration tests)
-- 🌍 Geographic AI advisors (country-specific expertise, multi-agent N8N)
-- 🔐 Production-grade security (RLS review, API rate limiting)
-- 🚀 Production Plaid deployment
+- 🎨 **Onboarding redesign** — 4-step wizard with theme selection (Swiss Alps Retreat, Gaudy Miami, Clooney's Positano) ← **IN PROGRESS**
+- 🤖 **AI plan generation** — Replace stub recommendations with real OpenRouter/Claude calls (JSON mode, model-swappable via env var)
+- 🔁 **Re-entry flows** — "Update my setup" from dashboard; same onboarding wizard pre-populated with existing data
+- 🌍 **Geographic AI advisors** — Country-specific personas with localised expertise (depends on theming + AI plan gen)
+- 🧪 **Testing infrastructure** — Vitest unit + integration tests
+- ✅ ~~Goals, check-ins & progressive onboarding~~ **COMPLETE** (2026-03-21)
 - ✅ ~~Portfolio-aware news feed~~ **COMPLETE** (2026-03-20)
 - ✅ ~~Account management & detail views~~ **COMPLETE** (2026-03-20)
 

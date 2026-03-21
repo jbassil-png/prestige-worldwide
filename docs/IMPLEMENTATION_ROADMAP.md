@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last Updated:** 2026-03-21
-**Current Phase:** Phase 2 - Differentiation & Quality
+**Current Phase:** Phase 2 — Onboarding Construction (active)
 
 ---
 
@@ -69,8 +69,34 @@ Redesign the goals layer so the tool works for both simple account-trackers and 
 
 ---
 
+### Task 3.5: Onboarding Construction ← CURRENT
+**Status:** 🎯 Active
+**Priority:** High — unblocks theming, re-entry flow, and advisor personas
+**Effort:** ~12-16 hours total across sub-tasks
+
+**Overview:**
+Build the onboarding preview page for design iteration, add the theme step (Step 4) to the onboarding wizard, wire it all together, and upgrade the loading state into a proper full-screen reveal. This work is a prerequisite for AI plan generation wiring (the theme selection needs to exist before we build the reveal moment).
+
+**Sub-tasks:**
+- [ ] **Preview page** (`/onboarding/preview`) — column view, all 4 steps, mock US+CA data, theme placeholder cards, no API calls ← **START HERE**
+- [ ] **Bug fix** — `app/onboarding/page.tsx:42`: `country: a.name` → add `countryCode` to `Account` type, populate in `ManualEntry` and Plaid path
+- [ ] **Theme design decision** — user input on palette/identity for each of the 3 themes (Swiss Alps Retreat, Gaudy Miami, Clooney's Positano)
+- [ ] **Theme token system** — CSS custom properties on `<html data-theme>` or Tailwind config extension
+- [ ] **`StepStyle` component** — three visual preview cards, real selection, `ThemeId` type
+- [ ] **Wire Step 4 into wizard** — `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores `GoalsData`, Style `onNext` triggers plan generation; `WizardData` gains `goals` and `theme` fields
+- [ ] **Full-screen loading reveal** — themed 3-beat progress animation replaces disabled-button state
+- [ ] **Persist theme** — `user_preferences` Supabase table; sessionStorage fallback for no-auth path; apply to dashboard and all pages
+
+**Key decisions (settled — do not revisit):**
+- Three themes: Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹
+- Theme step is Step 4, after Goals, before plan generation
+- Preview page: column view, accessible in production, real components + mock data
+- Loading reveal: full-screen, themed, not a disabled button
+
+---
+
 ### Task 4: AI Plan Generation
-**Status:** 📐 Spec complete — ready to implement
+**Status:** 📐 Spec complete — ready to implement (after Task 3.5)
 **Priority:** High — biggest functional gap, unblocks chat agent and advisors
 **Effort:** ~4-6 hours
 
@@ -79,25 +105,19 @@ Replace the hardcoded stub recommendations in `/api/plan` with a real AI call. T
 
 Full spec: `docs/FEATURE_AI_PLAN_GENERATION.md`
 
-**Key design decisions (agreed):**
+**Key design decisions (all settled):**
 - Two-layer architecture: code calculates metrics, AI generates narrative + recommendations
-- OpenRouter with JSON mode for structured output; stub fallback on failure
-- Model: `OPENROUTER_PLAN_MODEL` env var, defaults to Haiku; upgrade to Sonnet if quality is thin
+- **JSON mode** (`response_format: { type: "json_object" }`) — no retry loop; stub plan is the fallback on API failure
+- **Model:** `OPENROUTER_PLAN_MODEL` env var, defaults to `anthropic/claude-3.5-haiku`; upgrade to `claude-3.5-sonnet` if quality is thin on complex multi-country cases
 - No account names or institution names sent to AI (privacy)
 - Plan regenerates on: onboarding, user request, profile change, >10% balance change, scheduled check-in
 
-**Open questions before implementation:**
-- Haiku vs. Sonnet — evaluate with a test US+CA prompt
-- JSON mode vs. prompt-only + validation/retry
-- Whether to inject market_data (treasury yields, equity returns) for more timely recs
-- Minimum recommendations per category
-
 **Sub-tasks:**
-- [ ] Resolve open questions above
 - [ ] Add `generateAIPlan()` to `/api/plan/route.ts`
 - [ ] Add Zod validation of AI response schema
 - [ ] Preserve `buildStubPlan()` as fallback
 - [ ] Add `OPENROUTER_PLAN_MODEL` to `.env.example`
+- [ ] Validate output quality with US+CA mock payload
 - [ ] Unit tests for `calculateMetrics()`
 - [ ] Integration test for AI path + stub fallback path
 
@@ -268,12 +288,12 @@ Advisors are specialised **chat agents**, not separate plan generators. They rea
 | Phase 5 | 📋 Planned | Polish |
 
 **Agreed sequence:**
-1. **Task 4** — AI Plan Generation (spec agreed, implement next)
-2. **Task 5** — Re-entry Flows & Unified Goal/Account Editing
-3. **Task 6** — Testing Infrastructure
-4. **Task 8** — Visual Theming *(start designing now as part of onboarding planning; build here)*
+1. **Task 3.5** — Onboarding Construction (preview page → bug fix → theme design → StepStyle → wire → reveal → persist) ← **CURRENT**
+2. **Task 4** — AI Plan Generation (JSON mode, OpenRouter, model via env var)
+3. **Task 5** — Re-entry Flows & Unified Goal/Account Editing (add `initialValues` props first)
+4. **Task 6** — Testing Infrastructure
 5. **Task 9/10** — Goal-Account Linking + Check-in Emails
-6. **Task 11** — Geographic AI Advisors (last)
+6. **Task 11** — Geographic AI Advisors (depends on Task 3.5 theming + Task 4 AI plan)
 
 ---
 

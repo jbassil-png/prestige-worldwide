@@ -9,6 +9,68 @@
 
 ---
 
+### Session: Mar 21, 2026 — Onboarding Review, Theming & Plan Alignment 🗺️
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Created `CLAUDE.md`** — Primary session-continuity document. Gives any new Claude session everything needed to resume immediately: current task, settled decisions, known bugs, file map, architecture notes.
+
+2. ✅ **Documentation audit and cleanup:**
+   - Deleted: `PR_DESCRIPTION.md`, `PR_DESCRIPTION_SECURITY.md` (historical PR artifacts)
+   - Deleted: `docs/MANUAL_TEST_CHECKLIST.md` (Next.js 15→16 upgrade specific, upgrade complete)
+   - Merged: `docs/n8n-setup.md` + `docs/n8n-workflows.md` → `docs/N8N.md` (single reference + setup doc)
+   - Updated: `docs/IMPLEMENTATION_ROADMAP.md` (revised phase sequence)
+   - Updated: `README.md` (roadmap section)
+
+3. ✅ **Full onboarding code review** — Read all 4 files (`page.tsx`, `StepCountries`, `StepConnect`, `StepGoals`). Key findings documented below.
+
+4. ✅ **Decisions locked in:**
+
+| Topic | Decision |
+|-------|----------|
+| AI models | OpenRouter for all AI; no direct Anthropic/Google calls |
+| Plan gen model | `claude-3.5-haiku` default via `OPENROUTER_PLAN_MODEL` env var |
+| Structured output | JSON mode (`response_format: { type: "json_object" }`), no retry loop |
+| Theme step placement | Step 4 in onboarding, after Goals, before plan generation |
+| Theme names | Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 |
+| Loading state upgrade | Full-screen themed reveal after Step 4 (not a disabled button) |
+| Preview page | Column view, accessible in production, real components + mock data |
+
+**Bug Found (not yet fixed):**
+- `app/onboarding/page.tsx:42` — `country: a.name` sends the account display name (e.g. "Chase Checking") as the country field to the plan API. Fix: add `countryCode: string` to the `Account` type; populate in `ManualEntry` (`r.flag`) and the Plaid path.
+
+**Ordered Plan of Record:**
+1. Onboarding preview page at `/onboarding/preview` ← **NEXT**
+2. Bug fix: `country: a.name`
+3. Theme design decision (user input on palette/identity)
+4. Theme token system (CSS custom properties)
+5. `StepStyle` component (3 visual cards)
+6. Wire Step 4 into wizard + full-screen loading reveal
+7. Persist theme to `user_preferences` Supabase table + propagate to dashboard
+8. OpenRouter model wiring (`OPENROUTER_PLAN_MODEL` env var, JSON mode)
+9. `initialValues` props on all step components
+10. Re-entry flow (`/setup` route, "Update my setup" entry point)
+
+**Files Created:**
+- `CLAUDE.md`
+- `docs/N8N.md`
+
+**Files Deleted:**
+- `PR_DESCRIPTION.md`
+- `PR_DESCRIPTION_SECURITY.md`
+- `docs/MANUAL_TEST_CHECKLIST.md`
+- `docs/n8n-setup.md`
+- `docs/n8n-workflows.md`
+
+**Files Updated:**
+- `docs/IMPLEMENTATION_ROADMAP.md`
+- `README.md`
+- `SESSION_NOTES.md`
+
+---
+
 ### Session: Mar 20, 2026 (Afternoon) — Task 2 Polish + Task 5 Portfolio News 🚀
 
 **Branch:** `claude/review-documentation-rgCPT`
