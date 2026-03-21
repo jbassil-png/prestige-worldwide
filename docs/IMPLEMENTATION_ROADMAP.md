@@ -69,142 +69,211 @@ Redesign the goals layer so the tool works for both simple account-trackers and 
 
 ---
 
-### Task 4: Visual Theming System
-**Status:** 📋 Planned
-**Priority:** High (differentiating feature)
-**Effort:** ~8-12 hours
+### Task 4: AI Plan Generation
+**Status:** 📐 Spec complete — ready to implement
+**Priority:** High — biggest functional gap, unblocks chat agent and advisors
+**Effort:** ~4-6 hours
 
 **Overview:**
-Three aspirational lifestyle themes that transform the entire app's visual presentation.
+Replace the hardcoded stub recommendations in `/api/plan` with a real AI call. The deterministic math layer (net worth, projections, on-track) stays as code. The AI generates the narrative summary and structured recommendations, with full awareness of the user's specific country combination, account types, and cross-border situation.
 
-**Themes:**
-1. **Swiss Alps Retreat** ❄️ - Minimalist luxury, serene, clean
-2. **Gaudy Miami** 🌴 - Bold, energetic, Art Deco glamour
-3. **Clooney's Positano** 🇮🇹 - Effortless elegance, Mediterranean warmth
+Full spec: `docs/FEATURE_AI_PLAN_GENERATION.md`
+
+**Key design decisions (agreed):**
+- Two-layer architecture: code calculates metrics, AI generates narrative + recommendations
+- OpenRouter with JSON mode for structured output; stub fallback on failure
+- Model: `OPENROUTER_PLAN_MODEL` env var, defaults to Haiku; upgrade to Sonnet if quality is thin
+- No account names or institution names sent to AI (privacy)
+- Plan regenerates on: onboarding, user request, profile change, >10% balance change, scheduled check-in
+
+**Open questions before implementation:**
+- Haiku vs. Sonnet — evaluate with a test US+CA prompt
+- JSON mode vs. prompt-only + validation/retry
+- Whether to inject market_data (treasury yields, equity returns) for more timely recs
+- Minimum recommendations per category
 
 **Sub-tasks:**
-- [ ] Design theme configurations (color palettes, typography)
-- [ ] Create Tailwind theme extension
-- [ ] Build theme selector UI component
-- [ ] Implement React Context for theme state
-- [ ] Add `user_preferences` table to Supabase
-- [ ] Apply theme to all components
-- [ ] Test theme switching across all pages
+- [ ] Resolve open questions above
+- [ ] Add `generateAIPlan()` to `/api/plan/route.ts`
+- [ ] Add Zod validation of AI response schema
+- [ ] Preserve `buildStubPlan()` as fallback
+- [ ] Add `OPENROUTER_PLAN_MODEL` to `.env.example`
+- [ ] Unit tests for `calculateMetrics()`
+- [ ] Integration test for AI path + stub fallback path
 
 ---
 
-### Task 5: Testing Infrastructure
+### Task 5: Re-entry Flows & Unified Account/Goal Editing
 **Status:** 📋 Planned
-**Priority:** Medium (technical foundation)
+**Priority:** High — needed before real users; also required for dev iteration
+**Effort:** ~4-6 hours
+
+**Overview:**
+When returning users want to add accounts, add countries, or edit goals, the experience should feel like a natural continuation of onboarding — not a separate admin panel. Critically, adding accounts and editing goals are part of the **same flow**, not separate pages.
+
+The unified "edit my setup" flow:
+1. Which countries do you have assets in? (reuses `StepCountries`)
+2. Connect or update accounts (reuses `StepConnect`)
+3. Update goals and retirement year (reuses `StepGoals`)
+
+This mirrors onboarding exactly. It can be triggered from the dashboard ("Update my setup") and from Settings.
+
+Also includes the dev utility: a "Reset onboarding" button in Settings (`NODE_ENV === 'development'` only) so we can iterate on the onboarding flow without touching Supabase.
+
+See: `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`
+
+**Sub-tasks:**
+- [ ] Make `StepCountries`, `StepConnect`, `StepGoals` accept an `initialValues` prop (pre-populate from existing data)
+- [ ] Create `/setup` route that runs the 3-step wizard in edit mode
+- [ ] Add "Update my setup" entry point on the dashboard
+- [ ] Add dev-only "Reset onboarding" button in `/settings`
+- [ ] Plan auto-regenerates on save (same as profile update today)
+
+---
+
+### Task 6: Testing Infrastructure
+**Status:** 📋 Planned
+**Priority:** Medium
 **Effort:** ~6-8 hours
 
 **Sub-tasks:**
 - [ ] Install and configure Vitest
-- [ ] Write unit tests for plan calculations (on-track logic, CAGR projections)
-- [ ] Write integration tests for API routes
-  - `/api/plan` (with and without retirement goal)
-  - `/api/checkin-schedule`
-  - `/api/profile`
-  - `/api/accounts/[id]`
+- [ ] Unit tests: `calculateMetrics()`, on-track logic, CAGR projections
+- [ ] Integration tests: `/api/plan` (AI path + stub fallback), `/api/checkin-schedule`, `/api/profile`
 - [ ] Add test scripts to `package.json`
 - [ ] Document testing setup in README
 
 ---
 
-## Phase 3: Advanced Features
+## Phase 3: Product Depth
 **Timeline:** Week 4+
-**Goal:** Build differentiating AI-powered features
 
-### ✅ Task 6: Portfolio-Aware News Feed
-**Status:** ✅ COMPLETE (Phases 1–3, 2026-03-20)
+### ✅ Task 7: Portfolio-Aware News Feed
+**Status:** ✅ COMPLETE (2026-03-20)
 
 Full spec: `docs/FEATURE_PORTFOLIO_NEWS.md`
 
 ---
 
-### Task 7: Geographic AI Advisors
+### Task 8: Visual Theming
+**Status:** 📐 Design in progress — integrate into onboarding
+**Priority:** High (differentiating surface feature; blocks advisor personas)
+**Effort:** ~8-12 hours
+
+**Overview:**
+Three aspirational lifestyle themes transform the app's entire visual presentation. Theme selection happens during onboarding (new Step 4, after goals) so the experience is personalised from first use. The chosen theme persists and can be changed in settings.
+
+**Themes:**
+1. **Swiss Alps Retreat** ❄️ — Minimalist luxury, serene, clean
+2. **Gaudy Miami** 🌴 — Bold, energetic, Art Deco glamour
+3. **Clooney's Positano** 🇮🇹 — Effortless elegance, Mediterranean warmth
+
+**Onboarding integration:**
+- New Step 4 in the onboarding wizard: "Choose your style"
+- Visual cards showing a preview of each theme
+- Selection is optional (defaults to Swiss Alps or a neutral default)
+- This step should feel like a personalisation moment, not a configuration screen
+
+**Sub-tasks:**
+- [ ] Design theme colour palettes and typography specs
+- [ ] Create Tailwind theme extension / CSS variable approach
+- [ ] Build theme selector component (for onboarding Step 4 and Settings)
+- [ ] Implement React Context for theme state
+- [ ] Add `user_preferences` table to Supabase
+- [ ] Apply theme to all components
+- [ ] Add theme selector to Settings
+- [ ] Test theme switching across all pages
+
+**Note:** Theme personas feed into Geographic AI Advisors — advisors adapt their visual identity to the chosen theme. That's why theming comes before advisors.
+
+---
+
+### Task 9: Goal-Account Linking
 **Status:** 📋 Planned
-**Priority:** High (differentiating feature)
+**Priority:** Medium
+**Effort:** ~3-4 hours
+
+**Overview:**
+Let users assign accounts to goals so the unallocated bucket reflects real allocation, not an approximation.
+
+**Sub-tasks:**
+- [ ] Goal card UI with "Add accounts" action
+- [ ] Multi-select from connected accounts
+- [ ] Update `user_goals.linked_account_ids`
+- [ ] Recalculate unallocated: net worth minus sum of linked account balances
+
+---
+
+### Task 10: Scheduled Check-in Email Delivery
+**Status:** 📋 Planned
+**Priority:** Medium
+**Effort:** ~3-4 hours
+
+**Sub-tasks:**
+- [ ] Vercel cron job (daily) querying `user_checkin_schedule` for due users
+- [ ] Resend email: portfolio snapshot + link to dashboard
+- [ ] Update `last_checkin_at` / `next_checkin_at` after send
+
+---
+
+## Phase 4: Advanced AI
+**Timeline:** After theming is complete
+
+### Task 11: Geographic AI Advisors
+**Status:** 📋 Planned — depends on AI plan generation (Task 4) and theming (Task 8)
+**Priority:** High (most differentiating feature)
 **Effort:** ~24-32 hours
 
 **Overview:**
-Country-specific AI advisors (Gordon for Canada, Brad for USA, etc.) that provide localized financial expertise.
+Country-specific AI advisor personas (e.g. Gordon for Canada, Brad for US) with localised financial expertise, their own chat interfaces, and visual identities that adapt to the user's chosen theme.
+
+Advisors are specialised **chat agents**, not separate plan generators. They read from the same plan document that the main chat agent reads, with country-specific system prompts and personas layered on top.
+
+**Dependencies:**
+- Task 4 (AI plan gen) — advisors need a real plan to reference
+- Task 8 (theming) — advisor visual identity adapts to theme
 
 **Sub-tasks:**
-- [ ] Design advisor database schema
-- [ ] Create advisor system prompts (personality, expertise)
-- [ ] Build advisor detection logic (from Plaid accounts)
-- [ ] Implement N8N multi-agent workflow
-- [ ] Build advisor selector UI
-- [ ] Create advisor introduction flow
-- [ ] Integrate with visual theming system
+- [ ] Design advisor persona schema (country, name, expertise, personality, visual)
+- [ ] Create per-country system prompts
+- [ ] Build advisor detection logic (which advisors are relevant to user's countries)
+- [ ] Advisor selector UI
+- [ ] Multi-advisor group chat (N8N multi-agent workflow)
+- [ ] Theme-aware visual identity per advisor
 
 ---
 
-### Task 8: Goal Account Linking
-**Status:** 📋 Planned
-**Priority:** Medium
-**Effort:** ~4-6 hours
-
-**Overview:**
-Allow users to link specific accounts to specific goals so the unallocated bucket shrinks over time.
-
-**Sub-tasks:**
-- [ ] UI to assign accounts to goals (drag or select)
-- [ ] Update `user_goals.linked_account_ids` array
-- [ ] Update PlanView unallocated bucket calculation to use real links
-- [ ] Show per-goal allocation on plan detail page
-
----
-
-### Task 9: Post-Onboarding Re-entry Flows
-**Status:** 📋 Planned
-**Priority:** Medium
-**Effort:** ~4-6 hours
-
-**Overview:**
-When returning users want to add accounts, change countries, or add goals, the UI should feel
-continuous with what they saw in onboarding. See `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`.
-
-**Sub-tasks:**
-- [ ] "Add countries" flow that reuses `StepCountries` component
-- [ ] "Add accounts" flow that reuses `StepConnect` component
-- [ ] "Edit goals" modal/page that reuses `StepGoals` layout
-- [ ] Add these as quick-action entry points from the dashboard
-- [ ] Dev utility: "Reset onboarding" button in settings (dev/staging only)
-
----
-
-## Phase 4: Polish
+## Phase 5: Polish
 **Timeline:** Ongoing
 
-### Task 10: Fix Bug #1 - Sign-up Redirect
-**Status:** 📋 Planned
-**Priority:** Low
-
-### Task 11: Additional Enhancements
-**Status:** 📋 Planned
-
-- Transaction history (from Plaid Transactions API)
-- Plan comparison tool (side-by-side)
+### Task 12: Minor fixes and enhancements
+- Sign-up redirect UX (silent redirect with no feedback)
+- Transaction history (Plaid Transactions API)
 - PDF export for plans
-- Email notifications for check-in reminders
-- Account nicknames (user-defined labels)
-- What-if analysis (simulate changes before applying)
-- Scheduled check-in email delivery (via Resend + cron)
+- Plan comparison tool
+- What-if analysis
+- Drop legacy `current_age`/`retirement_age` columns from DB
+- Centralise `Plan`/`Metrics` types into `types/plan.ts`
 
 ---
 
 ## Current Status Summary
 
-| Phase | Status | Progress |
-|-------|--------|----------|
-| **Phase 1** | ✅ **Complete** | 100% |
-| **Phase 2** | 🎯 **Active** | Task 3 ✅ done; Task 4/5 next |
-| Phase 3 | 🔀 **Partial** | Task 6 ✅ done; Tasks 7-9 pending |
-| Phase 4 | 📋 Planned | 0% |
+| Phase | Status | Tasks |
+|-------|--------|-------|
+| **Phase 1** | ✅ Complete | Tasks 1-2 done |
+| **Phase 2** | 🎯 Active | Task 3 ✅; Tasks 4-6 next |
+| Phase 3 | 📋 Planned | Task 7 ✅ (news); Tasks 8-10 pending |
+| Phase 4 | 📋 Planned | Task 11 (advisors) — after theming |
+| Phase 5 | 📋 Planned | Polish |
 
-**Next Session: Phase 2 — Task 4 (Visual Theming) or Task 5 (Testing Infrastructure)** 🚀
+**Agreed sequence:**
+1. **Task 4** — AI Plan Generation (spec agreed, implement next)
+2. **Task 5** — Re-entry Flows & Unified Goal/Account Editing
+3. **Task 6** — Testing Infrastructure
+4. **Task 8** — Visual Theming *(start designing now as part of onboarding planning; build here)*
+5. **Task 9/10** — Goal-Account Linking + Check-in Emails
+6. **Task 11** — Geographic AI Advisors (last)
 
 ---
 
