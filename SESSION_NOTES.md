@@ -9,6 +9,36 @@
 
 ---
 
+### Session: Mar 21, 2026 (Evening) — Bug Fix + Roadmap: Horizontal Scroll
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Bug fix — `country: a.name`** (`app/onboarding/page.tsx:42`)
+   - Added `countryCode: string` to the `Account` type in `StepConnect.tsx`
+   - `ManualEntry.handleSubmit` now populates `countryCode: r.flag`
+   - Mock accounts in both `StepConnect.tsx` and `app/api/plaid/exchange/route.ts` updated with correct `countryCode` values
+   - Real Plaid path infers `countryCode` from `iso_currency_code` via a `CURRENCY_TO_COUNTRY` map (best-effort; EUR maps to `""` since it spans multiple countries)
+   - `page.tsx:42` now sends `country: a.countryCode` (was `a.name`)
+
+2. ✅ **Added horizontal scroll to roadmap**
+   - Wizard converts to horizontal scroll (one step per viewport, slide transition) when Step 4 is wired in — that's the right moment since 4 steps is the full shape of the flow
+   - Preview page stays column view by design
+   - Recorded in roadmap sub-task and `CLAUDE.md` key decisions
+
+**Files Changed:**
+- `app/onboarding/steps/StepConnect.tsx` — `countryCode` in type + mock accounts + `ManualEntry`
+- `app/api/plaid/exchange/route.ts` — `countryCode` in mock accounts + currency inference for real Plaid accounts
+- `app/onboarding/page.tsx` — `country: a.countryCode` (the actual bug fix)
+- `docs/IMPLEMENTATION_ROADMAP.md` — bug fix checked off; horizontal scroll added to wizard wiring sub-task
+- `CLAUDE.md` — bug removed from Known Bugs; horizontal scroll added to key decisions and task list
+- `SESSION_NOTES.md` — this entry
+
+**Next up:** Preview page at `/onboarding/preview` (column view, all 4 steps, mock US+CA data)
+
+---
+
 ### Session: Mar 21, 2026 — Onboarding Review, Theming & Plan Alignment 🗺️
 
 **Branch:** `claude/review-documentation-rgCPT`

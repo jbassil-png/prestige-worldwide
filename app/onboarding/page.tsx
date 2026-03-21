@@ -38,7 +38,7 @@ export default function OnboardingPage() {
         countries: wizardData.selections!.map((s) => s.country),
         accounts: wizardData.accounts!.map((a) => ({
           type: a.type,
-          country: a.name,
+          country: a.countryCode,
           balanceUsd: a.balanceUsd,
           currency: a.currency,
         })),

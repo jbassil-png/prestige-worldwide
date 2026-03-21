@@ -79,7 +79,7 @@ Build the onboarding preview page for design iteration, add the theme step (Step
 
 **Sub-tasks:**
 - [ ] **Preview page** (`/onboarding/preview`) — column view, all 4 steps, mock US+CA data, theme placeholder cards, no API calls ← **START HERE**
-- [ ] **Bug fix** — `app/onboarding/page.tsx:42`: `country: a.name` → add `countryCode` to `Account` type, populate in `ManualEntry` and Plaid path
+- [x] **Bug fix** — `app/onboarding/page.tsx:42`: `country: a.name` → added `countryCode: string` to `Account` type; populated in `ManualEntry` (`r.flag`), mock accounts, and Plaid exchange route (currency-based inference)
 - [ ] **Theme design decision** — user input on palette/identity for each of the 3 themes (Swiss Alps Retreat, Gaudy Miami, Clooney's Positano)
 - [ ] **Theme token system** — CSS custom properties on `<html data-theme>` or Tailwind config extension
 - [ ] **`StepStyle` component** — three visual preview cards, real selection, `ThemeId` type
