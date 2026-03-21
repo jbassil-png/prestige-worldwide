@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import StepGoals from "../steps/StepGoals";
 import StepCountries from "../steps/StepCountries";
 import StepConnect from "../steps/StepConnect";
-import StepGoals from "../steps/StepGoals";
-import { MOCK_SELECTIONS, MOCK_GOALS } from "./mock";
+import { MOCK_SELECTIONS, MOCK_ACCOUNTS, MOCK_GOALS } from "./mock";
 
 // ─── Theme placeholder ────────────────────────────────────────────────────────
 
@@ -61,7 +61,6 @@ function ThemePlaceholder() {
               }`}
             >
               <div className="flex items-center gap-3">
-                {/* Colour swatch */}
                 <div className="flex gap-1 shrink-0">
                   {theme.colors.map((c, i) => (
                     <span
@@ -71,7 +70,6 @@ function ThemePlaceholder() {
                     />
                   ))}
                 </div>
-
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-base">{theme.emoji}</span>
@@ -95,7 +93,7 @@ function ThemePlaceholder() {
           disabled={!selected}
           className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-lg text-sm transition disabled:opacity-40"
         >
-          Build my plan →
+          Continue →
         </button>
         <p className="text-center text-xs text-gray-400">
           Defaults to Swiss Alps Retreat if you skip.
@@ -114,10 +112,12 @@ function ThemePlaceholder() {
 function StepSection({
   number,
   label,
+  required,
   children,
 }: {
   number: number;
   label: string;
+  required: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -127,6 +127,15 @@ function StepSection({
           {number}
         </div>
         <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">{label}</span>
+        {required ? (
+          <span className="text-xs font-medium text-brand-700 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-full">
+            Required
+          </span>
+        ) : (
+          <span className="text-xs font-medium text-gray-400 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">
+            Optional — do later
+          </span>
+        )}
         <div className="flex-1 h-px bg-gray-200" />
       </div>
       <div className="bg-white rounded-2xl shadow-lg p-8">{children}</div>
@@ -147,39 +156,37 @@ export default function OnboardingPreviewPage() {
             <p className="text-sm font-semibold text-gray-800">Onboarding preview</p>
             <p className="text-xs text-gray-500 mt-0.5">
               All steps are live and interactive. Navigation is disabled — nothing is saved.
-              Use <strong>Enter manually</strong> in Step 2 to avoid Plaid API calls.
+              Use <strong>Enter manually</strong> in Step 4 to avoid Plaid API calls.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Step 1 — Countries */}
-      <StepSection number={1} label="Countries">
+      {/* Step 1 — Goals */}
+      <StepSection number={1} label="Goals" required={true}>
+        <StepGoals
+          onNext={() => {}}
+          loading={false}
+        />
+      </StepSection>
+
+      {/* Step 2 — Countries */}
+      <StepSection number={2} label="Assets" required={true}>
         <StepCountries onNext={() => {}} />
       </StepSection>
 
-      {/* Step 2 — Connect */}
-      <StepSection number={2} label="Connect">
+      {/* Step 3 — Style (placeholder) */}
+      <StepSection number={3} label="Style" required={false}>
+        <ThemePlaceholder />
+      </StepSection>
+
+      {/* Step 4 — Connect */}
+      <StepSection number={4} label="Connect" required={false}>
         <StepConnect
           selections={MOCK_SELECTIONS}
           onNext={() => {}}
           onBack={() => {}}
         />
-      </StepSection>
-
-      {/* Step 3 — Goals */}
-      <StepSection number={3} label="Goals">
-        <StepGoals
-          countrySelections={MOCK_SELECTIONS}
-          onNext={() => {}}
-          onBack={() => {}}
-          loading={false}
-        />
-      </StepSection>
-
-      {/* Step 4 — Style (placeholder) */}
-      <StepSection number={4} label="Style">
-        <ThemePlaceholder />
       </StepSection>
     </div>
   );

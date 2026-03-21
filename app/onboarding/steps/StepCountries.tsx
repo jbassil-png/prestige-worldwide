@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const COUNTRIES: { code: string; label: string; flag: string; accountTypes: string[] }[] = [
+export const COUNTRIES: { code: string; label: string; flag: string; accountTypes: string[] }[] = [
   { code: "US", label: "United States", flag: "🇺🇸", accountTypes: ["401(k)", "IRA / Roth IRA", "Brokerage", "529 (Education)"] },
   { code: "CA", label: "Canada", flag: "🇨🇦", accountTypes: ["RRSP", "TFSA", "RESP", "Non-registered"] },
   { code: "GB", label: "United Kingdom", flag: "🇬🇧", accountTypes: ["ISA", "SIPP (Pension)", "General Investment"] },
