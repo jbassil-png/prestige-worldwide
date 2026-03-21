@@ -4,36 +4,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-  // ── n8n webhook ─────────────────────────────────────────────────────────────
-  // When you have n8n running, set N8N_WEBHOOK_URL in your .env.local file.
-  // Your n8n workflow should accept this payload, call OpenRouter (or any model),
-  // and return a JSON object with the shape below.
-  // ─────────────────────────────────────────────────────────────────────────────
-  const webhookUrl = process.env.N8N_WEBHOOK_URL;
-
-  if (webhookUrl) {
-    try {
-      const n8nRes = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!n8nRes.ok) {
-        throw new Error(`n8n responded with ${n8nRes.status}`);
-      }
-
-      const plan = await n8nRes.json();
-      return NextResponse.json(plan);
-    } catch (err) {
-      console.error("n8n webhook error:", err);
-      // Fall through to stub so the UI still works during development
-    }
-  }
-
-  // ── Stub plan (used when N8N_WEBHOOK_URL is not set) ────────────────────────
-  // Replace this with real n8n + OpenRouter output once you've wired it up.
-  // ─────────────────────────────────────────────────────────────────────────────
   const stub = buildStubPlan(body);
   return NextResponse.json(stub);
   } catch (error) {
