@@ -15,6 +15,10 @@
 - **StepStyle card visuals** — theme selection cards currently show color swatches; could show a miniature UI preview or moodboard image
 - **Dark mode variants** — not planned yet; revisit after theme system is stable
 
+## Onboarding — Loading State
+
+- **Full-screen loading reveal** — after Step 4 (Style), while plan is generating: full-screen overlay in the chosen theme's colours, 3-beat animation (pulsing dots or staged progress bar), copy stepping through "Analysing your accounts… Modelling tax exposure… Building your plan…" before dashboard reveals. Currently just a disabled button with "Building your plan…" text.
+
 ## Onboarding Wizard
 
 - **Slide transition animation** — horizontal scroll transition easing, duration, and feel (snap vs. inertia)
