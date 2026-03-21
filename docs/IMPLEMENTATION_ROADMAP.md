@@ -79,11 +79,11 @@ Build the onboarding preview page for design iteration, add the theme step (Step
 
 **Sub-tasks:**
 - [ ] **Preview page** (`/onboarding/preview`) — column view, all 4 steps, mock US+CA data, theme placeholder cards, no API calls ← **START HERE**
-- [ ] **Bug fix** — `app/onboarding/page.tsx:42`: `country: a.name` → add `countryCode` to `Account` type, populate in `ManualEntry` and Plaid path
+- [x] **Bug fix** — `app/onboarding/page.tsx:42`: `country: a.name` → added `countryCode: string` to `Account` type; populated in `ManualEntry` (`r.flag`), mock accounts, and Plaid exchange route (currency-based inference)
 - [ ] **Theme design decision** — user input on palette/identity for each of the 3 themes (Swiss Alps Retreat, Gaudy Miami, Clooney's Positano)
 - [ ] **Theme token system** — CSS custom properties on `<html data-theme>` or Tailwind config extension
 - [ ] **`StepStyle` component** — three visual preview cards, real selection, `ThemeId` type
-- [ ] **Wire Step 4 into wizard** — `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores `GoalsData`, Style `onNext` triggers plan generation; `WizardData` gains `goals` and `theme` fields
+- [ ] **Wire Step 4 into wizard** — `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores `GoalsData`, Style `onNext` triggers plan generation; `WizardData` gains `goals` and `theme` fields; **convert to horizontal scroll** — one step fills the viewport, slide transition between steps (this is the right moment since 4 steps is the full shape of the flow)
 - [ ] **Full-screen loading reveal** — themed 3-beat progress animation replaces disabled-button state
 - [ ] **Persist theme** — `user_preferences` Supabase table; sessionStorage fallback for no-auth path; apply to dashboard and all pages
 

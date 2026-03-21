@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { encrypt } from "@/lib/encrypt";
 
+const CURRENCY_TO_COUNTRY: Record<string, string> = {
+  USD: "US", CAD: "CA", GBP: "GB", SGD: "SG", AUD: "AU", EUR: "",
+};
+
 const MOCK_ACCOUNTS = [
-  { name: "Chase Checking", type: "401(k)", balanceUsd: 85000, currency: "USD", institution: "Chase" },
-  { name: "TD RRSP", type: "RRSP", balanceUsd: 62000, currency: "CAD", institution: "TD Bank" },
+  { name: "Chase Checking", type: "401(k)", balanceUsd: 85000, currency: "USD", countryCode: "US", institution: "Chase" },
+  { name: "TD RRSP", type: "RRSP", balanceUsd: 62000, currency: "CAD", countryCode: "CA", institution: "TD Bank" },
 ];
 
 export async function POST(req: NextRequest) {
@@ -47,13 +51,17 @@ export async function POST(req: NextRequest) {
       institution: balancesRes.data.item?.institution_id ?? null,
     });
 
-    const accounts = balancesRes.data.accounts.map((a) => ({
-      name: a.name,
-      type: a.subtype ?? a.type,
-      balanceUsd: a.balances.current ?? 0,
-      currency: a.balances.iso_currency_code ?? "USD",
-      institution: null,
-    }));
+    const accounts = balancesRes.data.accounts.map((a) => {
+      const currency = a.balances.iso_currency_code ?? "USD";
+      return {
+        name: a.name,
+        type: a.subtype ?? a.type,
+        balanceUsd: a.balances.current ?? 0,
+        currency,
+        countryCode: CURRENCY_TO_COUNTRY[currency] ?? "",
+        institution: null,
+      };
+    });
 
     return NextResponse.json({ accounts });
   } catch (error) {

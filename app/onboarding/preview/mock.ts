@@ -16,10 +16,10 @@ export const MOCK_SELECTIONS: CountrySelection[] = [
 ];
 
 export const MOCK_ACCOUNTS: Account[] = [
-  { name: "401(k) (United States)", type: "401(k)", balanceUsd: 124000, currency: "USD" },
-  { name: "IRA / Roth IRA (United States)", type: "IRA / Roth IRA", balanceUsd: 38000, currency: "USD" },
-  { name: "RRSP (Canada)", type: "RRSP", balanceUsd: 67000, currency: "CAD" },
-  { name: "TFSA (Canada)", type: "TFSA", balanceUsd: 31000, currency: "CAD" },
+  { name: "401(k) (United States)", type: "401(k)", balanceUsd: 124000, currency: "USD", countryCode: "US" },
+  { name: "IRA / Roth IRA (United States)", type: "IRA / Roth IRA", balanceUsd: 38000, currency: "USD", countryCode: "US" },
+  { name: "RRSP (Canada)", type: "RRSP", balanceUsd: 67000, currency: "CAD", countryCode: "CA" },
+  { name: "TFSA (Canada)", type: "TFSA", balanceUsd: 31000, currency: "CAD", countryCode: "CA" },
 ];
 
 export const MOCK_GOALS: GoalsData = {

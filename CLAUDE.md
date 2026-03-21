@@ -40,11 +40,11 @@ In order:
 | # | Task | Notes |
 |---|------|-------|
 | 1 | **Preview page** | CURRENT |
-| 2 | **Bug fix** — `country: a.name` in `app/onboarding/page.tsx:42` | Small, standalone |
+| 2 | ~~**Bug fix** — `country: a.name` in `app/onboarding/page.tsx:42`~~ | ✅ DONE — `countryCode: string` added to `Account` type; populated in `ManualEntry` and Plaid path |
 | 3 | **Theme design decision** | Requires user input on palette/identity for each theme |
 | 4 | **Theme token system** | CSS custom properties or Tailwind config extension |
 | 5 | **`StepStyle` component** | Three visual cards, real selection |
-| 6 | **Wire Step 4 into wizard** | `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores data, Style `onNext` triggers plan gen |
+| 6 | **Wire Step 4 into wizard + horizontal scroll** | `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores data, Style `onNext` triggers plan gen; convert wizard to horizontal scroll (one step per viewport, slide transition) |
 | 7 | **Full-screen loading reveal** | Replace disabled-button loading state with themed 3-beat progress animation |
 | 8 | **Persist theme** | `user_preferences` Supabase table; sessionStorage fallback for no-auth path |
 | 9 | **OpenRouter model wiring** | `OPENROUTER_PLAN_MODEL` env var, JSON mode, validate plan output quality |
@@ -68,6 +68,7 @@ In order:
 | Theme default | TBD (Swiss Alps or neutral — to be decided during theme design conversation) |
 | Preview page | Column view, production-accessible, real components with mock data |
 | Loading reveal | Full-screen themed transition after Step 4, not a disabled button on Step 3 |
+| Horizontal scroll | Wizard converts to horizontal scroll when Step 4 is wired in — one step per viewport, slide transition. Preview page stays column view. |
 
 ---
 
@@ -107,7 +108,7 @@ type WizardData = {
 
 ## Known Bugs
 
-- **`app/onboarding/page.tsx:42`** — `country: a.name` sends the account display name (e.g. "Chase Checking") as the country field to the plan API. Fix: add `countryCode: string` to the `Account` type and populate it in `ManualEntry` (use `r.flag`) and the Plaid path.
+*(None currently)*
 
 ---
 
