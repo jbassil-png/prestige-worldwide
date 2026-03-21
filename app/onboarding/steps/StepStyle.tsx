@@ -50,10 +50,11 @@ interface Props {
   onNext: (data: StyleData) => void;
   onBack?: () => void;
   loading?: boolean;
+  initialValues?: StyleData;
 }
 
-export default function StepStyle({ onNext, onBack, loading }: Props) {
-  const [selected, setSelected] = useState<ThemeId | null>(null);
+export default function StepStyle({ onNext, onBack, loading, initialValues }: Props) {
+  const [selected, setSelected] = useState<ThemeId | null>(initialValues?.theme ?? null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
