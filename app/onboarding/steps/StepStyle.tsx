@@ -49,9 +49,10 @@ const THEMES: {
 interface Props {
   onNext: (data: StyleData) => void;
   onBack?: () => void;
+  loading?: boolean;
 }
 
-export default function StepStyle({ onNext, onBack }: Props) {
+export default function StepStyle({ onNext, onBack, loading }: Props) {
   const [selected, setSelected] = useState<ThemeId | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
@@ -158,17 +159,18 @@ export default function StepStyle({ onNext, onBack }: Props) {
 
       <button
         type="submit"
-        disabled={!selected}
+        disabled={!selected || loading}
         className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-lg text-sm transition disabled:opacity-40"
       >
-        Continue →
+        {loading ? "Building your plan…" : "Continue →"}
       </button>
 
       <div className="text-center space-y-1">
         <button
           type="button"
           onClick={handleSkip}
-          className="text-sm text-gray-400 hover:text-gray-600 transition"
+          disabled={loading}
+          className="text-sm text-gray-400 hover:text-gray-600 transition disabled:opacity-40"
         >
           Skip — use Swiss Alps Retreat
         </button>

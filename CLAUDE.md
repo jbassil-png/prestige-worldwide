@@ -15,7 +15,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**Building `StepStyle`** — the theme selection step (Step 4 in the wizard).
+**Persist theme** (task 8) — write the chosen theme to a `user_preferences` Supabase table; fall back to `sessionStorage` for the no-auth path.
 
 ### Confirmed approach
 - **Column view** — all 4 steps stacked vertically, visible without clicking through the flow
@@ -51,10 +51,10 @@ In order:
 | 2 | ~~**Bug fix** — `country: a.name` in `app/onboarding/page.tsx:42`~~ | ✅ DONE — `countryCode: string` added to `Account` type; populated in `ManualEntry` and Plaid path |
 | 3 | ~~**Theme design decision**~~ | ✅ DONE — palettes + typography locked in; see Key Decisions |
 | 4 | ~~**Theme token system**~~ | ✅ DONE — CSS custom properties in `globals.css`; Tailwind `theme-*` + `font-heading`/`font-body` utilities; fonts via `next/font/google` |
-| 5 | **`StepStyle` component** | CURRENT — Three visual cards, real selection |
-| 6 | **Wire Step 4 into wizard + horizontal scroll** | `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores data, Style `onNext` triggers plan gen; convert wizard to horizontal scroll (one step per viewport, slide transition) |
-| 7 | **Full-screen loading reveal** | Replace disabled-button loading state with themed 3-beat progress animation |
-| 8 | **Persist theme** | `user_preferences` Supabase table; sessionStorage fallback for no-auth path |
+| 5 | ~~**`StepStyle` component**~~ | ✅ DONE — three cards with colour bar, swatches, tagline, mood, font name |
+| 6 | ~~**Wire Step 4 into wizard + horizontal scroll**~~ | ✅ DONE — 4-step wizard; Goals stores data, Style triggers plan gen; horizontal slide track (0.45s cubic-bezier); theme stored to sessionStorage |
+| 7 | ~~**Full-screen loading reveal**~~ | ↳ moved to `docs/POLISH_BACKLOG.md` |
+| 8 | **Persist theme** | CURRENT — `user_preferences` Supabase table; sessionStorage fallback for no-auth path |
 | 9 | **OpenRouter model wiring** | `OPENROUTER_PLAN_MODEL` env var, JSON mode, validate plan output quality |
 | 10 | **`initialValues` props on step components** | Seam for re-entry flow |
 | 11 | **Re-entry flow** | `/setup` route, "Update my setup" dashboard entry point |
