@@ -27,6 +27,19 @@ const config: Config = {
           700: "#0369a1",
           900: "#0c4a6e",
         },
+        // Theme-aware utilities — resolve via CSS custom properties set by data-theme
+        theme: {
+          bg:      "var(--color-bg)",
+          surface: "var(--color-surface)",
+          primary: "var(--color-primary)",
+          accent:  "var(--color-accent)",
+          border:  "var(--color-border)",
+          text:    "var(--color-text)",
+        },
+      },
+      fontFamily: {
+        heading: "var(--font-heading)",
+        body:    "var(--font-body)",
       },
     },
   },

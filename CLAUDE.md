@@ -15,7 +15,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**Building the onboarding preview page** at `/onboarding/preview`.
+**Building `StepStyle`** — the theme selection step (Step 4 in the wizard).
 
 ### Confirmed approach
 - **Column view** — all 4 steps stacked vertically, visible without clicking through the flow
@@ -47,11 +47,11 @@ In order:
 
 | # | Task | Notes |
 |---|------|-------|
-| 1 | **Preview page** | CURRENT |
+| 1 | ~~**Preview page**~~ | ✅ DONE — column view, real components, mock US+CA data |
 | 2 | ~~**Bug fix** — `country: a.name` in `app/onboarding/page.tsx:42`~~ | ✅ DONE — `countryCode: string` added to `Account` type; populated in `ManualEntry` and Plaid path |
-| 3 | **Theme design decision** | Requires user input on palette/identity for each theme |
-| 4 | **Theme token system** | CSS custom properties or Tailwind config extension |
-| 5 | **`StepStyle` component** | Three visual cards, real selection |
+| 3 | ~~**Theme design decision**~~ | ✅ DONE — palettes + typography locked in; see Key Decisions |
+| 4 | ~~**Theme token system**~~ | ✅ DONE — CSS custom properties in `globals.css`; Tailwind `theme-*` + `font-heading`/`font-body` utilities; fonts via `next/font/google` |
+| 5 | **`StepStyle` component** | CURRENT — Three visual cards, real selection |
 | 6 | **Wire Step 4 into wizard + horizontal scroll** | `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores data, Style `onNext` triggers plan gen; convert wizard to horizontal scroll (one step per viewport, slide transition) |
 | 7 | **Full-screen loading reveal** | Replace disabled-button loading state with themed 3-beat progress animation |
 | 8 | **Persist theme** | `user_preferences` Supabase table; sessionStorage fallback for no-auth path |
@@ -73,7 +73,10 @@ In order:
 | Theme count | 3 themes |
 | Theme names | Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 |
 | Theme step placement | Step 4 in onboarding, after Goals, before plan generation |
-| Theme default | TBD (Swiss Alps or neutral — to be decided during theme design conversation) |
+| Theme default | Swiss Alps Retreat ❄️ (`data-theme="swiss-alps"` on `<html>`) |
+| Theme palettes | Swiss Alps: slate/ice. Gaudy Miami: pink/gold. Positano: linen/terracotta. See `docs/POLISH_BACKLOG.md` for exact values. |
+| Theme typography | Swiss Alps: DM Serif Display + DM Sans. Gaudy Miami: Syne + DM Sans. Positano: Cormorant Garamond + Lato. Loaded via `next/font/google`. |
+| Theme token system | CSS custom properties (`--color-bg`, `--color-primary`, etc.) + `--font-heading`/`--font-body`. Tailwind `theme-*` utilities reference them. Applied via `data-theme` on `<html>`. |
 | Preview page | Column view, production-accessible, real components with mock data |
 | Loading reveal | Full-screen themed transition after Step 4, not a disabled button on Step 3 |
 | Horizontal scroll | Wizard converts to horizontal scroll when Step 4 is wired in — one step per viewport, slide transition. Preview page stays column view. |
