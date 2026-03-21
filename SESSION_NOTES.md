@@ -9,6 +9,35 @@
 
 ---
 
+### Session: Mar 21, 2026 (Night, cont.) — Task 8 Complete + Docs
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 8 — Persist theme**
+   - Migration: `user_preferences` table (`user_id` PK, `theme` text with CHECK constraint on valid values, RLS policies, `updated_at` trigger)
+   - `onboarding/page.tsx`: upsert to `user_preferences` in parallel with plan insert for auth'd users; `sessionStorage` (`pw_theme`) retained for no-auth path
+   - `dashboard/page.tsx`: fetches `user_preferences.theme` in the parallel data fetch; passes as `initialTheme` prop
+   - `DashboardClient.tsx`: on mount, applies `data-theme` to `document.documentElement`; server prop takes precedence over `sessionStorage` fallback
+
+2. ✅ **Task 12 added** — Dashboard plan display UX (layout, cards, plan output presentation) — tracked but not yet scoped
+
+3. ✅ **Documentation finalised for handoff** — `CLAUDE.md` current task updated; task 9 flagged as collaborative/learning session
+
+**Files Changed:**
+- `supabase/migrations/20260321b_add_user_preferences.sql` — new migration
+- `app/onboarding/page.tsx` — parallel upsert of theme preference
+- `app/dashboard/page.tsx` — fetch theme; pass `initialTheme`
+- `app/dashboard/DashboardClient.tsx` — apply `data-theme` on mount
+- `CLAUDE.md` — tasks 8 done; task 9 approach note; task 12 added
+- `SESSION_NOTES.md` — this entry
+
+**Stopping point / next session:**
+Task 9 — OpenRouter model wiring. **This must be done collaboratively.** The user wants to learn about OpenRouter and the available models before any code is written. Start by asking where they'd like to begin — overview of OpenRouter, or a look at the current API routes.
+
+---
+
 ### Session: Mar 21, 2026 (Night) — Theme System, StepStyle, Wizard Wiring
 
 **Branch:** `claude/review-documentation-rgCPT`
