@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Theme tokens ────────────────────────────────────────────────────────── */
+
+:root,
+[data-theme="swiss-alps"] {
+  --color-bg:      #F1F5F9;
+  --color-surface: #FFFFFF;
+  --color-primary: #1E293B;
+  --color-accent:  #38BDF8;
+  --color-border:  #CBD5E1;
+  --color-text:    #0F172A;
+  --font-heading:  var(--font-dm-serif), Georgia, serif;
+  --font-body:     var(--font-dm-sans), system-ui, sans-serif;
+}
+
+[data-theme="gaudy-miami"] {
+  --color-bg:      #FFF0F6;
+  --color-surface: #FFFFFF;
+  --color-primary: #DB2777;
+  --color-accent:  #F59E0B;
+  --color-border:  #FBCFE8;
+  --color-text:    #0F172A;
+  --font-heading:  var(--font-syne), system-ui, sans-serif;
+  --font-body:     var(--font-dm-sans), system-ui, sans-serif;
+}
+
+[data-theme="positano"] {
+  --color-bg:      #FEF3C7;
+  --color-surface: #FFFFFF;
+  --color-primary: #92400E;
+  --color-accent:  #D97706;
+  --color-border:  #FDE68A;
+  --color-text:    #0F172A;
+  --font-heading:  var(--font-cormorant), Georgia, serif;
+  --font-body:     var(--font-lato), system-ui, sans-serif;
+}
+
 /* Prevent horizontal overflow on mobile */
 * {
   box-sizing: border-box;

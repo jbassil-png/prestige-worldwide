@@ -17,6 +17,8 @@ const config: Config = {
           "Arial",
           "sans-serif",
         ],
+        heading: ["var(--font-heading)"],
+        body:    ["var(--font-body)"],
       },
       colors: {
         brand: {
@@ -26,6 +28,15 @@ const config: Config = {
           600: "#0284c7",
           700: "#0369a1",
           900: "#0c4a6e",
+        },
+        // Theme-aware utilities — resolve via CSS custom properties set by data-theme
+        theme: {
+          bg:      "var(--color-bg)",
+          surface: "var(--color-surface)",
+          primary: "var(--color-primary)",
+          accent:  "var(--color-accent)",
+          border:  "var(--color-border)",
+          text:    "var(--color-text)",
         },
       },
     },
