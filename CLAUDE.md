@@ -25,7 +25,15 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 - **Accessible in production** (not dev-only gated)
 - **Theme placeholder** — Step 4 shows three named cards: Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 — no full UI yet, just the shape
 
-### Files to create
+### Preview display order (differs from wizard order)
+1. Goals (`StepGoals`)
+2. Assets (`StepCountries`)
+3. Style (`ThemePlaceholder`)
+4. Connect (`StepConnect`)
+
+The wizard's step order (Countries → Connect → Goals → Style) is the live flow. The preview reorders for a better top-to-bottom reading experience — "why you're here" before "what you have".
+
+### Files
 ```
 app/onboarding/preview/page.tsx   ← preview shell (column view + step navigator)
 app/onboarding/preview/mock.ts    ← MOCK_SELECTIONS, MOCK_ACCOUNTS, MOCK_GOALS

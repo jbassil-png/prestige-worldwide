@@ -179,6 +179,7 @@ export default function OnboardingPreviewPage() {
       {/* Step 1 — Goals */}
       <StepSection number={1} label="Goals" required={true}>
         <StepGoals
+          countrySelections={MOCK_SELECTIONS}
           onNext={() => {}}
           loading={false}
         />
