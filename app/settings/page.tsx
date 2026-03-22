@@ -415,9 +415,9 @@ export default function SettingsPage() {
         <span className="text-sm text-gray-500">Settings</span>
         <Link
           href="/dashboard"
-          className="ml-auto text-xs text-gray-400 hover:text-brand-600 transition"
+          className="ml-auto text-sm font-medium text-brand-600 hover:text-brand-700 transition"
         >
-          ← Back to dashboard
+          ← Dashboard
         </Link>
       </header>
 
