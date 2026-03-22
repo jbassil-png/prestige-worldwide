@@ -6,6 +6,9 @@ const nextConfig = {
   experimental: {
     turbopackUseSystemTlsCerts: true,
   },
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isGitHubPages ? '/prestige-worldwide' : '',
+  },
   ...(isGitHubPages && {
     output: 'export',
     basePath: '/prestige-worldwide',
