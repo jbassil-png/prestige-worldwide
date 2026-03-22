@@ -18,9 +18,6 @@ export async function POST() {
     "user_holdings",
     "user_balance_history",
     "user_portfolio_news",
-    "user_checkin_schedule",
-    "user_preferences",
-    "user_goals",
     "plaid_items",
     "user_profiles",
   ];
