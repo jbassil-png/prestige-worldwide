@@ -9,23 +9,28 @@
 
 ---
 
-### Session: Mar 22, 2026 (cont.) — Task 14 Scoped: Unify Settings
+### Session: Mar 22, 2026 (cont.) — Task 14 + 15 Scoped: Settings Redesign + Freemium
 
 **Branch:** `claude/review-documentation-rgCPT`
 
 **Decisions:**
 
-- **One settings entry point.** Dashboard currently has two buttons: "Update setup" (`/setup`, 4-step horizontal wizard) and "Settings" (`/settings`, plain vertical form). These will be merged into a single "Settings" button pointing to `/setup`.
-- **No scroll migration needed.** Both `/onboarding` and `/setup` already use identical horizontal scroll (0.45s cubic-bezier). Confirmed by reading both `page.tsx` files.
-- **Only field missing from wizard:** check-in frequency (residence/retirement country + retirement year already live in StepGoals). Plan: add check-in frequency to `StepGoals`; delete `/settings`; replace both dashboard buttons with one.
+- **Onboarding wizard is one-time only.** Users go through the horizontal wizard once at sign-up. They never see it again. `/setup` (the re-entry wizard) will be deleted.
+- **New unified settings page.** Single page, non-linear — all sections visible and independently editable. Visually recalls the wizard aesthetic (cards, typography, palette) but is clearly a settings home, not a flow. Covers everything: countries, accounts, goals, theme, check-in frequency.
+- **One dashboard entry point.** Both "Update setup" and "Settings" buttons replaced with a single "Settings" link → new `/settings` page.
+- **Freemium model locked in.** Free tier: full app access except Plaid bank connection. Paid tier: Plaid unlocked. Manual account entry always available on free tier. Settings accounts section: manual entry for free users, Plaid connect for paid users with upgrade prompt.
 
 **Task 14 plan:**
-1. Add check-in frequency field to `StepGoals` (and wire into both `onboarding/page.tsx` and `SetupClient.tsx` submit handlers, saving to `/api/checkin-schedule`)
-2. Replace "Update setup" + "Settings" in `DashboardClient` with single "Settings" button → `/setup`
-3. Delete `app/settings/` page and layout
+1. Build new `/settings` as a single-page component with sectioned cards (Countries, Accounts, Goals, Style, Profile/check-in)
+2. Each section saves independently (no enforced order)
+3. Accounts section: manual entry always available; Plaid gated with upgrade prompt for free users
+4. Replace both dashboard buttons with one "Settings" → `/settings`
+5. Delete `/app/setup/`
+
+**Task 15:** Freemium gating — implement paid/free tier check; show upgrade prompt on Plaid connect.
 
 **Stopping point / next session:**
-Implement Task 14. Start with `StepGoals` — add check-in frequency field at the bottom.
+Design and implement Task 14 — new unified settings page.
 
 ---
 
