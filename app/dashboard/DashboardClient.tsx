@@ -8,6 +8,7 @@ import PlanView, { type Plan } from "@/components/PlanView";
 import NewsPanel from "@/components/NewsPanel";
 import PortfolioNewsPanel from "@/components/PortfolioNewsPanel";
 import ChatPanel from "@/components/ChatPanel";
+import AllocationCharts from "@/components/AllocationCharts";
 import { createClient } from "@/lib/supabase/client";
 import type { PortfolioNewsItem } from "@/app/api/portfolio-news/route";
 import posthog from "posthog-js";
@@ -301,6 +302,14 @@ export default function DashboardClient({
               retirementCurrency={retirementCurrency}
             />
           </div>
+
+          {/* Portfolio allocation breakdown */}
+          {!isDemoMode && (
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+              <h3 className="text-sm font-semibold text-gray-900 mb-4">Portfolio breakdown</h3>
+              <AllocationCharts />
+            </div>
+          )}
         </div>
 
         {/* Right column — chat */}

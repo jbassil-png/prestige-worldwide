@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { CurrencyMode } from "./CurrencyToggle";
+
+const ProjectionChart = dynamic(() => import("./ProjectionChart"), { ssr: false });
 
 type RetirementGoal = {
   targetYear: number;
@@ -249,6 +252,19 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
                 </>
               );
             })()}
+
+            {/* Projection chart */}
+            {metrics.retirementYear && (
+              <div className="pt-2">
+                <ProjectionChart
+                  netWorthUsd={metrics.netWorthUsd}
+                  retirementYear={metrics.retirementYear}
+                  targetAmountUsd={metrics.retirementGoal?.targetAmountUsd ?? null}
+                  fmt={fmt}
+                />
+              </div>
+            )}
+
             <Link
               href="/plan"
               className="text-xs text-brand-600 hover:underline font-medium"
