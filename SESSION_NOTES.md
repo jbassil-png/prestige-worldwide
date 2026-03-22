@@ -9,6 +9,26 @@
 
 ---
 
+### Session: Mar 22, 2026 (cont.) — Task 14 Scoped: Unify Settings
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**Decisions:**
+
+- **One settings entry point.** Dashboard currently has two buttons: "Update setup" (`/setup`, 4-step horizontal wizard) and "Settings" (`/settings`, plain vertical form). These will be merged into a single "Settings" button pointing to `/setup`.
+- **No scroll migration needed.** Both `/onboarding` and `/setup` already use identical horizontal scroll (0.45s cubic-bezier). Confirmed by reading both `page.tsx` files.
+- **Only field missing from wizard:** check-in frequency (residence/retirement country + retirement year already live in StepGoals). Plan: add check-in frequency to `StepGoals`; delete `/settings`; replace both dashboard buttons with one.
+
+**Task 14 plan:**
+1. Add check-in frequency field to `StepGoals` (and wire into both `onboarding/page.tsx` and `SetupClient.tsx` submit handlers, saving to `/api/checkin-schedule`)
+2. Replace "Update setup" + "Settings" in `DashboardClient` with single "Settings" button → `/setup`
+3. Delete `app/settings/` page and layout
+
+**Stopping point / next session:**
+Implement Task 14. Start with `StepGoals` — add check-in frequency field at the bottom.
+
+---
+
 ### Session: Mar 22, 2026 (cont.) — Docs Audit + UX Review
 
 **Branch:** `claude/review-documentation-rgCPT`

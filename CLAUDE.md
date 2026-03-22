@@ -15,9 +15,20 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**UX review pass.** The core loop is complete — onboarding → plan gen → dashboard → re-entry all work end-to-end. The next focus is a holistic UX audit: does the app feel polished and trustworthy for the target user (expat, dual citizen, global citizen)?
+**Task 14: Unify "Update setup" + "Settings" into one place.**
 
-Start by running the UX review agent, then prioritise any issues found before moving to new features.
+The dashboard currently has two buttons — "Update setup" (`/setup`) and "Settings" (`/settings`) — that lead to overlapping but different pages. The goal is one entry point covering everything.
+
+### Plan
+1. **Add check-in frequency to StepGoals** — the only field in `/settings` not already in the wizard (residence/retirement country + retirement year are already in Goals step)
+2. **Unify dashboard buttons** — replace both "Update setup" and "Settings" links with a single "Settings" button pointing to `/setup`
+3. **Delete `/settings` page** — no longer needed once its fields are absorbed
+
+### Notes
+- `/onboarding` and `/setup` already use the same horizontal scroll implementation — no migration needed there
+- Theme is already Step 4 (Style), so no changes needed there
+- The `/settings` API routes (`/api/profile`, `/api/checkin-schedule`) are called from the wizard submit — wire check-in frequency into the `handleStyle` submit in both `onboarding/page.tsx` and `SetupClient.tsx`
+- `PRODUCT_PRINCIPLES.md` already states this intent: "Settings page mirrors the structure of Step 3"
 
 ---
 
@@ -55,6 +66,8 @@ Start by running the UX review agent, then prioritise any issues found before mo
 | 11 | Re-entry flow | ✅ DONE — `/setup` route with pre-filled wizard; "Update setup" in dashboard control bar |
 | 12 | Dashboard UX pass | ✅ DONE — control bar, news promoted, top bar stripped, plan header personalised |
 | 13 | Charts | ✅ DONE — `ProjectionChart` (Recharts area chart) in PlanView; `AllocationCharts` (geo + account type) in DashboardClient |
+
+| 14 | Unify Settings + Update setup | 🔜 NEXT — fold `/settings` into `/setup` wizard; single dashboard entry point |
 
 **Partial / placeholder:**
 - `AllocationCharts` — empty state fallbacks exist but chart content needs real data validation
