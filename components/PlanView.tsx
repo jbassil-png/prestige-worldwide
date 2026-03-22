@@ -290,7 +290,7 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
         </div>
         <p className="text-xs text-gray-400 leading-relaxed">
           {hasRetirementGoal
-            ? "Funds not yet assigned to a specific goal. Link accounts to goals to track allocation."
+            ? "Available to allocate across other goals. You can assign funds to additional goals any time."
             : "All your current assets. Add goals to see how your money is working toward them."}
         </p>
       </div>

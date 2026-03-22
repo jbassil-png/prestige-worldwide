@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   // Fetch latest plan
   const { data: planRow } = await supabase
     .from("user_plans")
-    .select("plan")
+    .select("plan, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -73,6 +73,7 @@ export default async function DashboardPage() {
   return (
     <DashboardClient
       initialPlan={plan}
+      planDate={planRow.created_at}
       initialNews={(newsRow?.items as object[]) ?? []}
       initialHoldings={holdingsRows}
       initialPortfolioNews={(portfolioNewsRow?.items as PortfolioNewsItem[]) ?? []}
