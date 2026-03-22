@@ -9,6 +9,45 @@
 
 ---
 
+### Session: Mar 22, 2026 (cont.) — Tasks 14 + 15 Delivered
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 14 — Unified settings page**
+   - Replaced old plain-form `/settings` and deleted `/setup` entirely
+   - New single-page, non-linear settings with 5 independently-saveable sections: Countries, Accounts, Goals, Style, Check-ins
+   - Visually recalls onboarding wizard (gradient bg, white cards, same typography)
+   - Accounts section: manual add form always available (new `POST /api/accounts` route into `user_accounts`); Plaid gated behind `is_paid` with upgrade prompt
+   - Dashboard reduced to one "Settings" link (removed "Update setup")
+   - "← Dashboard" link in header made prominent; bottom back link added
+   - Migration: `is_paid boolean default false` on `user_profiles`
+
+2. ✅ **Task 15 — Stripe freemium infrastructure**
+   - `POST /api/stripe/checkout` — creates Checkout session, re-uses Stripe customer, returns `{ mock: true }` when keys not set
+   - `POST /api/stripe/webhook` — verifies signature, handles 4 subscription events, flips `is_paid`, no-ops when keys not set
+   - Migration: `stripe_customer_id text` on `user_profiles` with partial unique index
+   - Settings upgrade button wired to checkout; `?upgraded=true` success banner on return
+   - `.env.example` updated with `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`
+   - No Stripe account needed yet — everything stubs gracefully
+
+3. ✅ **Supabase migrations applied**
+   - `20260322_add_is_paid_to_user_profiles.sql` — confirmed applied by owner
+   - `20260322b_add_stripe_customer_id.sql` — pending until Stripe account setup
+
+**Key decisions made this session:**
+- Stripe + Supabase column work together: Stripe is source of truth, column is the cached mirror updated by webhook
+- Post-launch iteration driven by user testing — no speculative polish
+- Launch sequence: Plan history UI → sign-up redirect UX → Stripe account setup → ship
+
+**Stopping point / next session:**
+1. **Plan history UI** — build the display for `/plan/history` (fetch already works, just needs a real list view)
+2. **Sign-up redirect UX** — add feedback so silent redirect doesn't look broken
+3. **Stripe account setup** — owner action, not a code task; steps documented in CLAUDE.md
+
+---
+
 ### Session: Mar 22, 2026 (cont.) — Task 14 + 15 Scoped: Settings Redesign + Freemium
 
 **Branch:** `claude/review-documentation-rgCPT`

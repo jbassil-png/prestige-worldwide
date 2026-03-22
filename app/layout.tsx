@@ -1,50 +1,24 @@
 import type { Metadata } from "next";
 import "./globals.css";
+// Self-hosted fonts via @fontsource — no build-time network fetch required
+import "@fontsource/dm-serif-display/400.css";
+import "@fontsource/dm-sans/400.css";
+import "@fontsource/dm-sans/500.css";
+import "@fontsource/dm-sans/600.css";
+import "@fontsource/dm-sans/700.css";
+import "@fontsource/syne/400.css";
+import "@fontsource/syne/500.css";
+import "@fontsource/syne/600.css";
+import "@fontsource/syne/700.css";
+import "@fontsource/syne/800.css";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/cormorant-garamond/700.css";
+import "@fontsource/lato/400.css";
+import "@fontsource/lato/700.css";
 import { PostHogProvider, PostHogPageView } from "@/lib/posthog/provider";
 import { Suspense } from "react";
-import {
-  DM_Serif_Display,
-  DM_Sans,
-  Syne,
-  Cormorant_Garamond,
-  Lato,
-} from "next/font/google";
-
-// Swiss Alps Retreat ❄️
-const dmSerifDisplay = DM_Serif_Display({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-dm-serif",
-  display: "swap",
-});
-const dmSans = DM_Sans({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
-});
-
-// Gaudy Miami 🌴
-const syne = Syne({
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-  variable: "--font-syne",
-  display: "swap",
-});
-
-// Clooney's Positano 🇮🇹
-const cormorantGaramond = Cormorant_Garamond({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
-const lato = Lato({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-lato",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Prestige Worldwide — Financial planning without borders",
@@ -57,21 +31,13 @@ export const metadata: Metadata = {
   },
 };
 
-const fontVars = [
-  dmSerifDisplay.variable,
-  dmSans.variable,
-  syne.variable,
-  cormorantGaramond.variable,
-  lato.variable,
-].join(" ");
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="swiss-alps" className={`overflow-x-hidden ${fontVars}`}>
+    <html lang="en" data-theme="swiss-alps" className="overflow-x-hidden">
       <body className="overflow-x-hidden w-full">
         <PostHogProvider>
           <Suspense fallback={null}>

@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Font family variables (populated by @fontsource, not next/font) ─────── */
+
+:root {
+  --font-dm-serif:   'DM Serif Display';
+  --font-dm-sans:    'DM Sans';
+  --font-syne:       'Syne';
+  --font-cormorant:  'Cormorant Garamond';
+  --font-lato:       'Lato';
+}
+
 /* ─── Theme tokens ────────────────────────────────────────────────────────── */
 
 :root,
