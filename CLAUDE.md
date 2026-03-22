@@ -78,8 +78,9 @@ Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, u
 | 12 | Dashboard UX pass | ✅ DONE — control bar, news promoted, top bar stripped, plan header personalised |
 | 13 | Charts | ✅ DONE — `ProjectionChart` (Recharts area chart) in PlanView; `AllocationCharts` (geo + account type) in DashboardClient |
 
-| 14 | New unified settings page | 🔜 NEXT — single-page, non-linear, visually recalls wizard; replaces `/setup` + `/settings` |
-| 15 | Freemium model | 🔜 — gate Plaid behind paid tier; free users manual-entry only |
+| 14 | New unified settings page | ✅ DONE — single-page, non-linear, sectioned cards; `/setup` deleted |
+| 15 | Freemium model | ✅ DONE — `is_paid` stub + Stripe infrastructure code-complete; keys deferred |
+| 16 | Set up Stripe account | 🔜 — create account, add product + price, set `STRIPE_SECRET_KEY` / `STRIPE_PRICE_ID` / `STRIPE_WEBHOOK_SECRET` in Vercel, run `20260322b` migration, register webhook endpoint |
 
 **Partial / placeholder:**
 - `AllocationCharts` — empty state fallbacks exist but chart content needs real data validation
