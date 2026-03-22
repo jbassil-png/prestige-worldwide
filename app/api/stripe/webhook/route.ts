@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Stripe requires the raw request body for signature verification — disable
-// Next.js body parsing for this route.
-export const config = { api: { bodyParser: false } };
+// Note: Next.js App Router route handlers expose the raw body via req.text()
+// directly — no body parser config needed (that was a Pages Router pattern).
 
 const STRIPE_CONFIGURED =
   !!process.env.STRIPE_SECRET_KEY && !!process.env.STRIPE_WEBHOOK_SECRET;
