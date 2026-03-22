@@ -73,6 +73,11 @@ function PlanEntryCard({ entry }: { entry: HistoryEntry }) {
               <span className="text-sm font-semibold text-gray-900">
                 {formatDate(entry.created_at)}
               </span>
+              {entry.plan?.meta?.residenceCountry && entry.plan?.meta?.retirementCountry && (
+                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+                  {entry.plan.meta.residenceCountry} → {entry.plan.meta.retirementCountry}
+                </span>
+              )}
               <span
                 className={`text-xs border px-2 py-0.5 rounded-full font-medium ${trigger.style}`}
               >
