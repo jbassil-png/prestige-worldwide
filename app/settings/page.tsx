@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { usePlaidLink } from "react-plaid-link";
 
@@ -176,13 +175,15 @@ function PlaidConnectButton({ onAccountsAdded }: { onAccountsAdded: (accounts: U
 
 export default function SettingsPage() {
   const supabase = createClient();
-  const searchParams = useSearchParams();
 
   // ── Loading state
   const [pageLoading, setPageLoading] = useState(true);
 
-  // ── Upgrade state
-  const [justUpgraded] = useState(() => searchParams.get("upgraded") === "true");
+  // ── Upgrade state — read from URL client-side only (avoids SSR/Suspense issues)
+  const [justUpgraded, setJustUpgraded] = useState(false);
+  useEffect(() => {
+    setJustUpgraded(new URLSearchParams(window.location.search).get("upgraded") === "true");
+  }, []);
   const [upgrading, setUpgrading] = useState(false);
 
   // ── Countries section
