@@ -7,8 +7,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   residence_country text NOT NULL,
   retirement_country text NOT NULL,
-  current_age integer NOT NULL,
-  retirement_age integer NOT NULL,
+  retirement_year integer,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
