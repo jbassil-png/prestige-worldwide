@@ -234,9 +234,6 @@ export default function DashboardClient({
                 >
                   {refreshing ? "Refreshing…" : "Refresh plan"}
                 </button>
-                <Link href="/setup" className="hover:text-brand-600 transition">
-                  Update setup
-                </Link>
                 <Link href="/settings" className="hover:text-brand-600 transition">
                   Settings
                 </Link>
