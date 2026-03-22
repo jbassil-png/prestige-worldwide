@@ -20,6 +20,7 @@ interface Holding {
 
 interface Props {
   initialPlan?: Plan;
+  planDate?: string;
   initialNews?: object[];
   initialHoldings?: Holding[];
   initialPortfolioNews?: PortfolioNewsItem[];
@@ -30,6 +31,7 @@ interface Props {
 
 export default function DashboardClient({
   initialPlan,
+  planDate,
   initialNews = [],
   initialHoldings = [],
   initialPortfolioNews = [],
@@ -192,16 +194,16 @@ export default function DashboardClient({
         </div>
       </header>
 
-      {/* Introduction banner for demo/showcase */}
-      <div className="w-full bg-gradient-to-r from-brand-600 to-brand-700 text-white">
-        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8">
-          <h1 className="text-xl sm:text-2xl font-bold mb-2">Financial Planning Without Borders</h1>
-          <p className="text-brand-50 text-xs sm:text-sm leading-relaxed max-w-3xl">
-            Prestige Worldwide helps people with assets in multiple countries navigate complex cross-border retirement,
-            tax, and cash flow planning. Get personalized recommendations that account for multi-currency portfolios,
-            international tax treaties, and retirement timing strategies.
-          </p>
-          {isDemoMode && (
+      {/* Demo mode: marketing banner */}
+      {isDemoMode && (
+        <div className="w-full bg-gradient-to-r from-brand-600 to-brand-700 text-white">
+          <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8">
+            <h1 className="text-xl sm:text-2xl font-bold mb-2">Financial Planning Without Borders</h1>
+            <p className="text-brand-50 text-xs sm:text-sm leading-relaxed max-w-3xl">
+              Prestige Worldwide helps people with assets in multiple countries navigate complex cross-border retirement,
+              tax, and cash flow planning. Get personalized recommendations that account for multi-currency portfolios,
+              international tax treaties, and retirement timing strategies.
+            </p>
             <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
               <span className="bg-white/20 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full">
                 📊 Demo Mode
@@ -213,9 +215,40 @@ export default function DashboardClient({
                 Connect Your Accounts to Get Started
               </button>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Authenticated users: personalised plan context header */}
+      {!isDemoMode && (
+        <div className="w-full bg-white border-b border-gray-100">
+          <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p className="text-xs text-gray-400 mb-0.5">Your financial plan</p>
+              <h1 className="text-base sm:text-lg font-semibold text-gray-900">
+                {plan.meta?.residenceCountry ?? "Your portfolio"}
+                {plan.meta?.retirementCountry &&
+                  plan.meta.retirementCountry !== plan.meta.residenceCountry && (
+                    <>
+                      {" "}
+                      <span className="text-gray-400">→</span>{" "}
+                      {plan.meta.retirementCountry}
+                    </>
+                  )}
+              </h1>
+            </div>
+            <p className="text-xs text-gray-400">
+              {planDate
+                ? `Updated ${new Date(planDate).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}`
+                : null}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main layout */}
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
