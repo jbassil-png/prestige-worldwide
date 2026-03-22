@@ -9,6 +9,22 @@
 
 ---
 
+### Session: Mar 22, 2026 (cont.) — Auth fixes + onboarding redesign
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+- ✅ Fixed sign-up flow: after `signUp` returns user but no session, immediately attempts `signInWithPassword` to handle Supabase email confirmation quirk
+- ✅ Sign-up UX already had loading/redirecting state (Task 18 effectively done)
+
+**Known issue — revisit before launch:**
+- Sign-up / sign-in flow needs a full UX review. Email confirmation behaviour in Supabase was confusing and required a code-level workaround. Consider: disabling email confirmation entirely for now, or adding a proper post-confirmation flow once a real SMTP provider (Resend) is wired up.
+
+**Stopping point / next session:**
+- Onboarding flow redesign (in progress)
+
+---
+
 ### Session: Mar 22, 2026 (cont.) — Tasks 14 + 15 Delivered
 
 **Branch:** `claude/review-documentation-rgCPT`
