@@ -9,6 +9,29 @@
 
 ---
 
+### Session: Mar 22, 2026 (cont.) — Docs Audit + UX Review
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Full codebase audit** — discovered that CLAUDE.md and SESSION_NOTES.md were significantly behind the actual state of the codebase. Tasks 9 (OpenRouter wiring), 10 (initialValues props), 11 (re-entry flow), and the three charts (projection, geographic allocation, account type allocation) were all already shipped.
+
+2. ✅ **CLAUDE.md rewritten** — now reflects actual current state:
+   - All 13 tasks marked with correct status
+   - Route map added
+   - Dashboard structure documented
+   - Known gaps section added (settings target amount, plan history UI stub, allocation charts validation)
+   - Key Architecture updated (theme system built, charts library noted)
+   - Stale/misleading sections removed (old WizardData "current → target" shape, "not yet built" theme note)
+
+3. ✅ **SESSION_NOTES.md updated** — this entry
+
+**Stopping point / next session:**
+UX review pass — holistic audit of the app's feel, trust signals, and polish for the target user (expat, dual citizen, global citizen). See CLAUDE.md "Current Task".
+
+---
+
 ### Session: Mar 22, 2026 — Dashboard UX Pass + Charts Planning
 
 **Branch:** `claude/review-documentation-rgCPT`
