@@ -10,7 +10,7 @@ import PortfolioNewsPanel from "@/components/PortfolioNewsPanel";
 import ChatPanel from "@/components/ChatPanel";
 import AllocationCharts from "@/components/AllocationCharts";
 import { createClient } from "@/lib/supabase/client";
-import type { PortfolioNewsItem } from "@/app/api/portfolio-news/route";
+import type { PortfolioNewsItem } from "@/components/PortfolioNewsPanel";
 import posthog from "posthog-js";
 
 interface Holding {

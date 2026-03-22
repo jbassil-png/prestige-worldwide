@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Plan } from "@/components/PlanView";
-import type { PortfolioNewsItem } from "@/app/api/portfolio-news/route";
+import type { PortfolioNewsItem } from "@/components/PortfolioNewsPanel";
 import DashboardClient from "./DashboardClient";
 
 export const dynamic = 'force-dynamic';

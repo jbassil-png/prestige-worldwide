@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
-import type { PortfolioNewsItem } from "@/app/api/portfolio-news/route";
+
+export interface PortfolioNewsItem {
+  ticker: string;
+  headline: string;
+  summary: string;
+  source: string;
+  url: string;
+  published_at: string;
+  sentiment_label: string;
+  sentiment_score: number;
+}
 
 interface Holding {
   id: string;
