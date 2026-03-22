@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-
-export interface PortfolioNewsItem {
-  ticker: string;
-  headline: string;
-  summary: string;
-  source: string;
-  url: string;
-  published_at: string;
-  sentiment_label: string;
-  sentiment_score: number;
-}
+import type { PortfolioNewsItem } from "@/components/PortfolioNewsPanel";
 
 const STUB_NEWS: PortfolioNewsItem[] = [
   {
