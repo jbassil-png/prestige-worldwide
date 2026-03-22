@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { usePlaidLink } from "react-plaid-link";
 
@@ -175,9 +176,14 @@ function PlaidConnectButton({ onAccountsAdded }: { onAccountsAdded: (accounts: U
 
 export default function SettingsPage() {
   const supabase = createClient();
+  const searchParams = useSearchParams();
 
   // ── Loading state
   const [pageLoading, setPageLoading] = useState(true);
+
+  // ── Upgrade state
+  const [justUpgraded] = useState(() => searchParams.get("upgraded") === "true");
+  const [upgrading, setUpgrading] = useState(false);
 
   // ── Countries section
   const [residenceCountry, setResidenceCountry] = useState("US");
@@ -352,6 +358,27 @@ export default function SettingsPage() {
     }
   }
 
+  // ─ Stripe checkout
+  async function handleUpgrade() {
+    setUpgrading(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", { method: "POST" });
+      const data = await res.json();
+      if (data.mock) {
+        // Stripe not configured yet — show coming soon alert
+        alert("Paid plan coming soon. Stay tuned!");
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setUpgrading(false);
+    }
+  }
+
   // ─ Save check-ins
   async function saveCheckins() {
     checkinSave.setSaving();
@@ -401,6 +428,12 @@ export default function SettingsPage() {
             Each section saves independently — change what you need without touching anything else.
           </p>
         </div>
+
+        {justUpgraded && (
+          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-800">
+            You're now on the paid plan. Plaid bank connection is unlocked — connect your accounts below.
+          </div>
+        )}
 
         {/* ── Countries ──────────────────────────────────────────────────── */}
         <SectionCard
@@ -611,17 +644,14 @@ export default function SettingsPage() {
                   Automatically sync balances from your bank accounts, brokerages, and retirement accounts — in any country.
                 </p>
                 <button
-                  disabled
-                  className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-400 font-medium py-2.5 rounded-lg text-sm cursor-not-allowed"
+                  onClick={handleUpgrade}
+                  disabled={upgrading}
+                  className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-40"
                 >
-                  Connect bank account via Plaid
+                  {upgrading ? "Redirecting…" : "Upgrade to connect via Plaid"}
                 </button>
                 <p className="text-xs text-center text-gray-400">
-                  Upgrade to unlock Plaid sync.{" "}
-                  {/* TODO Task 15: link to Stripe checkout */}
-                  <span className="text-brand-600 cursor-pointer hover:underline">
-                    Learn more
-                  </span>
+                  Automatically sync balances from banks and brokerages in any country.
                 </p>
               </>
             )}
