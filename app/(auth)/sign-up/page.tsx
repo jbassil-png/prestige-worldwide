@@ -16,6 +16,7 @@ export default function SignUpPage() {
   const [magicSent, setMagicSent] = useState(false);
   // When email confirmation is required, Supabase returns a user but no session
   const [confirmationSent, setConfirmationSent] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
@@ -44,8 +45,11 @@ export default function SignUpPage() {
         posthog.identify(data.user.id, { email: data.user.email });
         posthog.capture('user_signed_up', { method: 'email_password' });
       }
-      router.refresh();
-      router.push("/onboarding");
+      setRedirecting(true);
+      setLoading(false);
+      setTimeout(() => {
+        router.push("/onboarding");
+      }, 1200);
     } else {
       // Email confirmation is required — tell the user to check their inbox
       setConfirmationSent(true);
@@ -80,6 +84,21 @@ export default function SignUpPage() {
     setMagicSent(true);
     setLoading(false);
     // Note: We'll track sign-up completion when they confirm email and reach onboarding
+  }
+
+  if (redirecting) {
+    return (
+      <div className="text-center space-y-3 py-4">
+        <div className="flex justify-center">
+          <svg className="animate-spin h-8 w-8 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        </div>
+        <h2 className="text-lg font-semibold text-gray-800">Account created!</h2>
+        <p className="text-sm text-gray-500">Taking you to setup…</p>
+      </div>
+    );
   }
 
   if (confirmationSent) {
