@@ -15,9 +15,28 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**UX review pass.** The core loop is complete — onboarding → plan gen → dashboard → re-entry all work end-to-end. The next focus is a holistic UX audit: does the app feel polished and trustworthy for the target user (expat, dual citizen, global citizen)?
+**Task 14: New unified settings page.**
 
-Start by running the UX review agent, then prioritise any issues found before moving to new features.
+Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, unified settings page. Both dashboard buttons ("Update setup" and "Settings") become one "Settings" button pointing to the new page.
+
+### Design intent
+- **Not a wizard replay.** The onboarding wizard is a one-time linear journey. Returning users should never re-experience it.
+- **Single page, non-linear.** All sections visible and editable in place — users jump to what they need, no enforced step order.
+- **Visually recalls the wizard** — same card style, typography, colour palette — but clearly a settings home, not a flow.
+- **Covers everything:** countries, accounts (manual entry for free users), goals, theme, check-in frequency.
+
+### Freemium model (locked in — see Key Decisions)
+- Free tier: full access except Plaid bank connection. Manual account entry only.
+- Paid tier: Plaid connection unlocked.
+- The settings page accounts section shows manual entry for free users; Plaid connect for paid users.
+
+### Plan
+1. Build `/settings` as a new single-page component with sectioned cards (Countries, Accounts, Goals, Style, Profile)
+2. Each section is independently editable and saves without affecting others
+3. Accounts section: manual entry always available; Plaid gated behind paid tier with upgrade prompt
+4. Replace both dashboard buttons with one "Settings" link → `/settings`
+5. Delete `/setup` (SetupClient, setup page) — no longer needed
+6. Delete old `/settings` page — replaced by new implementation
 
 ---
 
@@ -56,6 +75,9 @@ Start by running the UX review agent, then prioritise any issues found before mo
 | 12 | Dashboard UX pass | ✅ DONE — control bar, news promoted, top bar stripped, plan header personalised |
 | 13 | Charts | ✅ DONE — `ProjectionChart` (Recharts area chart) in PlanView; `AllocationCharts` (geo + account type) in DashboardClient |
 
+| 14 | New unified settings page | 🔜 NEXT — single-page, non-linear, visually recalls wizard; replaces `/setup` + `/settings` |
+| 15 | Freemium model | 🔜 — gate Plaid behind paid tier; free users manual-entry only |
+
 **Partial / placeholder:**
 - `AllocationCharts` — empty state fallbacks exist but chart content needs real data validation
 - Plan history UI (`/plan/history`) — fetch works, display is stub
@@ -66,6 +88,9 @@ Start by running the UX review agent, then prioritise any issues found before mo
 
 | Topic | Decision |
 |-------|----------|
+| Business model | Freemium. Free tier: full app access (onboarding, plan gen, dashboard, chat, news) except Plaid bank connection. Paid tier: Plaid connection unlocked. Manual account entry is always available on free tier. |
+| Settings UX | Post-onboarding settings is a single non-linear page, not a wizard replay. Visually recalls the onboarding aesthetic (cards, typography, palette) but all sections are independently editable. The horizontal wizard is a one-time onboarding experience only. |
+| Settings entry point | One "Settings" button on the dashboard. Replaces both "Update setup" (`/setup`) and "Settings" (`/settings`). `/setup` will be deleted. |
 | AI models | OpenRouter for all AI calls (not direct Anthropic/Google APIs) |
 | Plan generation model | `anthropic/claude-3.5-haiku` default via `OPENROUTER_PLAN_MODEL` env var; upgrade to `claude-3.5-sonnet` if quality is thin |
 | Chat model | `anthropic/claude-3.5-haiku` via `OPENROUTER_MODEL` env var |
