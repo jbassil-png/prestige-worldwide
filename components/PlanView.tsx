@@ -201,6 +201,22 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
         ))}
       </div>
 
+      {/* Projection placeholder — shown when no retirement year is set */}
+      {!metrics.retirementYear && (
+        <div className="border border-dashed border-gray-200 rounded-xl overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 border-b border-dashed border-gray-200 flex items-center gap-2">
+            <span className="text-sm">📈</span>
+            <span className="text-sm font-semibold text-gray-500">Growth projection</span>
+          </div>
+          <div className="px-4 py-8 bg-white flex flex-col items-center justify-center text-center gap-2">
+            <p className="text-xs text-gray-400">Set a retirement year to see your projected portfolio growth.</p>
+            <Link href="/settings" className="text-xs font-medium text-brand-600 hover:underline">
+              Set retirement year →
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Projection chart — shown whenever we have a retirement year */}
       {metrics.retirementYear && metrics.projectedRetirementBalanceUsd !== null && (
         <div className="border border-gray-100 rounded-xl overflow-hidden">
