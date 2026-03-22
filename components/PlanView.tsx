@@ -201,14 +201,14 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
         ))}
       </div>
 
-      {/* Retirement goal progress */}
-      {hasRetirementGoal && metrics.retirementGoal && metrics.projectedRetirementBalanceUsd !== null && (
+      {/* Projection chart — shown whenever we have a retirement year */}
+      {metrics.retirementYear && metrics.projectedRetirementBalanceUsd !== null && (
         <div className="border border-gray-100 rounded-xl overflow-hidden">
           <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm">🏦</span>
               <span className="text-sm font-semibold text-gray-800">
-                Retirement {metrics.retirementYear ? `· ${metrics.retirementYear}` : ""}
+                Retirement · {metrics.retirementYear}
               </span>
             </div>
             {metrics.onTrackStatus && (
@@ -221,9 +221,9 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
             )}
           </div>
           <div className="px-4 py-4 bg-white space-y-3">
-            {/* Progress bar */}
-            {(() => {
-              const target = metrics.retirementGoal.targetAmountUsd;
+            {/* Progress bar — only when a target amount is set */}
+            {hasRetirementGoal && metrics.retirementGoal && (() => {
+              const target = metrics.retirementGoal!.targetAmountUsd;
               const projected = metrics.projectedRetirementBalanceUsd!;
               const progress = Math.min(100, Math.round((projected / target) * 100));
               return (
@@ -253,17 +253,12 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
               );
             })()}
 
-            {/* Projection chart */}
-            {metrics.retirementYear && (
-              <div className="pt-2">
-                <ProjectionChart
-                  netWorthUsd={metrics.netWorthUsd}
-                  retirementYear={metrics.retirementYear}
-                  targetAmountUsd={metrics.retirementGoal?.targetAmountUsd ?? null}
-                  fmt={fmt}
-                />
-              </div>
-            )}
+            <ProjectionChart
+              netWorthUsd={metrics.netWorthUsd}
+              retirementYear={metrics.retirementYear}
+              targetAmountUsd={metrics.retirementGoal?.targetAmountUsd ?? null}
+              fmt={fmt}
+            />
 
             <Link
               href="/plan"
