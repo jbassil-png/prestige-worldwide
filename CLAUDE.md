@@ -38,6 +38,9 @@ Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, u
 5. Delete `/setup` (SetupClient, setup page) — no longer needed
 6. Delete old `/settings` page — replaced by new implementation
 
+### Open question (resolve before building Accounts section)
+**How is paid/free tier status tracked?** Options: a Supabase column on `user_profiles`, or Stripe subscription status checked at runtime. Decision affects how the upgrade prompt is implemented and whether the gate is enforced server-side or client-side. Decide this at the start of Task 14.
+
 ---
 
 ## Route Map
@@ -46,11 +49,11 @@ Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, u
 |-------|-------------|
 | `/` | Marketing landing page |
 | `/sign-in`, `/sign-up` | Supabase Auth |
-| `/onboarding` | 4-step wizard (Countries → Connect → Goals → Style) |
+| `/onboarding` | 4-step wizard (Countries → Connect → Goals → Style) — one-time only |
 | `/onboarding/preview` | Public preview — no auth, no data written |
 | `/dashboard` | Main authenticated view |
-| `/setup` | Re-entry wizard — update countries, accounts, goals, theme |
-| `/settings` | Profile settings (countries, retirement year, check-in frequency) |
+| `/settings` | **Task 14** — new unified settings page (replaces `/setup` + old `/settings`) |
+| `/setup` | ⚠️ To be deleted in Task 14 |
 | `/accounts` | Manage Plaid-connected accounts |
 | `/plan/history` | Last 10 plan generations |
 | `/contact`, `/terms`, `/privacy` | Marketing |
@@ -134,7 +137,7 @@ type WizardData = {
 };
 ```
 
-All step components accept `initialValues` props — used by the `/setup` re-entry flow.
+All step components accept `initialValues` props (built for the `/setup` re-entry flow, which will be deleted in Task 14).
 
 ---
 
@@ -144,7 +147,7 @@ All step components accept `initialValues` props — used by the `/setup` re-ent
 
 **Left column (top to bottom):**
 1. Demo banner (unauthenticated only) — marketing copy + CTA
-2. Personalised control bar (authenticated) — country pair, plan date, currency toggle, refresh plan, update setup, settings
+2. Personalised control bar (authenticated) — country pair, plan date, currency toggle, refresh plan, settings *(currently two buttons "Update setup" + "Settings" — Task 14 reduces to one)*
 3. News panel — portfolio news (Alpha Vantage, 30-min cache) or demo news
 4. Plan view — summary, metrics, projection chart, recommendations
 5. Allocation charts — geo breakdown + account type breakdown
