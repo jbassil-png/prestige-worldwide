@@ -69,7 +69,7 @@ export default function DevResetPage() {
           </button>
         )}
 
-        <p className="text-xs text-gray-400">Only works outside of production.</p>
+        <p className="text-xs text-gray-400">Requires <code>ALLOW_DEV_RESET=true</code> env var.</p>
       </div>
     </div>
   );
