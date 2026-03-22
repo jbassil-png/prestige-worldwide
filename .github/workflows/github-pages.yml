@@ -38,6 +38,7 @@ jobs:
           mv app/dashboard /tmp/dashboard.backup || true
           mv app/accounts /tmp/accounts.backup || true
           mv app/onboarding /tmp/onboarding.backup || true
+          mv app/plan /tmp/plan.backup || true
           echo "✅ Moved dynamic pages for static export"
 
       - name: Build with Next.js for GitHub Pages
@@ -55,6 +56,7 @@ jobs:
           mv /tmp/dashboard.backup app/dashboard || true
           mv /tmp/accounts.backup app/accounts || true
           mv /tmp/onboarding.backup app/onboarding || true
+          mv /tmp/plan.backup app/plan || true
           echo "✅ Restored all pages"
 
       - name: Upload artifact
