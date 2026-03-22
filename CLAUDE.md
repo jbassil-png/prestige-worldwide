@@ -9,37 +9,29 @@
 Cross-border financial planning app for expats, dual citizens, and global citizens. Helps users with assets in multiple countries build a unified retirement and tax strategy.
 
 **Live:** https://prestige-worldwide-kappa.vercel.app
-**Stack:** Next.js 16, TypeScript, Tailwind CSS, Supabase (auth + DB), Plaid (bank data), OpenRouter (AI), PostHog (analytics), Vercel (deploy)
+**Stack:** Next.js 16, TypeScript, Tailwind CSS, Supabase (auth + DB), Plaid (bank data), OpenRouter (AI), PostHog (analytics), Stripe (payments), Vercel (deploy)
 
 ---
 
 ## Current Task — START HERE
 
-**Task 14: New unified settings page.**
+**Approaching launch. Three things to close before real users:**
 
-Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, unified settings page. Both dashboard buttons ("Update setup" and "Settings") become one "Settings" button pointing to the new page.
+### 1. Plan history UI (code task)
+`/plan/history` fetches from `plan_history` table successfully but the display is a stub. Real users will click this on day one. Build a simple, clean list view — date, country pair, net worth snapshot, link to view full plan.
 
-### Design intent
-- **Not a wizard replay.** The onboarding wizard is a one-time linear journey. Returning users should never re-experience it.
-- **Single page, non-linear.** All sections visible and editable in place — users jump to what they need, no enforced step order.
-- **Visually recalls the wizard** — same card style, typography, colour palette — but clearly a settings home, not a flow.
-- **Covers everything:** countries, accounts (manual entry for free users), goals, theme, check-in frequency.
+### 2. Sign-up redirect UX (code task)
+After sign-up, the redirect is silent — no feedback, looks broken. Add a brief confirmation state or loading indicator so users know something is happening.
 
-### Freemium model (locked in — see Key Decisions)
-- Free tier: full access except Plaid bank connection. Manual account entry only.
-- Paid tier: Plaid connection unlocked.
-- The settings page accounts section shows manual entry for free users; Plaid connect for paid users.
+### 3. Stripe account setup (owner action — not a code task)
+All Stripe code is built and waiting. When ready:
+1. Create Stripe account at stripe.com
+2. Add a subscription product + price → copy the `price_id`
+3. Set env vars in Vercel: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`
+4. Register `/api/stripe/webhook` as a webhook endpoint in Stripe dashboard
+5. Run migration `20260322b_add_stripe_customer_id.sql` in Supabase SQL editor
 
-### Plan
-1. Build `/settings` as a new single-page component with sectioned cards (Countries, Accounts, Goals, Style, Profile)
-2. Each section is independently editable and saves without affecting others
-3. Accounts section: manual entry always available; Plaid gated behind paid tier with upgrade prompt
-4. Replace both dashboard buttons with one "Settings" link → `/settings`
-5. Delete `/setup` (SetupClient, setup page) — no longer needed
-6. Delete old `/settings` page — replaced by new implementation
-
-### Open question (resolve before building Accounts section)
-**How is paid/free tier status tracked?** Options: a Supabase column on `user_profiles`, or Stripe subscription status checked at runtime. Decision affects how the upgrade prompt is implemented and whether the gate is enforced server-side or client-side. Decide this at the start of Task 14.
+**After these three: ship to real users and iterate based on testing.**
 
 ---
 
@@ -52,10 +44,9 @@ Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, u
 | `/onboarding` | 4-step wizard (Countries → Connect → Goals → Style) — one-time only |
 | `/onboarding/preview` | Public preview — no auth, no data written |
 | `/dashboard` | Main authenticated view |
-| `/settings` | **Task 14** — new unified settings page (replaces `/setup` + old `/settings`) |
-| `/setup` | ⚠️ To be deleted in Task 14 |
+| `/settings` | Unified settings page — Countries, Accounts, Goals, Style, Check-ins |
 | `/accounts` | Manage Plaid-connected accounts |
-| `/plan/history` | Last 10 plan generations |
+| `/plan/history` | Last 10 plan generations — fetch works, display is stub |
 | `/contact`, `/terms`, `/privacy` | Marketing |
 
 ---
@@ -74,17 +65,25 @@ Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, u
 | 8 | Persist theme | ✅ DONE — `user_preferences` table + RLS; upserted on plan gen; applied via `data-theme` on dashboard load |
 | 9 | OpenRouter model wiring | ✅ DONE — all three routes wired; `OPENROUTER_API_KEY` + `OPENROUTER_PLAN_MODEL` in Vercel |
 | 10 | `initialValues` props on step components | ✅ DONE — all four steps accept `initialValues` |
-| 11 | Re-entry flow | ✅ DONE — `/setup` route with pre-filled wizard; "Update setup" in dashboard control bar |
+| 11 | Re-entry flow | ✅ DONE — was `/setup`; deleted in Task 14 |
 | 12 | Dashboard UX pass | ✅ DONE — control bar, news promoted, top bar stripped, plan header personalised |
 | 13 | Charts | ✅ DONE — `ProjectionChart` (Recharts area chart) in PlanView; `AllocationCharts` (geo + account type) in DashboardClient |
+| 14 | New unified settings page | ✅ DONE — single-page non-linear; Countries, Accounts, Goals, Style, Check-ins; each saves independently; `/setup` deleted; dashboard reduced to one "Settings" link |
+| 15 | Freemium model | ✅ DONE — `is_paid boolean default false` on `user_profiles`; Stripe infrastructure code-complete; upgrade button wired; keys deferred until Task 16 |
+| 16 | Stripe account setup | 🔜 OWNER ACTION — see "Current Task" above for exact steps |
+| 17 | Plan history UI | 🔜 NEXT CODE TASK — stub display needs replacing |
+| 18 | Sign-up redirect UX | 🔜 NEXT CODE TASK — silent redirect looks broken |
 
-| 14 | New unified settings page | ✅ DONE — single-page, non-linear, sectioned cards; `/setup` deleted |
-| 15 | Freemium model | ✅ DONE — `is_paid` stub + Stripe infrastructure code-complete; keys deferred |
-| 16 | Set up Stripe account | 🔜 — create account, add product + price, set `STRIPE_SECRET_KEY` / `STRIPE_PRICE_ID` / `STRIPE_WEBHOOK_SECRET` in Vercel, run `20260322b` migration, register webhook endpoint |
+**Post-launch (driven by user testing):**
+- Geographic AI advisors
+- Goal-account linking + unallocated bucket accuracy
+- Check-in email delivery (Vercel cron + Resend)
+- Polish backlog (loading reveal, PDF export, what-if analysis)
 
-**Partial / placeholder:**
-- `AllocationCharts` — empty state fallbacks exist but chart content needs real data validation
-- Plan history UI (`/plan/history`) — fetch works, display is stub
+**Known gaps still open:**
+- `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
+- Plan history display — stub
+- Sign-up redirect — silent, no feedback
 
 ---
 
@@ -93,10 +92,11 @@ Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, u
 | Topic | Decision |
 |-------|----------|
 | Business model | Freemium. Free tier: full app access (onboarding, plan gen, dashboard, chat, news) except Plaid bank connection. Paid tier: Plaid connection unlocked. Manual account entry is always available on free tier. |
-| Settings UX | Post-onboarding settings is a single non-linear page, not a wizard replay. Visually recalls the onboarding aesthetic (cards, typography, palette) but all sections are independently editable. The horizontal wizard is a one-time onboarding experience only. |
-| Settings entry point | One "Settings" button on the dashboard. Replaces both "Update setup" (`/setup`) and "Settings" (`/settings`). `/setup` will be deleted. |
+| Paid tier tracking | `is_paid boolean` column on `user_profiles`. Set by Stripe webhook on subscription events. Checked client-side in settings page. |
+| Settings UX | Single non-linear page. All sections visible and independently editable. Not a wizard replay. Visually recalls onboarding aesthetic. |
+| Settings entry point | One "Settings" link on the dashboard control bar. `/setup` deleted. |
 | AI models | OpenRouter for all AI calls (not direct Anthropic/Google APIs) |
-| Plan generation model | `anthropic/claude-3.5-haiku` default via `OPENROUTER_PLAN_MODEL` env var; upgrade to `claude-3.5-sonnet` if quality is thin |
+| Plan generation model | `anthropic/claude-3.5-haiku` default via `OPENROUTER_PLAN_MODEL` env var |
 | Chat model | `anthropic/claude-3.5-haiku` via `OPENROUTER_MODEL` env var |
 | Insights model | `google/gemini-flash-1.5` (hardcoded in `/api/insight`) |
 | Structured output | **JSON mode** (`response_format: { type: "json_object" }`), no retry loop. Stub plan is the fallback on API failure. |
@@ -110,6 +110,7 @@ Replace `/setup` (re-entry wizard) and `/settings` (plain form) with a single, u
 | Preview page | Column view, production-accessible, real components with mock data |
 | Loading reveal | Full-screen themed transition — deferred to Polish backlog |
 | Horizontal scroll | Wizard uses horizontal scroll — one step per viewport, 0.45s cubic-bezier slide transition |
+| Post-launch iteration | Driven by user testing — no speculative polish before real users |
 
 ---
 
@@ -138,7 +139,31 @@ type WizardData = {
 };
 ```
 
-All step components accept `initialValues` props (built for the `/setup` re-entry flow, which will be deleted in Task 14).
+All step components accept `initialValues` props.
+
+---
+
+## Settings Structure
+
+```
+app/settings/
+└── page.tsx    ← Unified settings page (client component)
+
+app/api/
+├── accounts/
+│   ├── route.ts       ← GET (list) + POST (manual create) for user_accounts
+│   └── [id]/route.ts  ← DELETE
+├── stripe/
+│   ├── checkout/route.ts  ← POST — creates Stripe Checkout session
+│   └── webhook/route.ts   ← POST — handles subscription events, flips is_paid
+```
+
+**Settings sections (all independently saveable):**
+1. Countries — residence + retirement → `PUT /api/profile`
+2. Accounts — list/delete existing; manual add → `POST /api/accounts`; Plaid gated by `is_paid`
+3. Goals — retirement year → `PUT /api/profile`
+4. Style — theme picker → upsert `user_preferences` via Supabase client; applies instantly
+5. Check-ins — frequency → `PUT /api/checkin-schedule`
 
 ---
 
@@ -148,7 +173,7 @@ All step components accept `initialValues` props (built for the `/setup` re-entr
 
 **Left column (top to bottom):**
 1. Demo banner (unauthenticated only) — marketing copy + CTA
-2. Personalised control bar (authenticated) — country pair, plan date, currency toggle, refresh plan, settings *(currently two buttons "Update setup" + "Settings" — Task 14 reduces to one)*
+2. Personalised control bar (authenticated) — country pair, plan date, currency toggle, refresh plan, Settings link
 3. News panel — portfolio news (Alpha Vantage, 30-min cache) or demo news
 4. Plan view — summary, metrics, projection chart, recommendations
 5. Allocation charts — geo breakdown + account type breakdown
@@ -158,26 +183,18 @@ All step components accept `initialValues` props (built for the `/setup` re-entr
 
 ---
 
-## Known Gaps
-
-- **Settings page** — missing retirement savings target amount field (profile stores country + year, not goal amount)
-- **Plan history UI** — `/plan/history` fetches from `plan_history` table but display is a stub
-- **`AllocationCharts`** — empty state placeholders in place; needs validation with real multi-account data
-
----
-
 ## Key Architecture
 
 | Concern | Implementation |
 |---------|----------------|
 | Auth | Supabase Auth (sign-in/sign-up, middleware guards `/dashboard` and `/onboarding`) |
-| Database | Supabase (Postgres). Tables: `user_plans`, `user_preferences`, `user_profiles`, `user_holdings`, `user_portfolio_news`, `plaid_items`, `user_checkin_schedule` |
+| Database | Supabase (Postgres). Tables: `user_plans`, `user_preferences`, `user_profiles`, `user_holdings`, `user_portfolio_news`, `plaid_items`, `user_accounts`, `user_checkin_schedule` |
 | AI | OpenRouter via `/api/plan` (Haiku, JSON mode), `/api/chat` (Haiku, streaming), `/api/insight` (Gemini Flash) — all have stub fallbacks |
 | Bank data | Plaid (sandbox); mock accounts returned when credentials not configured |
+| Payments | Stripe — checkout + webhook built; gracefully stubs when `STRIPE_SECRET_KEY` not set |
 | Analytics | PostHog — `onboarding_started`, `plan_generated`, `onboarding_completed`, `plan_refreshed`, `chat_message_sent` |
 | Theme system | CSS custom properties in `globals.css`; applied via `data-theme` on `<html>`; persisted to `user_preferences` table |
 | Charts | Recharts (`ProjectionChart`); CSS bar charts (`AllocationCharts`) |
-| N8N | Referenced in older docs but not in the active call path. Ignore. |
 
 ---
 
@@ -186,6 +203,7 @@ All step components accept `initialValues` props (built for the `/setup` re-entr
 - **Branch:** Check `SESSION_NOTES.md` for the current working branch
 - **Mock data path:** If no Supabase session, plan is stored in `sessionStorage` as `pw_plan` and read by `DashboardClient` on load
 - **Plaid mock:** If `PLAID_CLIENT_ID` not set, `/api/plaid/link-token` returns `{ mock: true }` and onboarding shows demo accounts
+- **Stripe mock:** If `STRIPE_SECRET_KEY` not set, `/api/stripe/checkout` returns `{ mock: true }` and settings shows "coming soon" alert
 - **Preview page:** Navigate to `/onboarding/preview` — no auth required, no data written
 - **OpenRouter:** `OPENROUTER_API_KEY` and `OPENROUTER_PLAN_MODEL` set in Vercel for all environments
 
