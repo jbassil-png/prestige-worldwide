@@ -52,7 +52,7 @@ export default function Hero() {
             {/* Screenshot - using img tag for Safari compatibility with SVG */}
             <div className="absolute top-8 left-0 right-0 bottom-0">
               <img
-                src="/dashboard-screenshot.svg"
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/dashboard-screenshot.svg`}
                 alt="Prestige Worldwide Dashboard showing cross-border financial plan with retirement accounts, AI recommendations, and personalized news feed"
                 className="w-full h-full object-cover object-top"
               />
