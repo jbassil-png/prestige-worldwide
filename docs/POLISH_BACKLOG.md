@@ -36,6 +36,7 @@
 
 - **Plan output quality** — validate AI plan JSON against expected shape; add a richer stub for dev
 - **Insights panel** — Gemini flash integration styling and empty states
+- **Retirement target amount in Settings** — Settings only lets users set a retirement *year*; the target *amount* (e.g. $2M) is only captured during onboarding Step 3 (StepGoals) and has no post-onboarding edit path. Users who set a retirement year via Settings will see the projection chart but no goal line and no on-track badge. Fix: add a target amount field to the Settings retirement section, wire it through `PUT /api/profile` → plan regen payload. Blocked on: nothing technical, just needs scoping. Related to Task 9 (goal-account linking).
 
 ## Charts & Data Visualisation (deferred)
 
