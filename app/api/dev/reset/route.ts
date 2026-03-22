@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Dev-only endpoint — hard blocked in production
+// Dev-only endpoint — requires ALLOW_DEV_RESET=true env var
 export async function POST() {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not available in production" }, { status: 403 });
+  if (process.env.ALLOW_DEV_RESET !== "true") {
+    return NextResponse.json({ error: "Not enabled. Set ALLOW_DEV_RESET=true." }, { status: 403 });
   }
 
   const supabase = await createClient();
