@@ -149,49 +149,18 @@ export default function DashboardClient({
 
   return (
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
-      {/* Top bar */}
-      <header className="w-full bg-white border-b border-gray-100 px-3 sm:px-4 md:px-6 py-3 flex items-center gap-2 sm:gap-4">
-        <span className="font-bold text-brand-700 text-sm sm:text-base md:text-lg whitespace-nowrap">
+      {/* Top bar — brand + sign out only */}
+      <header className="w-full bg-white border-b border-gray-100 px-3 sm:px-4 md:px-6 py-3 flex items-center">
+        <span className="font-bold text-brand-700 text-sm sm:text-base md:text-lg">
           <span className="hidden sm:inline">Prestige Worldwide</span>
           <span className="sm:hidden">Prestige</span>
         </span>
-        <div className="ml-auto flex items-center gap-2 sm:gap-4 flex-wrap">
-          <CurrencyToggle
-            residenceCurrency={residenceCurrency}
-            retirementCurrency={retirementCurrency}
-            onChange={setCurrencyMode}
-          />
-          <Link
-            href="/setup"
-            className="text-xs text-gray-500 hover:text-brand-600 transition whitespace-nowrap"
-          >
-            Update my setup
-          </Link>
-          <Link
-            href="/settings"
-            className="text-xs text-gray-500 hover:text-brand-600 transition whitespace-nowrap"
-          >
-            Settings
-          </Link>
-          <button
-            onClick={handleRefreshPlan}
-            disabled={refreshing}
-            className="text-xs text-gray-500 hover:text-brand-600 transition disabled:opacity-50 whitespace-nowrap"
-          >
-            {refreshing ? "Refreshing…" : "Refresh"}
-          </button>
-          {refreshError && (
-            <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1">
-              {refreshError}
-            </div>
-          )}
-          <button
-            onClick={handleSignOut}
-            className="text-xs text-gray-500 hover:text-red-600 transition whitespace-nowrap"
-          >
-            Sign out
-          </button>
-        </div>
+        <button
+          onClick={handleSignOut}
+          className="ml-auto text-xs text-gray-400 hover:text-red-600 transition"
+        >
+          Sign out
+        </button>
       </header>
 
       {/* Demo mode: marketing banner */}
@@ -219,13 +188,14 @@ export default function DashboardClient({
         </div>
       )}
 
-      {/* Authenticated users: personalised plan context header */}
+      {/* Authenticated users: personalised plan control bar */}
       {!isDemoMode && (
         <div className="w-full bg-white border-b border-gray-100">
-          <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 flex items-center justify-between flex-wrap gap-3">
-            <div>
+          <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+            {/* Plan identity */}
+            <div className="min-w-0">
               <p className="text-xs text-gray-400 mb-0.5">Your financial plan</p>
-              <h1 className="text-base sm:text-lg font-semibold text-gray-900">
+              <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                 {plan.meta?.residenceCountry ?? "Your portfolio"}
                 {plan.meta?.retirementCountry &&
                   plan.meta.retirementCountry !== plan.meta.residenceCountry && (
@@ -237,16 +207,50 @@ export default function DashboardClient({
                   )}
               </h1>
             </div>
-            <p className="text-xs text-gray-400">
-              {planDate
-                ? `Updated ${new Date(planDate).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}`
-                : null}
-            </p>
+
+            {/* Controls — flush right on desktop */}
+            <div className="sm:ml-auto flex flex-wrap items-center gap-3">
+              <CurrencyToggle
+                residenceCurrency={residenceCurrency}
+                retirementCurrency={retirementCurrency}
+                onChange={setCurrencyMode}
+              />
+              <div className="flex items-center gap-3 text-xs text-gray-400">
+                {planDate && (
+                  <span>
+                    Updated{" "}
+                    {new Date(planDate).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </span>
+                )}
+                <button
+                  onClick={handleRefreshPlan}
+                  disabled={refreshing}
+                  className="hover:text-brand-600 transition disabled:opacity-50"
+                >
+                  {refreshing ? "Refreshing…" : "Refresh plan"}
+                </button>
+                <Link href="/setup" className="hover:text-brand-600 transition">
+                  Update setup
+                </Link>
+                <Link href="/settings" className="hover:text-brand-600 transition">
+                  Settings
+                </Link>
+              </div>
+            </div>
           </div>
+
+          {/* Refresh error — shown below the control bar */}
+          {refreshError && (
+            <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 pb-3">
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+                {refreshError}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -268,15 +272,7 @@ export default function DashboardClient({
             </div>
           )}
 
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-            <PlanView
-              plan={plan}
-              currencyMode={currencyMode}
-              residenceCurrency={residenceCurrency}
-              retirementCurrency={retirementCurrency}
-            />
-          </div>
-
+          {/* News — shown first so returning users see what's changed */}
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
             {isDemoMode ? (
               <>
@@ -294,6 +290,16 @@ export default function DashboardClient({
                 initialNews={initialPortfolioNews}
               />
             )}
+          </div>
+
+          {/* Plan */}
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+            <PlanView
+              plan={plan}
+              currencyMode={currencyMode}
+              residenceCurrency={residenceCurrency}
+              retirementCurrency={retirementCurrency}
+            />
           </div>
         </div>
 

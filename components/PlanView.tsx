@@ -91,7 +91,6 @@ function formatMoney(usd: number, mode: CurrencyMode, rates: Record<string, numb
 }
 
 export default function PlanView({ plan, currencyMode, residenceCurrency, retirementCurrency }: Props) {
-  const [insight, setInsight] = useState<string | null>(null);
   const [rates, setRates] = useState<Record<string, number>>({ USD: 1 });
   const [accountCount, setAccountCount] = useState<number>(0);
   const supabase = createClient();
@@ -104,16 +103,6 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
       .then((r) => r.json())
       .then((d) => setRates({ USD: 1, ...d.rates }));
   }, [residenceCurrency, retirementCurrency]);
-
-  useEffect(() => {
-    fetch("/api/insight", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan }),
-    })
-      .then((r) => r.json())
-      .then((d) => setInsight(d.insight));
-  }, [plan]);
 
   useEffect(() => {
     async function fetchAccountCount() {
@@ -162,13 +151,6 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
 
   return (
     <div className="space-y-6">
-      {insight && (
-        <div className="bg-brand-50 border border-brand-200 rounded-xl px-4 py-3">
-          <p className="text-xs font-semibold text-brand-700 mb-1">Today&apos;s spotlight</p>
-          <p className="text-sm text-brand-900 leading-relaxed">{insight}</p>
-        </div>
-      )}
-
       <p className="text-sm text-gray-700 leading-relaxed">{plan.summary}</p>
 
       {/* Account metrics header */}
