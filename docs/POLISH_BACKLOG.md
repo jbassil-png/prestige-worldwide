@@ -37,6 +37,16 @@
 - **Plan output quality** — validate AI plan JSON against expected shape; add a richer stub for dev
 - **Insights panel** — Gemini flash integration styling and empty states
 
+## Charts & Data Visualisation (deferred)
+
+These were discussed and scoped but need more infrastructure before they can be built:
+
+- **Multi-goal projection table** — side-by-side projected vs. actual values at each check-in, per goal (like a Betterment-style timeline). Needs: multi-goal data model (Task 9 in roadmap) + historical actuals stored per check-in.
+- **Projected vs. actual check-in log** — tabular view showing projected portfolio value vs. what actually happened at each semi-annual check-in. Needs: new `user_checkin_actuals` tracking infrastructure.
+- **Portfolio history line** — solid line showing *actual* net worth over time, up to today. Needs: Plaid balance snapshots or manual entry stored at each check-in.
+
+---
+
 ## General
 
 - **Accessibility audit** — colour contrast across all three themes (WCAG AA), keyboard nav, focus rings

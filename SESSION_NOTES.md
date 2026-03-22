@@ -9,6 +9,49 @@
 
 ---
 
+### Session: Mar 22, 2026 — Dashboard UX Pass + Charts Planning
+
+**Branch:** `claude/review-documentation-rgCPT`
+
+**What Was Accomplished:**
+
+1. ✅ **Three dashboard pre-conditions shipped**
+   - `page.tsx`: selects `created_at` alongside plan; passes `planDate` to `DashboardClient`
+   - `DashboardClient`: personalised plan header for auth users (country pair + plan date); demo users keep marketing banner
+   - `PlanView`: unallocated bucket copy fixed for users with a retirement goal
+
+2. ✅ **Dashboard UX pass shipped**
+   - Removed "Today's spotlight" block from `PlanView` entirely — duplicated portfolio news; also eliminated the `/api/insight` fetch on every dashboard load
+   - Top bar stripped to brand + sign out only
+   - All nav controls (CurrencyToggle, Refresh plan, Update setup, Settings) moved into a persistent plan control bar below the personalised header — visible in the main content flow, not buried in the corner
+   - News card promoted above PlanView in the left column — returning users see what's changed before re-reading a plan they already know
+
+3. ✅ **Charts planning discussion — decisions locked in**
+
+   User shared reference screenshots from their own financial planning document. Reviewed chart types and agreed on the following:
+
+   **Agreed to build:**
+
+   | Chart | Type | Data source | Notes |
+   |-------|------|-------------|-------|
+   | Portfolio projection | Area chart (line) | `netWorthUsd` + CAGR + `retirementYear` | Solid line for past, dashed for future, vertical "today" marker; per-goal variant once multi-goal lands |
+   | Geographic allocation | Bar or donut | `countryCode` + balance per account | Natural fit for a cross-border app; computable from existing data |
+   | Account type allocation | Bar or donut | `asset_type` + balance per account | Computable from existing data |
+
+   **Deferred (needs more infrastructure):**
+   - Multi-goal projection table (needs goal data model expansion — Task 9 in roadmap)
+   - Projected vs. actual check-in log (needs historical actuals stored per check-in — new infrastructure)
+
+   **Key decisions:**
+   - Projection chart: **area/line**, not bar — reads as a journey; handles per-goal overlay cleanly; can show solid past + dashed future with "today" divider
+   - Per-goal projection: yes — every goal a user sets (retirement, property, education, etc.) gets its own projection curve using the same area chart component. Retirement goal works today; future goals follow the same pattern (target amount + target date → projection curve)
+   - Allocation charts: bar or donut — discrete comparisons, not time series
+
+**Stopping point / next session:**
+Implement the three agreed charts: portfolio projection area chart, geographic allocation, account type allocation. All computable from existing data — no new DB infrastructure needed.
+
+---
+
 ### Session: Mar 21, 2026 (Night, cont.) — Task 8 Complete + Docs
 
 **Branch:** `claude/review-documentation-rgCPT`
