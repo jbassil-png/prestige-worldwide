@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+// Column names vary between environments — handle both variants
 interface Account {
-  balance: number;
+  balance?: number;
+  current_balance?: number;
   currency: string;
-  type: string;
-  subtype: string | null;
+  type?: string;
+  account_type?: string;
+  subtype?: string | null;
 }
 
 const CURRENCY_TO_COUNTRY: Record<string, string> = {
@@ -89,19 +92,34 @@ export default function AllocationCharts() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: accounts } = await supabase
+      const { data: accounts, error } = await supabase
         .from("user_accounts")
-        .select("balance, currency, type, subtype")
-        .eq("user_id", user.id)
-        .gt("balance", 0); // assets only, exclude loans/credit
+        .select("*")
+        .eq("user_id", user.id);
 
-      if (!accounts || accounts.length === 0) {
+      if (error) {
+        console.error("AllocationCharts: failed to load accounts", error);
+        setLoading(false);
+        return;
+      }
+
+      // Normalise column names and filter to assets only
+      const normalised = (accounts as Account[])
+        .map((a) => ({
+          balance: a.current_balance ?? a.balance ?? 0,
+          currency: a.currency ?? "USD",
+          type: a.account_type ?? a.type ?? "other",
+          subtype: a.subtype ?? null,
+        }))
+        .filter((a) => a.balance > 0);
+
+      if (normalised.length === 0) {
         setLoading(false);
         return;
       }
 
       // Fetch FX rates for all currencies present
-      const currencies = [...new Set((accounts as Account[]).map((a) => a.currency))].join(",");
+      const currencies = [...new Set(normalised.map((a) => a.currency))].join(",");
       let rates: Record<string, number> = { USD: 1 };
       try {
         const res = await fetch(`/api/fx?base=USD&targets=${currencies}`);
@@ -116,14 +134,14 @@ export default function AllocationCharts() {
 
       // Geographic grouping by currency → country
       const geo: Record<string, number> = {};
-      for (const a of accounts as Account[]) {
+      for (const a of normalised) {
         const country = CURRENCY_TO_COUNTRY[a.currency] ?? "Other";
         geo[country] = (geo[country] ?? 0) + toUsd(a.balance, a.currency);
       }
 
       // Account type grouping by subtype → human label
       const types: Record<string, number> = {};
-      for (const a of accounts as Account[]) {
+      for (const a of normalised) {
         const label =
           (a.subtype ? SUBTYPE_LABELS[a.subtype.toLowerCase()] : null) ??
           (a.type === "depository"
@@ -159,7 +177,50 @@ export default function AllocationCharts() {
     );
   }
 
-  if (geoGroups.length === 0) return null;
+  // No accounts — show a blurred demo preview with a connect CTA
+  if (geoGroups.length === 0) {
+    const demoGeo: [string, number][] = [
+      ["United States", 55],
+      ["Canada", 28],
+      ["United Kingdom", 17],
+    ];
+    const demoTypes: [string, number][] = [
+      ["Investment", 45],
+      ["Savings", 32],
+      ["Checking", 23],
+    ];
+    return (
+      <div className="relative">
+        {/* Blurred demo bars */}
+        <div className="blur-sm pointer-events-none select-none grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <p className="text-xs font-semibold text-gray-700 mb-3">By geography</p>
+            <div className="space-y-2.5">
+              {demoGeo.map(([label, pct], i) => (
+                <AllocationRow key={label} label={label} valueUsd={pct} total={100} colorClass={BAR_COLORS[i % BAR_COLORS.length]} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-700 mb-3">By account type</p>
+            <div className="space-y-2.5">
+              {demoTypes.map(([label, pct], i) => (
+                <AllocationRow key={label} label={label} valueUsd={pct} total={100} colorClass={BAR_COLORS[i % BAR_COLORS.length]} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="bg-white/90 border border-gray-200 rounded-xl px-5 py-4 text-center shadow-sm">
+            <p className="text-xs font-semibold text-gray-700 mb-1">Connect your accounts</p>
+            <p className="text-xs text-gray-400">Your real allocation will appear here once accounts are linked.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const geoTotal = geoGroups.reduce((s, [, v]) => s + v, 0);
   const typeTotal = typeGroups.reduce((s, [, v]) => s + v, 0);
