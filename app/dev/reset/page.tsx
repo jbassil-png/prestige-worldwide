@@ -2,6 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+
+const TABLES = [
+  "plan_history",
+  "user_plans",
+  "user_accounts",
+  "user_holdings",
+  "user_balance_history",
+  "user_portfolio_news",
+  "plaid_items",
+  "user_preferences",
+  "user_checkin_schedule",
+  "user_goals",
+  "user_profiles",
+] as const;
 
 export default function DevResetPage() {
   const router = useRouter();
@@ -11,14 +26,28 @@ export default function DevResetPage() {
   async function handleReset() {
     setStatus("loading");
     try {
-      const res = await fetch("/api/dev/reset", { method: "POST" });
-      const data = await res.json();
-      if (res.ok && data.ok) {
-        router.push("/onboarding");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setStatus("error");
+        setMessage("Not signed in.");
         return;
+      }
+
+      const errors: string[] = [];
+      for (const table of TABLES) {
+        const { error } = await supabase.from(table).delete().eq("user_id", user.id);
+        // Skip tables that don't exist yet (migration not applied)
+        if (error && !error.message.includes("schema cache")) {
+          errors.push(`${table}: ${error.message}`);
+        }
+      }
+
+      if (errors.length === 0) {
+        router.push("/onboarding");
       } else {
         setStatus("error");
-        setMessage(data.errors?.join("\n") ?? data.error ?? "Unknown error");
+        setMessage(errors.join("\n"));
       }
     } catch {
       setStatus("error");
