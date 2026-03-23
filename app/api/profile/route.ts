@@ -111,6 +111,8 @@ export async function PUT(request: Request) {
       notes: (existingMeta.notes as string) || "",
     };
 
+    // NEXT_PUBLIC_APP_URL must be set in Vercel (e.g. https://your-app.vercel.app)
+    // Without it, this server-to-server call falls back to localhost and silently fails in production.
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
     const planRes = await fetch(`${appUrl}/api/plan`, {
       method: "POST",
