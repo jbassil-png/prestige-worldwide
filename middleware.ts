@@ -47,6 +47,7 @@ export async function middleware(request: NextRequest) {
   if (!user && (pathname.startsWith("/dashboard") || pathname.startsWith("/dev") || (pathname.startsWith("/onboarding") && !pathname.startsWith("/onboarding/preview")))) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
+    url.searchParams.set("next", pathname);
     const redirectResponse = NextResponse.redirect(url);
     supabaseResponse.cookies.getAll().forEach(({ name, value, ...rest }) => {
       redirectResponse.cookies.set(name, value, rest);

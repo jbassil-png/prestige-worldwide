@@ -10,6 +10,7 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isDemoMode = searchParams.get("demo") === "true";
+  const nextPath = searchParams.get("next");
 
   const [email, setEmail] = useState(isDemoMode ? "demo@prestigeworldwide.com" : "");
   const [password, setPassword] = useState(isDemoMode ? "demo123456" : "");
@@ -42,7 +43,7 @@ function SignInForm() {
 
     // Refresh server components so the new session is visible, then navigate
     router.refresh();
-    router.push("/dashboard");
+    router.push(nextPath || "/dashboard");
   }
 
   async function handleMagicLink() {
