@@ -9,6 +9,44 @@
 
 ---
 
+### Session: Mar 23, 2026 — Stripe done, build fixes, docs audit
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 16 complete — Stripe account setup done (owner action)**
+   - Stripe account created, product + price configured, env vars set in Vercel
+   - Webhook registered, migration `20260322b_add_stripe_customer_id.sql` run
+   - App is now ready for real users
+
+2. ✅ **Build fix — `useSearchParams()` Suspense boundary**
+   - Extracted magic link analytics into `SignupTracker` child component
+   - Wrapped in `<Suspense>` in `app/onboarding/page.tsx` — required by Next.js for static generation
+
+3. ✅ **Build fix — settings page prerender failure**
+   - `/settings` was failing at build time because Supabase env vars aren't set in CI
+   - Split into `page.tsx` (server wrapper with `dynamic = "force-dynamic"`) + `SettingsClient.tsx` (existing client component)
+
+4. ✅ **SQL fix — duplicate policy error**
+   - `user_plans` RLS policy "Users can insert own plans" already existed
+   - Ran idempotent snippet to add missing indexes + service-role policy safely
+
+5. ✅ **Full docs audit + corrections**
+   - Font loading: corrected from `next/font/google` → `@fontsource` (self-hosted) throughout CLAUDE.md
+   - Gaudy Miami font display string: fixed "Syne + Inter" → "Syne + DM Sans" in StepStyle.tsx (Inter was never loaded)
+   - DB tables: added 4 missing tables (`user_goals`, `plan_history`, `user_balance_history`, `market_data`)
+   - Route map: added `/plan`, `/accounts/[id]`, `/auth/callback`, `/dev/reset`
+   - Settings structure: updated to reflect `page.tsx` + `SettingsClient.tsx` split
+   - Task 16: marked ✅ DONE in What's Been Built
+   - Current Task section: replaced Stripe instructions with the live task list
+
+**Stopping point / next session:**
+- Task 26 (free vs paid onboarding map) is the design decision that unblocks Tasks 21, 23, 27
+- See "Current Task" in CLAUDE.md for the full task table
+
+---
+
 ### Session: Mar 22, 2026 — Codebase audit, auth fixes, onboarding reorder
 
 **Branch:** `claude/review-codebase-docs-cLIae`

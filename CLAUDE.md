@@ -15,17 +15,29 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**One owner action remains before real users:**
+**Stripe setup is done. The app is ready for real users.**
 
-### Stripe account setup (owner action — not a code task)
-All Stripe code is built and waiting. When ready:
-1. Create Stripe account at stripe.com
-2. Add a subscription product + price → copy the `price_id`
-3. Set env vars in Vercel: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`
-4. Register `/api/stripe/webhook` as a webhook endpoint in Stripe dashboard
-5. Run migration `20260322b_add_stripe_customer_id.sql` in Supabase SQL editor
+### Open task list (next session — pick up here)
 
-**After this: ship to real users and iterate based on testing.**
+**Blocked on Task 26 decision (free vs paid onboarding map):**
+
+| # | Task | Status | Effort |
+|---|------|--------|--------|
+| 26 | Free vs paid onboarding map | 🔴 Decision needed | ~2h |
+| 21 | Plaid gating in Connect step | ⏸ Blocked on 26 | ~2h |
+| 23 | Goal-account linking in onboarding | ⏸ Blocked on 26 | ~3–4h |
+| 27 | Synthetic test data | ⏸ Blocked on 26 | ~2h |
+
+**Post-launch (user testing driven):**
+
+| # | Task | Notes |
+|---|------|-------|
+| 22 | Geographic AI advisors | Highest differentiation |
+| 23 | Goal-account linking (if not in onboarding) | Depends on Task 26 |
+| 24 | Scheduled check-in email delivery | Vercel cron + Resend |
+| 25 | Testing infrastructure (Vitest) | Unit + integration tests |
+
+**Polish backlog (deferred):** Paid user badge, full-screen loading reveal, PDF export, plan comparison, what-if analysis, transaction history, dark mode, WCAG audit, DB column cleanup, centralised Plan types, editable retirement target.
 
 ---
 
@@ -40,8 +52,12 @@ All Stripe code is built and waiting. When ready:
 | `/dashboard` | Main authenticated view |
 | `/settings` | Unified settings page — Countries, Accounts, Goals, Style, Check-ins |
 | `/accounts` | Manage Plaid-connected accounts |
+| `/accounts/[id]` | Account detail page |
+| `/plan` | Latest plan detail view |
 | `/plan/history` | Last 10 plan generations — accordion list with full metrics + recommendations |
 | `/contact`, `/terms`, `/privacy` | Marketing |
+| `/auth/callback` | Supabase auth callback (magic link redirect) |
+| `/dev/reset` | Dev utility — wipe user data and restart onboarding (requires `ALLOW_DEV_RESET=true`) |
 
 ---
 
@@ -52,7 +68,7 @@ All Stripe code is built and waiting. When ready:
 | 1 | Preview page | ✅ DONE — column view, real components, mock US+CA data |
 | 2 | Bug fix — `country: a.name` | ✅ DONE — `countryCode: string` on `Account` type |
 | 3 | Theme design decision | ✅ DONE — palettes + typography locked in |
-| 4 | Theme token system | ✅ DONE — CSS custom properties in `globals.css`; Tailwind utilities; fonts via `next/font/google` |
+| 4 | Theme token system | ✅ DONE — CSS custom properties in `globals.css`; Tailwind utilities; fonts via `@fontsource` (self-hosted) |
 | 5 | `StepStyle` component | ✅ DONE — three cards with colour bar, swatches, tagline, mood, font name |
 | 6 | Wire Step 4 into wizard + horizontal scroll | ✅ DONE — 4-step wizard; horizontal slide track (0.45s cubic-bezier) |
 | 7 | Full-screen loading reveal | ↳ moved to `docs/POLISH_BACKLOG.md` |
@@ -64,7 +80,7 @@ All Stripe code is built and waiting. When ready:
 | 13 | Charts | ✅ DONE — `ProjectionChart` (Recharts area chart) in PlanView; `AllocationCharts` (geo + account type) in DashboardClient |
 | 14 | New unified settings page | ✅ DONE — single-page non-linear; Countries, Accounts, Goals, Style, Check-ins; each saves independently; `/setup` deleted; dashboard reduced to one "Settings" link |
 | 15 | Freemium model | ✅ DONE — `is_paid boolean default false` on `user_profiles`; Stripe infrastructure code-complete; upgrade button wired; keys deferred until Task 16 |
-| 16 | Stripe account setup | 🔜 OWNER ACTION — see "Current Task" above for exact steps |
+| 16 | Stripe account setup | ✅ DONE — Stripe account created, env vars set in Vercel, webhook registered, migration run |
 | 17 | Plan history UI | ✅ DONE — full accordion list: date, country pair, trigger badge, 4 metrics, expandable summary + recommendations |
 | 18 | Sign-up redirect UX | ✅ DONE — spinner + "Account created!" state shown during 1s redirect delay |
 | 19 | Auth cleanup | ✅ DONE — removed signInWithPassword fallback; Stripe webhook now uses service-role client |
@@ -100,7 +116,7 @@ All Stripe code is built and waiting. When ready:
 | Theme step placement | Step 3 (optional) in onboarding, after Assets, before Connect |
 | Theme default | Swiss Alps Retreat ❄️ (`data-theme="swiss-alps"` on `<html>`) |
 | Theme palettes | Swiss Alps: slate/ice. Gaudy Miami: pink/gold. Positano: linen/terracotta. See `docs/POLISH_BACKLOG.md` for exact values. |
-| Theme typography | Swiss Alps: DM Serif Display + DM Sans. Gaudy Miami: Syne + DM Sans. Positano: Cormorant Garamond + Lato. Loaded via `next/font/google`. |
+| Theme typography | Swiss Alps: DM Serif Display + DM Sans. Gaudy Miami: Syne + DM Sans. Positano: Cormorant Garamond + Lato. Loaded via `@fontsource` (self-hosted, no build-time network fetch). |
 | Theme token system | CSS custom properties (`--color-bg`, `--color-primary`, etc.) + `--font-heading`/`--font-body`. Tailwind `theme-*` utilities reference them. Applied via `data-theme` on `<html>`. |
 | Onboarding sequence | Goals (req) → Assets (req) → Style (opt) → Connect (opt, paid). Plan generates at end of wizard (after Connect or skip). |
 | Connect step gating | Plaid connection is paid-tier only. Free users can use manual entry in Connect step or skip entirely. |
@@ -148,7 +164,8 @@ All step components accept `initialValues` props.
 
 ```
 app/settings/
-└── page.tsx    ← Unified settings page (client component)
+├── page.tsx           ← Server wrapper; exports `dynamic = "force-dynamic"` to prevent prerender failure
+└── SettingsClient.tsx ← Unified settings page (client component)
 
 app/api/
 ├── accounts/
@@ -189,7 +206,7 @@ app/api/
 | Concern | Implementation |
 |---------|----------------|
 | Auth | Supabase Auth (sign-in/sign-up, middleware guards `/dashboard` and `/onboarding`). Email confirmation disabled. |
-| Database | Supabase (Postgres). Tables: `user_plans`, `user_preferences`, `user_profiles`, `user_holdings`, `user_portfolio_news`, `plaid_items`, `user_accounts`, `user_checkin_schedule` |
+| Database | Supabase (Postgres). Tables: `user_plans`, `user_preferences`, `user_profiles`, `user_holdings`, `user_portfolio_news`, `plaid_items`, `user_accounts`, `user_checkin_schedule`, `user_goals`, `plan_history`, `user_balance_history`, `market_data` |
 | Supabase clients | `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (SSR, cookie-based), `lib/supabase/admin.ts` (service role, no RLS — webhooks only) |
 | AI | OpenRouter via `/api/plan` (Haiku, JSON mode), `/api/chat` (Haiku, streaming), `/api/insight` (Gemini Flash) — all have stub fallbacks |
 | Bank data | Plaid (sandbox); mock accounts returned when credentials not configured |
