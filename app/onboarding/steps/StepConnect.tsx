@@ -23,6 +23,7 @@ interface Props {
   selections: CountrySelection[];
   onNext: (accounts: Account[]) => void;
   onBack: () => void;
+  isPaid?: boolean;
   initialValues?: Account[];
 }
 
@@ -212,8 +213,8 @@ function ManualEntry({ selections, onAccounts }: { selections: CountrySelection[
   );
 }
 
-export default function StepConnect({ selections, onNext, onBack, initialValues }: Props) {
-  const [tab, setTab] = useState<"plaid" | "manual">("plaid");
+export default function StepConnect({ selections, onNext, onBack, isPaid, initialValues }: Props) {
+  const [tab, setTab] = useState<"plaid" | "manual">(isPaid ? "plaid" : "manual");
   const [accounts, setAccounts] = useState<Account[] | null>(initialValues ?? null);
 
   if (accounts) {
@@ -271,7 +272,35 @@ export default function StepConnect({ selections, onNext, onBack, initialValues 
       </div>
 
       {tab === "plaid" ? (
-        <PlaidConnect selections={selections} onAccounts={setAccounts} />
+        isPaid ? (
+          <PlaidConnect selections={selections} onAccounts={setAccounts} />
+        ) : (
+          <div className="rounded-xl border border-brand-200 bg-brand-50 p-5 space-y-3 text-center">
+            <p className="text-sm font-semibold text-brand-800">Plaid connection is a paid feature</p>
+            <p className="text-xs text-brand-600 leading-relaxed">
+              Upgrade to automatically sync live balances from your banks. Manual entry is always free.
+            </p>
+            <a
+              href="/api/stripe/checkout"
+              onClick={(e) => {
+                e.preventDefault();
+                fetch("/api/stripe/checkout", { method: "POST" })
+                  .then((r) => r.json())
+                  .then((d) => { if (d.url) window.location.href = d.url; });
+              }}
+              className="inline-block w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-lg text-sm transition"
+            >
+              Upgrade to connect via Plaid
+            </a>
+            <button
+              type="button"
+              onClick={() => setTab("manual")}
+              className="text-xs text-brand-500 hover:underline"
+            >
+              Use manual entry instead
+            </button>
+          </div>
+        )
       ) : (
         <ManualEntry selections={selections} onAccounts={setAccounts} />
       )}
