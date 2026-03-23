@@ -1,5 +1,12 @@
 # Complete Setup Guide: Market-Aware Financial Planning System
 
+> **⚠️ ARCHIVED — This guide describes an early n8n-based architecture that is no longer in use.**
+> The current system runs entirely as a Next.js app on Vercel — no n8n, no external workflow automation.
+> All AI calls go through OpenRouter directly. See `.env.example` for the current list of required environment variables.
+> This file is kept for historical reference only.
+
+---
+
 This guide walks you through setting up the complete system with:
 - ✅ **Scheduled Balance Refresh** - Daily Plaid balance sync
 - ✅ **Market-Aware Projections** - Real-time S&P 500, bond yields, inflation data

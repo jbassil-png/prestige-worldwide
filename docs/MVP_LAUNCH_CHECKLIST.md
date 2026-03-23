@@ -369,8 +369,7 @@ Add two clear sections to README.md:
 
 **Known Limitations:**
 - Plaid is in sandbox mode (no real bank connections yet)
-- N8N integration optional (falls back to OpenRouter)
-- No RLS on Supabase tables (OK for MVP, must add before production)
+- Plaid bank connection is gated behind paid tier (manual account entry always free)
 
 ## 🚧 What's Planned
 
@@ -651,9 +650,9 @@ These are shortcuts we took for MVP speed. They're fine for now.
 
 These will block growth and MUST be addressed.
 
-- **🔴 No RLS on Supabase tables**: Users can see each other's data
-- **🔴 Plaid sandbox only**: Can't connect real banks
-- **🟡 No automated tests**: Hard to ship with confidence
+- ~~**🔴 No RLS on Supabase tables**~~ ✅ RLS in place; service-role client used for webhook/cron bypass
+- **🔴 Plaid sandbox only**: Must upgrade for real bank connections as user base grows
+- **🟡 No automated tests**: Hard to ship with confidence — see Task 25 in roadmap
 - **🟡 No error monitoring**: Can't detect production issues
 ```
 
@@ -693,7 +692,7 @@ If starting a fresh session, follow this workflow:
 4. **Update checkboxes** - Mark completed items as you go
 5. **Document issues** - Add any new findings to `BACKLOG.md`
 
-**Current Progress:** 9/19 tasks completed (47%)
+**Current Progress:** 15/19 tasks completed (79%) — all critical and most high-priority items done. Open: README (9–11), screenshots (10), landing page review (12), feedback channel (13), beta testers (14).
 
 ---
 
@@ -723,7 +722,7 @@ Use this section to document issues found during the checklist:
 
 ---
 
-**Last Updated:** 2026-03-19
-**Status:** 9/19 tasks completed (47%) - Critical security ✅, Error handling ✅, Dashboard UX ✅, Analytics ✅, Mobile testing ✅
-**Branch:** `claude/start-planning-gWIXp`
-**Recent Additions:** Tasks 7-8 complete - Comprehensive mobile testing with Playwright (50+ scenarios, 8 devices)
+**Last Updated:** 2026-03-23
+**Status:** 15/19 tasks completed (79%) — Critical security ✅, Error handling ✅, Dashboard UX ✅, Analytics ✅, Mobile testing ✅, Freemium/Stripe ✅, Auth cleanup ✅, Plan history ✅
+**Branch:** `claude/review-codebase-docs-cLIae`
+**Recent work:** Auth flow cleanup, Stripe webhook fix (admin client), onboarding reorder (Goals→Assets→Style→Connect), plan history fixed to read from correct table, preview page unblocked, dev reset live at /dev/reset
