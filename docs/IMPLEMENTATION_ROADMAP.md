@@ -1,340 +1,233 @@
 # Implementation Roadmap
 
 **Status:** Active
-**Last Updated:** 2026-03-21
-**Current Phase:** Phase 2 — Onboarding Construction (active)
+**Last Updated:** 2026-03-22
 
 ---
 
 ## Overview
 
-This roadmap outlines the prioritized implementation order for Prestige Worldwide features, balancing user impact, technical dependencies, and learning objectives.
-
-**Guiding Principles:**
-- ✅ Quick wins first (build momentum)
-- ✅ Foundation before advanced features
-- ✅ Learning opportunities balanced with user value
-- ✅ Test as we grow
-- ✅ Progressive disclosure — surface power features without burdening simple users
-
-See `docs/PRODUCT_PRINCIPLES.md` for the full product philosophy guiding UX decisions.
+This roadmap tracks what has been built, what's in progress, and what comes next. For the full UX philosophy driving decisions, see `docs/PRODUCT_PRINCIPLES.md`.
 
 ---
 
-## Phase 1: Foundation & Quick Wins
-**Timeline:** Week 1
-**Goal:** Fix critical bugs and enable core user control
+## ✅ Phase 1 — Foundation (Complete)
 
-### ✅ Task 1: Fix Bug #2 - News API Empty Array
-**Status:** ✅ COMPLETE
+### Task 1: Fix Bug — News API Empty Array ✅
+Fixed news API returning empty array when Alpha Vantage key not set. Stub fallback added.
 
-### ✅ Task 2: Account Management & Detail Views
-**Status:** ✅ COMPLETE (2026-03-20)
-
-Full spec: `docs/FEATURE_ACCOUNT_MANAGEMENT.md`
+### Task 2: Account Management & Detail Views ✅
+Full account CRUD. Plaid integration (sandbox). Manual account entry. Account detail pages.
+Spec: `docs/FEATURE_ACCOUNT_MANAGEMENT.md`
 
 ---
 
-## Phase 2: Differentiation & Quality
-**Timeline:** Week 2-3
-**Goal:** Make product stand out and ensure code quality
+## ✅ Phase 2 — Core Product (Complete)
 
-### ✅ Task 3: Goals, Check-ins & Progressive Onboarding
-**Status:** ✅ COMPLETE (2026-03-21)
-**Priority:** High (core product UX)
+### Task 3: Goals, Check-ins & Progressive Onboarding ✅
+- Retirement year (not age) across onboarding + settings
+- Default retirement goal card in onboarding
+- Skip path ("I just want to track my accounts")
+- On-track status with 7% CAGR projection
+- Unallocated bucket concept
+- Check-in schedule (twice yearly default, configurable)
+- Consistent post-onboarding settings UX
 
-**Overview:**
-Redesign the goals layer so the tool works for both simple account-trackers and goal-oriented planners, without making either feel like a second-class experience.
+### Task 3.5: Onboarding Construction ✅
+- Preview page (`/onboarding/preview`) — column view, all steps, mock US+CA data, no API calls
+- Theme design: Swiss Alps Retreat ❄️ / Gaudy Miami 🌴 / Clooney's Positano 🇮🇹
+- Theme token system — CSS custom properties in `globals.css`; `data-theme` on `<html>`
+- `StepStyle` component — three visual preview cards
+- 4-step horizontal scroll wizard — one step per viewport, 0.45s cubic-bezier transition
+- Theme persisted to `user_preferences` + `sessionStorage.pw_theme`
 
-**Changes delivered:**
-- **Retirement year (not age):** Onboarding and settings now ask for a target retirement year (e.g. 2055) instead of current age + retirement age. Simpler, more intuitive, forward-looking.
-- **Default retirement goal card:** Step 3 of onboarding shows a pre-populated retirement goal ($2M / target year) that users can edit inline. Removes blank-slate anxiety. Users who don't want it can remove it or skip entirely.
-- **Skip path:** "Skip for now — I just want to track my accounts" option in Step 3. No guilt messaging. Users land on a fully functional dashboard with an "Unlock more" nudge.
-- **On-track status:** Dashboard shows a retirement goal progress bar with on-track badge (On track / Review needed / Off track) based on 7% CAGR projection vs. goal target.
-- **Unallocated bucket:** Funds not tied to any goal are shown in a distinct "Unallocated" bucket — a first-class concept, not a gap to fill.
-- **Check-in schedule:** Twice-per-year default, configurable in Settings (Monthly / Quarterly / Twice a year / Annually). Not part of onboarding.
-- **"Unlock more" nudge:** Shown on dashboard for users without a retirement goal — warm, non-judgmental CTA to add one.
-- **Consistent post-onboarding UI:** Settings page uses the same country selectors, retirement year field, and check-in controls that mirror the onboarding experience. See `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`.
+### Task 4: AI Plan Generation ✅
+- OpenRouter integration via `/api/plan` — JSON mode, model via `OPENROUTER_PLAN_MODEL` env var
+- Two-layer: code calculates metrics (net worth, CAGR, on-track), AI generates narrative + recommendations
+- `buildStubPlan()` fallback when API key not set or call fails
+- Privacy: no account names sent to AI, only types + balances
 
-**Files changed:**
-- `app/onboarding/steps/StepGoals.tsx` — redesigned
-- `app/onboarding/page.tsx` — updated payload
-- `app/api/plan/route.ts` — retirementYear, on-track calc, optional goals
-- `app/api/profile/route.ts` — retirement_year support
-- `app/api/checkin-schedule/route.ts` — new endpoint
-- `app/settings/page.tsx` — retirement year + check-in frequency
-- `components/PlanView.tsx` — goal progress, unallocated bucket, nudge
-- `app/plan/PlanDetailClient.tsx` — null-safe metrics
-- `supabase/migrations/20260321_add_goals_and_checkins.sql` — new tables
+### Task 5: Re-entry Flows & Unified Settings ✅
+- `initialValues` props on all four step components
+- `/setup` deleted; replaced by unified `/settings` page
+- Dashboard entry point: one "Settings" link
+
+### Task 7: Portfolio-Aware News Feed ✅
+- Alpha Vantage integration — fetches news for user's country pair
+- 30-minute server-side cache
+- Fallback to demo news when key not set
+Spec: `docs/FEATURE_PORTFOLIO_NEWS.md`
+
+### Task 8: Visual Theming ✅
+- 3 themes with CSS custom properties + font loading via `next/font/google`
+- Applied via `data-theme` on `<html>`; persisted to `user_preferences` table
+- Theme selector in onboarding (step 3) and settings
+
+### Task 12: Dashboard UX Pass ✅
+- Control bar (country pair, plan date, currency toggle, refresh, Settings link)
+- Portfolio news promoted above plan
+- Plan header personalised to user's country pair
+- Projection chart (Recharts area chart)
+- Allocation charts (geo breakdown + account type — CSS bars)
+
+### Task 14: Unified Settings Page ✅
+- Single non-linear page; 5 independently-saveable sections
+- Countries, Accounts, Goals, Style, Check-ins
+- Manual account entry always available; Plaid gated by `is_paid`
+- `/setup` deleted; dashboard reduced to one "Settings" link
+
+### Task 15: Freemium Model ✅
+- `is_paid boolean DEFAULT false` on `user_profiles`
+- `stripe_customer_id text` on `user_profiles` (partial unique index)
+- `POST /api/stripe/checkout` — creates Checkout session, re-uses Stripe customer
+- `POST /api/stripe/webhook` — uses service-role client; handles 4 subscription events; flips `is_paid`
+- Settings upgrade button wired to checkout; `?upgraded=true` success banner on return
+- All Stripe code stubs gracefully when keys not set
+
+### Task 17: Plan History UI ✅
+- `/plan/history` — server component fetches last 10 rows from `plan_history` table
+- `PlanHistoryClient` — accordion card list; date, country pair, trigger badge, 4 metrics
+- Expandable: full summary, account balance snapshot, colour-coded recommendations
+- Empty state + dashboard link
+
+### Task 18: Sign-up Redirect UX ✅
+- `redirecting` state shows spinner + "Account created! Taking you to setup…"
+- 1s delay then `router.push("/onboarding")`
+
+### Task 19: Auth Cleanup ✅
+- Removed `signInWithPassword` fallback from sign-up (email confirmation is disabled; direct session always returned)
+- Created `lib/supabase/admin.ts` — service-role client for trusted server contexts
+- Stripe webhook now uses `createAdminClient()` — fixes silent RLS failure on `is_paid` updates
+- Fixed `20260321_add_goals_and_checkins.sql` — wrapped `ALTER COLUMN` statements in idempotent DO blocks
+
+### Task 20: Onboarding Reorder ✅
+- New sequence: **Goals (req) → Assets (req) → Style (opt) → Connect (opt, paid)**
+- Matches `/onboarding/preview` sequence exactly
+- Loading state moved from inline button → full-screen overlay with spinner
+- `StepCountries` gained `onBack?` prop
+- Button labels updated to reflect new step order
 
 ---
 
-### Task 3.5: Onboarding Construction ← CURRENT
-**Status:** 🎯 Active
-**Priority:** High — unblocks theming, re-entry flow, and advisor personas
-**Effort:** ~12-16 hours total across sub-tasks
+## 🔜 Phase 3 — Launch Prep (In Progress)
 
-**Overview:**
-Build the onboarding preview page for design iteration, add the theme step (Step 4) to the onboarding wizard, wire it all together, and upgrade the loading state into a proper full-screen reveal. This work is a prerequisite for AI plan generation wiring (the theme selection needs to exist before we build the reveal moment).
+### Task 16: Stripe Account Setup 🔜 OWNER ACTION
+Steps documented in `CLAUDE.md` → "Current Task". Requires:
+1. Stripe account + product + price
+2. Vercel env vars: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`
+3. Also set `SUPABASE_SERVICE_ROLE_KEY` in Vercel (needed for webhook RLS bypass)
+4. Register webhook endpoint in Stripe dashboard
+5. Run `supabase/migrations/20260322b_add_stripe_customer_id.sql`
+
+### Task 21: Plaid Gating in Connect Step 📋
+Currently the Connect step shows both Plaid and manual tabs for all users. Free users should see an upgrade prompt on the Plaid tab (same pattern as the Settings accounts section). Manual entry remains available.
 
 **Sub-tasks:**
-- [ ] **Preview page** (`/onboarding/preview`) — column view, all 4 steps, mock US+CA data, theme placeholder cards, no API calls ← **START HERE**
-- [x] **Bug fix** — `app/onboarding/page.tsx:42`: `country: a.name` → added `countryCode: string` to `Account` type; populated in `ManualEntry` (`r.flag`), mock accounts, and Plaid exchange route (currency-based inference)
-- [ ] **Theme design decision** — user input on palette/identity for each of the 3 themes (Swiss Alps Retreat, Gaudy Miami, Clooney's Positano)
-- [ ] **Theme token system** — CSS custom properties on `<html data-theme>` or Tailwind config extension
-- [ ] **`StepStyle` component** — three visual preview cards, real selection, `ThemeId` type
-- [ ] **Wire Step 4 into wizard** — `page.tsx` goes from 3 to 4 steps; Goals `onNext` stores `GoalsData`, Style `onNext` triggers plan generation; `WizardData` gains `goals` and `theme` fields; **convert to horizontal scroll** — one step fills the viewport, slide transition between steps (this is the right moment since 4 steps is the full shape of the flow)
-- [ ] **Full-screen loading reveal** — themed 3-beat progress animation replaces disabled-button state
-- [ ] **Persist theme** — `user_preferences` Supabase table; sessionStorage fallback for no-auth path; apply to dashboard and all pages
-
-**Key decisions (settled — do not revisit):**
-- Three themes: Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹
-- Theme step is Step 4, after Goals, before plan generation
-- Preview page: column view, accessible in production, real components + mock data
-- Loading reveal: full-screen, themed, not a disabled button
+- [ ] Check `is_paid` in StepConnect (fetch from `/api/profile` or pass as prop from wizard)
+- [ ] Show upgrade CTA on Plaid tab for free users; keep manual tab accessible
+- [ ] Wire "Upgrade" to Stripe checkout flow
 
 ---
 
-### Task 4: AI Plan Generation
-**Status:** 📐 Spec complete — ready to implement (after Task 3.5)
-**Priority:** High — biggest functional gap, unblocks chat agent and advisors
-**Effort:** ~4-6 hours
+## 📋 Phase 4 — Post-Launch (User Testing Driven)
 
-**Overview:**
-Replace the hardcoded stub recommendations in `/api/plan` with a real AI call. The deterministic math layer (net worth, projections, on-track) stays as code. The AI generates the narrative summary and structured recommendations, with full awareness of the user's specific country combination, account types, and cross-border situation.
-
-Full spec: `docs/FEATURE_AI_PLAN_GENERATION.md`
-
-**Key design decisions (all settled):**
-- Two-layer architecture: code calculates metrics, AI generates narrative + recommendations
-- **JSON mode** (`response_format: { type: "json_object" }`) — no retry loop; stub plan is the fallback on API failure
-- **Model:** `OPENROUTER_PLAN_MODEL` env var, defaults to `anthropic/claude-3.5-haiku`; upgrade to `claude-3.5-sonnet` if quality is thin on complex multi-country cases
-- No account names or institution names sent to AI (privacy)
-- Plan regenerates on: onboarding, user request, profile change, >10% balance change, scheduled check-in
+### Task 22: Geographic AI Advisors
+Country-specific advisor personas (e.g. Gordon for Canada, Brad for US). Specialised chat agents reading from the same plan. Depends on theming being complete (it is).
 
 **Sub-tasks:**
-- [ ] Add `generateAIPlan()` to `/api/plan/route.ts`
-- [ ] Add Zod validation of AI response schema
-- [ ] Preserve `buildStubPlan()` as fallback
-- [ ] Add `OPENROUTER_PLAN_MODEL` to `.env.example`
-- [ ] Validate output quality with US+CA mock payload
-- [ ] Unit tests for `calculateMetrics()`
-- [ ] Integration test for AI path + stub fallback path
+- [ ] Design advisor persona schema (country, name, expertise, personality, visual)
+- [ ] Per-country system prompts
+- [ ] Advisor detection logic (which advisors are relevant to user's countries)
+- [ ] Advisor selector UI
+- [ ] Theme-aware visual identity per advisor
 
----
-
-### Task 5: Re-entry Flows & Unified Account/Goal Editing
-**Status:** 📋 Planned
-**Priority:** High — needed before real users; also required for dev iteration
-**Effort:** ~4-6 hours
-
-**Overview:**
-When returning users want to add accounts, add countries, or edit goals, the experience should feel like a natural continuation of onboarding — not a separate admin panel. Critically, adding accounts and editing goals are part of the **same flow**, not separate pages.
-
-The unified "edit my setup" flow:
-1. Which countries do you have assets in? (reuses `StepCountries`)
-2. Connect or update accounts (reuses `StepConnect`)
-3. Update goals and retirement year (reuses `StepGoals`)
-
-This mirrors onboarding exactly. It can be triggered from the dashboard ("Update my setup") and from Settings.
-
-Also includes the dev utility: a "Reset onboarding" button in Settings (`NODE_ENV === 'development'` only) so we can iterate on the onboarding flow without touching Supabase.
-
-See: `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`
-
-**Sub-tasks:**
-- [ ] Make `StepCountries`, `StepConnect`, `StepGoals` accept an `initialValues` prop (pre-populate from existing data)
-- [ ] Create `/setup` route that runs the 3-step wizard in edit mode
-- [ ] Add "Update my setup" entry point on the dashboard
-- [ ] Add dev-only "Reset onboarding" button in `/settings`
-- [ ] Plan auto-regenerates on save (same as profile update today)
-
----
-
-### Task 6: Testing Infrastructure
-**Status:** 📋 Planned
-**Priority:** Medium
-**Effort:** ~6-8 hours
-
-**Sub-tasks:**
-- [ ] Install and configure Vitest
-- [ ] Unit tests: `calculateMetrics()`, on-track logic, CAGR projections
-- [ ] Integration tests: `/api/plan` (AI path + stub fallback), `/api/checkin-schedule`, `/api/profile`
-- [ ] Add test scripts to `package.json`
-- [ ] Document testing setup in README
-
----
-
-## Phase 3: Product Depth
-**Timeline:** Week 4+
-
-### ✅ Task 7: Portfolio-Aware News Feed
-**Status:** ✅ COMPLETE (2026-03-20)
-
-Full spec: `docs/FEATURE_PORTFOLIO_NEWS.md`
-
----
-
-### Task 8: Visual Theming
-**Status:** 📐 Design in progress — integrate into onboarding
-**Priority:** High (differentiating surface feature; blocks advisor personas)
-**Effort:** ~8-12 hours
-
-**Overview:**
-Three aspirational lifestyle themes transform the app's entire visual presentation. Theme selection happens during onboarding (new Step 4, after goals) so the experience is personalised from first use. The chosen theme persists and can be changed in settings.
-
-**Themes:**
-1. **Swiss Alps Retreat** ❄️ — Minimalist luxury, serene, clean
-2. **Gaudy Miami** 🌴 — Bold, energetic, Art Deco glamour
-3. **Clooney's Positano** 🇮🇹 — Effortless elegance, Mediterranean warmth
-
-**Onboarding integration:**
-- New Step 4 in the onboarding wizard: "Choose your style"
-- Visual cards showing a preview of each theme
-- Selection is optional (defaults to Swiss Alps or a neutral default)
-- This step should feel like a personalisation moment, not a configuration screen
-
-**Sub-tasks:**
-- [ ] Design theme colour palettes and typography specs
-- [ ] Create Tailwind theme extension / CSS variable approach
-- [ ] Build theme selector component (for onboarding Step 4 and Settings)
-- [ ] Implement React Context for theme state
-- [ ] Add `user_preferences` table to Supabase
-- [ ] Apply theme to all components
-- [ ] Add theme selector to Settings
-- [ ] Test theme switching across all pages
-
-**Note:** Theme personas feed into Geographic AI Advisors — advisors adapt their visual identity to the chosen theme. That's why theming comes before advisors.
-
----
-
-### Task 9: Goal-Account Linking
-**Status:** 📋 Planned
-**Priority:** Medium
-**Effort:** ~3-4 hours
-
-**Overview:**
-Let users assign accounts to goals so the unallocated bucket reflects real allocation, not an approximation.
+### Task 23: Goal-Account Linking
+Let users assign accounts to goals so the unallocated bucket is accurate.
 
 **Sub-tasks:**
 - [ ] Goal card UI with "Add accounts" action
 - [ ] Multi-select from connected accounts
 - [ ] Update `user_goals.linked_account_ids`
-- [ ] Recalculate unallocated: net worth minus sum of linked account balances
+- [ ] Recalculate unallocated: net worth minus linked account balances
 
----
-
-### Task 10: Scheduled Check-in Email Delivery
-**Status:** 📋 Planned
-**Priority:** Medium
-**Effort:** ~3-4 hours
-
+### Task 24: Scheduled Check-in Email Delivery
 **Sub-tasks:**
 - [ ] Vercel cron job (daily) querying `user_checkin_schedule` for due users
-- [ ] Resend email: portfolio snapshot + link to dashboard
+- [ ] Resend email: portfolio snapshot + dashboard link
 - [ ] Update `last_checkin_at` / `next_checkin_at` after send
 
----
-
-## Phase 4: Advanced AI
-**Timeline:** After theming is complete
-
-### Task 11: Geographic AI Advisors
-**Status:** 📋 Planned — depends on AI plan generation (Task 4) and theming (Task 8)
-**Priority:** High (most differentiating feature)
-**Effort:** ~24-32 hours
-
-**Overview:**
-Country-specific AI advisor personas (e.g. Gordon for Canada, Brad for US) with localised financial expertise, their own chat interfaces, and visual identities that adapt to the user's chosen theme.
-
-Advisors are specialised **chat agents**, not separate plan generators. They read from the same plan document that the main chat agent reads, with country-specific system prompts and personas layered on top.
-
-**Dependencies:**
-- Task 4 (AI plan gen) — advisors need a real plan to reference
-- Task 8 (theming) — advisor visual identity adapts to theme
-
-**Sub-tasks:**
-- [ ] Design advisor persona schema (country, name, expertise, personality, visual)
-- [ ] Create per-country system prompts
-- [ ] Build advisor detection logic (which advisors are relevant to user's countries)
-- [ ] Advisor selector UI
-- [ ] Multi-advisor group chat (N8N multi-agent workflow)
-- [ ] Theme-aware visual identity per advisor
+### Task 25: Testing Infrastructure
+- [ ] Install and configure Vitest
+- [ ] Unit tests: `calculateMetrics()`, on-track logic, CAGR projections
+- [ ] Integration tests: `/api/plan` (AI path + stub fallback), `/api/stripe/webhook`
+- [ ] Add test scripts to `package.json`
 
 ---
 
-## Phase 5: Polish
-**Timeline:** Ongoing
+## 📋 Phase 5 — Polish Backlog
 
-### Task 12: Minor fixes and enhancements
-- Sign-up redirect UX (silent redirect with no feedback)
-- Transaction history (Plaid Transactions API)
+See `docs/POLISH_BACKLOG.md` for details. Intentionally deferred until post-launch user data.
+
+- Full-screen loading reveal (themed 3-beat animation on plan gen)
 - PDF export for plans
 - Plan comparison tool
 - What-if analysis
-- Drop legacy `current_age`/`retirement_age` columns from DB
+- Transaction history (Plaid Transactions API)
+- Dark mode variants
+- WCAG AA accessibility audit
+- Drop legacy `current_age`/`retirement_age` columns from DB schema
 - Centralise `Plan`/`Metrics` types into `types/plan.ts`
+- Retirement target amount editable post-onboarding (currently year-only in settings)
 
 ---
 
-## Current Status Summary
+## Database Schema (Current)
 
-| Phase | Status | Tasks |
-|-------|--------|-------|
-| **Phase 1** | ✅ Complete | Tasks 1-2 done |
-| **Phase 2** | 🎯 Active | Task 3 ✅; Tasks 4-6 next |
-| Phase 3 | 📋 Planned | Task 7 ✅ (news); Tasks 8-10 pending |
-| Phase 4 | 📋 Planned | Task 11 (advisors) — after theming |
-| Phase 5 | 📋 Planned | Polish |
+| Table | Purpose |
+|-------|---------|
+| `user_plans` | Plan JSON + meta; one row per generation |
+| `user_preferences` | Theme selection per user |
+| `user_profiles` | residence/retirement countries, retirement year, `is_paid`, `stripe_customer_id` |
+| `user_accounts` | Manual + Plaid-synced accounts |
+| `user_goals` | Discrete financial goals with linked account IDs |
+| `user_checkin_schedule` | Check-in frequency + next/last timestamps |
+| `user_holdings` | Portfolio holdings for news personalisation |
+| `user_portfolio_news` | Cached portfolio news (30-min TTL) |
+| `plaid_items` | Encrypted Plaid access tokens |
 
-**Agreed sequence:**
-1. **Task 3.5** — Onboarding Construction (preview page → bug fix → theme design → StepStyle → wire → reveal → persist) ← **CURRENT**
-2. **Task 4** — AI Plan Generation (JSON mode, OpenRouter, model via env var)
-3. **Task 5** — Re-entry Flows & Unified Goal/Account Editing (add `initialValues` props first)
-4. **Task 6** — Testing Infrastructure
-5. **Task 9/10** — Goal-Account Linking + Check-in Emails
-6. **Task 11** — Geographic AI Advisors (depends on Task 3.5 theming + Task 4 AI plan)
+**Pending migration (owner action):** `20260322b_add_stripe_customer_id.sql`
+
+---
+
+## Supabase Client Pattern
+
+| Client | File | When to use |
+|--------|------|-------------|
+| Browser client | `lib/supabase/client.ts` | Client components, browser-side API calls |
+| SSR client | `lib/supabase/server.ts` | Server components, user-facing API routes |
+| Admin client | `lib/supabase/admin.ts` | Webhooks, cron jobs — bypasses RLS, uses service role key |
 
 ---
 
 ## Dev Utilities
 
-### Relaunching the Onboarding Flow
+**Relaunching onboarding during development:**
+- Option A: Delete the user's row from `user_plans` in Supabase dashboard, then navigate to `/onboarding`
+- Option B: Navigate directly to `/onboarding` — middleware only blocks unauthenticated users
+- Option C (planned): Add a dev-only "Reset onboarding" button in settings
 
-During development, you may need to re-run onboarding to test changes:
-
-**Option A — Reset via Supabase:**
-Delete the user's row from `user_plans` in the Supabase dashboard, then navigate to `/onboarding`.
-
-**Option B — URL shortcut (dev only):**
-Navigate directly to `/onboarding`. Middleware only redirects to `/onboarding` when there is no plan; if you manually visit it, it will load.
-
-**Option C — Add a reset button (recommended for active iteration):**
-In `app/settings/page.tsx`, add a dev-mode "Reset onboarding" button that clears `user_plans` and redirects to `/onboarding`. This is tracked as Task 9.
-
----
-
-## Session Workflow
-
-**At the start of each session:**
-1. Read this roadmap to understand current task
-2. Review relevant feature spec (linked in task description)
-3. Read `SESSION_NOTES.md` for recent context
-4. Begin implementation
-
-**At the end of each session:**
-1. Update task status in this roadmap (checkboxes)
-2. Document progress in `SESSION_NOTES.md`
-3. Commit and push changes
-4. Update "Last Updated" date at top of this file
+**Testing the Stripe webhook locally:**
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
 
 ---
 
 ## Related Documents
 
-- [Product Principles](./PRODUCT_PRINCIPLES.md) - UX philosophy and design decisions
-- [Backlog](./BACKLOG.md) - All feature requests and bugs
-- [Session Notes](../SESSION_NOTES.md) - Development history
+- [Product Principles](./PRODUCT_PRINCIPLES.md)
+- [Polish Backlog](./POLISH_BACKLOG.md)
+- [Session Notes](../SESSION_NOTES.md)
 - [Feature: Account Management](./FEATURE_ACCOUNT_MANAGEMENT.md)
 - [Feature: Portfolio News](./FEATURE_PORTFOLIO_NEWS.md)
-- [Manual Test Checklist](./MANUAL_TEST_CHECKLIST.md)
+- [Feature: AI Plan Generation](./FEATURE_AI_PLAN_GENERATION.md)

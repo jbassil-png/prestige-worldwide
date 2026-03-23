@@ -6,10 +6,14 @@
 ALTER TABLE user_profiles
   ADD COLUMN IF NOT EXISTS retirement_year integer;
 
--- Make age columns nullable so existing rows aren't broken during migration
-ALTER TABLE user_profiles
-  ALTER COLUMN current_age DROP NOT NULL,
-  ALTER COLUMN retirement_age DROP NOT NULL;
+-- Make age columns nullable if they exist (legacy schema — not present in fresh installs)
+DO $$ BEGIN
+  ALTER TABLE user_profiles ALTER COLUMN current_age DROP NOT NULL;
+EXCEPTION WHEN undefined_column THEN NULL; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE user_profiles ALTER COLUMN retirement_age DROP NOT NULL;
+EXCEPTION WHEN undefined_column THEN NULL; END $$;
 
 COMMENT ON COLUMN user_profiles.retirement_year IS 'Target retirement calendar year (e.g. 2055). Replaces current_age / retirement_age.';
 

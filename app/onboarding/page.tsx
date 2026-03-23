@@ -5,17 +5,16 @@ import { useRouter } from "next/navigation";
 import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
 import StepGoals, { type GoalsData } from "./steps/StepGoals";
-import StepStyle, { type StyleData } from "./steps/StepStyle";
+import StepStyle from "./steps/StepStyle";
 import { createClient } from "@/lib/supabase/client";
 import posthog from "posthog-js";
 
 type WizardData = {
-  selections: CountrySelection[];
-  accounts: Account[];
   goals: GoalsData;
+  selections: CountrySelection[];
 };
 
-const STEPS = ["Countries", "Connect", "Goals", "Style"] as const;
+const STEPS = ["Goals", "Assets", "Style", "Connect"] as const;
 type StepNum = 1 | 2 | 3 | 4;
 
 export default function OnboardingPage() {
@@ -23,6 +22,7 @@ export default function OnboardingPage() {
 
   const [step, setStep] = useState<StepNum>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
+  const [theme, setTheme] = useState("swiss-alps");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,13 +32,12 @@ export default function OnboardingPage() {
     }
   }, []);
 
-  async function handleStyle(data: StyleData) {
-    const { goals, selections, accounts } = wizardData as WizardData;
+  async function handleFinish(accounts: Account[]) {
+    const { goals, selections } = wizardData as WizardData;
     setGenerating(true);
     setError(null);
 
-    // Persist theme — sessionStorage for no-auth path; Supabase for auth'd users
-    sessionStorage.setItem("pw_theme", data.theme);
+    sessionStorage.setItem("pw_theme", theme);
 
     try {
       const currentYear = new Date().getFullYear();
@@ -73,7 +72,7 @@ export default function OnboardingPage() {
           ? goals.retirementYear - currentYear
           : null,
         has_retirement_goal: !!goals.retirementGoal,
-        theme: data.theme,
+        theme,
       });
 
       const supabase = createClient();
@@ -81,7 +80,7 @@ export default function OnboardingPage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      const meta = { ...payload, selections, accounts, goals, theme: data.theme };
+      const meta = { ...payload, selections, accounts, goals, theme };
 
       if (user) {
         await Promise.all([
@@ -90,7 +89,7 @@ export default function OnboardingPage() {
             plan: { ...plan, meta },
           }),
           supabase.from("user_preferences").upsert(
-            { user_id: user.id, theme: data.theme },
+            { user_id: user.id, theme },
             { onConflict: "user_id" }
           ),
         ]);
@@ -105,7 +104,7 @@ export default function OnboardingPage() {
         years_to_retirement: goals.retirementYear
           ? goals.retirementYear - currentYear
           : null,
-        theme: data.theme,
+        theme,
       });
 
       router.push("/dashboard");
@@ -129,6 +128,7 @@ export default function OnboardingPage() {
               const stepNum = (i + 1) as StepNum;
               const isActive = step === stepNum;
               const isDone = step > stepNum;
+              const isOptional = stepNum >= 3;
               return (
                 <div key={label} className="flex items-center gap-1.5 flex-1">
                   <div className="flex flex-col items-center flex-1">
@@ -153,6 +153,9 @@ export default function OnboardingPage() {
                       }`}
                     >
                       {label}
+                      {isOptional && !isActive && !isDone && (
+                        <span className="text-gray-300 font-normal"> opt</span>
+                      )}
                     </span>
                   </div>
                   {i < STEPS.length - 1 && (
@@ -186,25 +189,24 @@ export default function OnboardingPage() {
           transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        {/* Step 1 — Countries */}
+        {/* Step 1 — Goals (required) */}
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-            <StepCountries
-              onNext={(selections) => {
-                setWizardData((p) => ({ ...p, selections }));
+            <StepGoals
+              onNext={(goals) => {
+                setWizardData((p) => ({ ...p, goals }));
                 setStep(2);
               }}
             />
           </div>
         </div>
 
-        {/* Step 2 — Connect */}
+        {/* Step 2 — Assets (required) */}
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-            <StepConnect
-              selections={wizardData.selections ?? []}
-              onNext={(accounts) => {
-                setWizardData((p) => ({ ...p, accounts }));
+            <StepCountries
+              onNext={(selections) => {
+                setWizardData((p) => ({ ...p, selections }));
                 setStep(3);
               }}
               onBack={() => setStep(1)}
@@ -212,13 +214,12 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        {/* Step 3 — Goals */}
+        {/* Step 3 — Style (optional) */}
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-            <StepGoals
-              countrySelections={wizardData.selections}
-              onNext={(goals) => {
-                setWizardData((p) => ({ ...p, goals }));
+            <StepStyle
+              onNext={(data) => {
+                setTheme(data.theme);
                 setStep(4);
               }}
               onBack={() => setStep(2)}
@@ -226,17 +227,48 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        {/* Step 4 — Style */}
+        {/* Step 4 — Connect (optional, paid) */}
         <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
-          <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-            <StepStyle
-              onNext={handleStyle}
-              onBack={() => setStep(3)}
-              loading={generating}
-            />
+          <div className="w-full max-w-lg space-y-4">
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <StepConnect
+                selections={wizardData.selections ?? []}
+                onNext={(accounts) => handleFinish(accounts)}
+                onBack={() => setStep(3)}
+              />
+            </div>
+            <div className="text-center space-y-1">
+              <button
+                onClick={() => handleFinish([])}
+                disabled={generating}
+                className="text-sm text-gray-400 hover:text-gray-600 transition disabled:opacity-40"
+              >
+                Skip — I&apos;ll connect accounts later
+              </button>
+              <p className="text-xs text-gray-300">You can connect accounts any time from settings.</p>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* ── Generating overlay ────────────────────────────────────────── */}
+      {generating && (
+        <div className="fixed inset-0 z-30 bg-white/90 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <svg
+              className="animate-spin h-10 w-10 text-brand-600 mx-auto"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <p className="text-base font-semibold text-gray-700">Building your plan…</p>
+            <p className="text-sm text-gray-400">Analysing your cross-border situation</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

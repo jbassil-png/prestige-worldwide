@@ -15,15 +15,9 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**Approaching launch. Three things to close before real users:**
+**One owner action remains before real users:**
 
-### 1. Plan history UI (code task)
-`/plan/history` fetches from `plan_history` table successfully but the display is a stub. Real users will click this on day one. Build a simple, clean list view — date, country pair, net worth snapshot, link to view full plan.
-
-### 2. Sign-up redirect UX (code task)
-After sign-up, the redirect is silent — no feedback, looks broken. Add a brief confirmation state or loading indicator so users know something is happening.
-
-### 3. Stripe account setup (owner action — not a code task)
+### Stripe account setup (owner action — not a code task)
 All Stripe code is built and waiting. When ready:
 1. Create Stripe account at stripe.com
 2. Add a subscription product + price → copy the `price_id`
@@ -31,7 +25,7 @@ All Stripe code is built and waiting. When ready:
 4. Register `/api/stripe/webhook` as a webhook endpoint in Stripe dashboard
 5. Run migration `20260322b_add_stripe_customer_id.sql` in Supabase SQL editor
 
-**After these three: ship to real users and iterate based on testing.**
+**After this: ship to real users and iterate based on testing.**
 
 ---
 
@@ -41,12 +35,12 @@ All Stripe code is built and waiting. When ready:
 |-------|-------------|
 | `/` | Marketing landing page |
 | `/sign-in`, `/sign-up` | Supabase Auth |
-| `/onboarding` | 4-step wizard (Countries → Connect → Goals → Style) — one-time only |
+| `/onboarding` | 4-step wizard (Goals → Assets → Style → Connect) — one-time only |
 | `/onboarding/preview` | Public preview — no auth, no data written |
 | `/dashboard` | Main authenticated view |
 | `/settings` | Unified settings page — Countries, Accounts, Goals, Style, Check-ins |
 | `/accounts` | Manage Plaid-connected accounts |
-| `/plan/history` | Last 10 plan generations — fetch works, display is stub |
+| `/plan/history` | Last 10 plan generations — accordion list with full metrics + recommendations |
 | `/contact`, `/terms`, `/privacy` | Marketing |
 
 ---
@@ -71,8 +65,10 @@ All Stripe code is built and waiting. When ready:
 | 14 | New unified settings page | ✅ DONE — single-page non-linear; Countries, Accounts, Goals, Style, Check-ins; each saves independently; `/setup` deleted; dashboard reduced to one "Settings" link |
 | 15 | Freemium model | ✅ DONE — `is_paid boolean default false` on `user_profiles`; Stripe infrastructure code-complete; upgrade button wired; keys deferred until Task 16 |
 | 16 | Stripe account setup | 🔜 OWNER ACTION — see "Current Task" above for exact steps |
-| 17 | Plan history UI | 🔜 NEXT CODE TASK — stub display needs replacing |
-| 18 | Sign-up redirect UX | 🔜 NEXT CODE TASK — silent redirect looks broken |
+| 17 | Plan history UI | ✅ DONE — full accordion list: date, country pair, trigger badge, 4 metrics, expandable summary + recommendations |
+| 18 | Sign-up redirect UX | ✅ DONE — spinner + "Account created!" state shown during 1s redirect delay |
+| 19 | Auth cleanup | ✅ DONE — removed signInWithPassword fallback; Stripe webhook now uses service-role client |
+| 20 | Onboarding reorder | ✅ DONE — new sequence: Goals → Assets → Style (opt) → Connect (opt, paid); plan generates at end |
 
 **Post-launch (driven by user testing):**
 - Geographic AI advisors
@@ -82,8 +78,7 @@ All Stripe code is built and waiting. When ready:
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
-- Plan history display — stub
-- Sign-up redirect — silent, no feedback
+- Plaid Connect in onboarding still shows both tabs (Plaid + manual) for free users — should show upgrade prompt for Plaid tab and encourage manual entry
 
 ---
 
@@ -92,7 +87,7 @@ All Stripe code is built and waiting. When ready:
 | Topic | Decision |
 |-------|----------|
 | Business model | Freemium. Free tier: full app access (onboarding, plan gen, dashboard, chat, news) except Plaid bank connection. Paid tier: Plaid connection unlocked. Manual account entry is always available on free tier. |
-| Paid tier tracking | `is_paid boolean` column on `user_profiles`. Set by Stripe webhook on subscription events. Checked client-side in settings page. |
+| Paid tier tracking | `is_paid boolean` column on `user_profiles`. Set by Stripe webhook (service-role client, bypasses RLS) on subscription events. Checked client-side in settings page. |
 | Settings UX | Single non-linear page. All sections visible and independently editable. Not a wizard replay. Visually recalls onboarding aesthetic. |
 | Settings entry point | One "Settings" link on the dashboard control bar. `/setup` deleted. |
 | AI models | OpenRouter for all AI calls (not direct Anthropic/Google APIs) |
@@ -102,15 +97,19 @@ All Stripe code is built and waiting. When ready:
 | Structured output | **JSON mode** (`response_format: { type: "json_object" }`), no retry loop. Stub plan is the fallback on API failure. |
 | Theme count | 3 themes |
 | Theme names | Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 |
-| Theme step placement | Step 4 in onboarding, after Goals, before plan generation |
+| Theme step placement | Step 3 (optional) in onboarding, after Assets, before Connect |
 | Theme default | Swiss Alps Retreat ❄️ (`data-theme="swiss-alps"` on `<html>`) |
 | Theme palettes | Swiss Alps: slate/ice. Gaudy Miami: pink/gold. Positano: linen/terracotta. See `docs/POLISH_BACKLOG.md` for exact values. |
 | Theme typography | Swiss Alps: DM Serif Display + DM Sans. Gaudy Miami: Syne + DM Sans. Positano: Cormorant Garamond + Lato. Loaded via `next/font/google`. |
 | Theme token system | CSS custom properties (`--color-bg`, `--color-primary`, etc.) + `--font-heading`/`--font-body`. Tailwind `theme-*` utilities reference them. Applied via `data-theme` on `<html>`. |
+| Onboarding sequence | Goals (req) → Assets (req) → Style (opt) → Connect (opt, paid). Plan generates at end of wizard (after Connect or skip). |
+| Connect step gating | Plaid connection is paid-tier only. Free users can use manual entry in Connect step or skip entirely. |
 | Preview page | Column view, production-accessible, real components with mock data |
 | Loading reveal | Full-screen themed transition — deferred to Polish backlog |
 | Horizontal scroll | Wizard uses horizontal scroll — one step per viewport, 0.45s cubic-bezier slide transition |
 | Post-launch iteration | Driven by user testing — no speculative polish before real users |
+| Supabase clients | Anon SSR client for user-facing routes; `createAdminClient()` (service role) for server-only trusted contexts (Stripe webhook, future cron jobs) |
+| Email confirmation | Disabled in Supabase. `signUp()` returns session immediately. No fallback sign-in attempt. |
 
 ---
 
@@ -123,21 +122,23 @@ app/onboarding/
 │   ├── page.tsx            ← Preview shell (public, no auth)
 │   └── mock.ts             ← Mock US+CA data
 └── steps/
-    ├── StepCountries.tsx   ← Step 1: "Where are your assets?"
-    ├── StepConnect.tsx     ← Step 2: "Connect your accounts" (Plaid or manual)
-    ├── StepGoals.tsx       ← Step 3: "Where are you headed?"
-    └── StepStyle.tsx       ← Step 4: "Choose your style"
+    ├── StepGoals.tsx       ← Step 1 (required): "Let's get to know your situation"
+    ├── StepCountries.tsx   ← Step 2 (required): "Where are your assets?"
+    ├── StepStyle.tsx       ← Step 3 (optional): "Choose your style"
+    └── StepConnect.tsx     ← Step 4 (optional, paid): "Connect your accounts"
 ```
 
 ### WizardData shape
 ```ts
 type WizardData = {
-  selections: CountrySelection[];
-  accounts: Account[];
-  goals: GoalsData;
-  // theme is passed directly from StepStyle, not stored in WizardData
+  goals: GoalsData;       // captured in Step 1
+  selections: CountrySelection[]; // captured in Step 2
+  // theme tracked separately (setTheme state)
+  // accounts passed directly to handleFinish()
 };
 ```
+
+Plan generates at the end of step 4 (Connect complete or skip). Payload: goals + selections + accounts (empty array if Connect skipped). Theme saved to `user_preferences` and `sessionStorage.pw_theme`.
 
 All step components accept `initialValues` props.
 
@@ -155,7 +156,7 @@ app/api/
 │   └── [id]/route.ts  ← DELETE
 ├── stripe/
 │   ├── checkout/route.ts  ← POST — creates Stripe Checkout session
-│   └── webhook/route.ts   ← POST — handles subscription events, flips is_paid
+│   └── webhook/route.ts   ← POST — uses admin client; handles subscription events, flips is_paid
 ```
 
 **Settings sections (all independently saveable):**
@@ -187,11 +188,12 @@ app/api/
 
 | Concern | Implementation |
 |---------|----------------|
-| Auth | Supabase Auth (sign-in/sign-up, middleware guards `/dashboard` and `/onboarding`) |
+| Auth | Supabase Auth (sign-in/sign-up, middleware guards `/dashboard` and `/onboarding`). Email confirmation disabled. |
 | Database | Supabase (Postgres). Tables: `user_plans`, `user_preferences`, `user_profiles`, `user_holdings`, `user_portfolio_news`, `plaid_items`, `user_accounts`, `user_checkin_schedule` |
+| Supabase clients | `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (SSR, cookie-based), `lib/supabase/admin.ts` (service role, no RLS — webhooks only) |
 | AI | OpenRouter via `/api/plan` (Haiku, JSON mode), `/api/chat` (Haiku, streaming), `/api/insight` (Gemini Flash) — all have stub fallbacks |
 | Bank data | Plaid (sandbox); mock accounts returned when credentials not configured |
-| Payments | Stripe — checkout + webhook built; gracefully stubs when `STRIPE_SECRET_KEY` not set |
+| Payments | Stripe — checkout + webhook built; webhook uses service-role client to bypass RLS; gracefully stubs when `STRIPE_SECRET_KEY` not set |
 | Analytics | PostHog — `onboarding_started`, `plan_generated`, `onboarding_completed`, `plan_refreshed`, `chat_message_sent` |
 | Theme system | CSS custom properties in `globals.css`; applied via `data-theme` on `<html>`; persisted to `user_preferences` table |
 | Charts | Recharts (`ProjectionChart`); CSS bar charts (`AllocationCharts`) |
@@ -206,6 +208,7 @@ app/api/
 - **Stripe mock:** If `STRIPE_SECRET_KEY` not set, `/api/stripe/checkout` returns `{ mock: true }` and settings shows "coming soon" alert
 - **Preview page:** Navigate to `/onboarding/preview` — no auth required, no data written
 - **OpenRouter:** `OPENROUTER_API_KEY` and `OPENROUTER_PLAN_MODEL` set in Vercel for all environments
+- **Admin client:** `createAdminClient()` in `lib/supabase/admin.ts` — uses `SUPABASE_SERVICE_ROLE_KEY`, bypasses RLS. Only use server-side in trusted contexts.
 
 ---
 

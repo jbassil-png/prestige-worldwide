@@ -238,7 +238,7 @@ export default function StepConnect({ selections, onNext, onBack, initialValues 
           onClick={() => onNext(accounts)}
           className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition"
         >
-          Next: Set your goals
+          Build my plan →
         </button>
         <button onClick={() => setAccounts(null)} className="w-full text-sm text-gray-500 hover:underline">
           Change accounts
