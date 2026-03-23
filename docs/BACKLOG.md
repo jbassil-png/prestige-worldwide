@@ -1,51 +1,24 @@
 # Backlog - Issues & Improvements
 
-This document tracks non-critical issues and improvements identified during testing that should be addressed after the Next.js update.
+This document tracks non-critical issues and improvements. Items marked ✅ are resolved.
+
+**Last Updated:** 2026-03-23
 
 ---
 
 ## UX Improvements
 
-### 1. Sign-up Page Redirect - No User Feedback
-**Issue:** When an authenticated user navigates to `/sign-up`, they are silently redirected to `/dashboard` with no explanation.
+### ✅ 1. Sign-up Redirect — No User Feedback (RESOLVED 2026-03-22)
+**Issue:** After sign-up, redirect to onboarding was silent — no feedback, looked broken.
 
-**Current Behavior:**
-- Middleware redirects authenticated users from `/sign-up` and `/sign-in` to `/dashboard`
-- No message or indication why the redirect happened
-- Can be confusing if user doesn't realize they're already logged in
-
-**Proposed Fix:**
-- Add query parameter when redirecting (e.g., `?already_signed_in=true`)
-- Display a friendly message on dashboard: "You're already signed in"
-- Or show a toast notification explaining the redirect
-
-**Location:** `middleware.ts` lines 45-54
-
-**Priority:** Low
-**Effort:** Small
+**Resolution:** Added `redirecting` state to sign-up page: shows spinner + "Account created! Taking you to setup…" for 1 second before `router.push("/onboarding")`. Also removed the fragile `signInWithPassword` fallback — `signUp()` always returns a session when email confirmation is disabled.
 
 ---
 
 ## Bug Fixes
 
-### 1. News API Returns Empty Array Without API Key
-**Issue:** When `OPENROUTER_API_KEY` is not configured, the `/api/news` endpoint returns an empty items array instead of stub/mock news.
-
-**Current Behavior:**
-- API returns `{ "items": [] }` when OpenRouter API key is missing
-- Users see empty news panel with no content
-- No indication that stub data should be shown
-
-**Expected Behavior:**
-- Should return stub news data (defined in `STUB_NEWS` constant) when API key is not configured
-- Code has fallback logic (lines 46-47) but it's not triggering correctly
-
-**Location:** `app/api/news/route.ts` lines 44-48
-
-**Impact:** News panel appears broken until OpenRouter API is configured
-
-**Priority:** Medium
-**Effort:** Small - Debug why the fallback condition isn't working
+### ✅ 1. News API Returns Empty Array Without API Key (RESOLVED — Task 1)
+Stub fallback added. News API now returns demo news when `ALPHA_VANTAGE_API_KEY` is not set. 30-minute server-side cache in place. See `docs/FEATURE_PORTFOLIO_NEWS.md`.
 
 ---
 
@@ -188,19 +161,17 @@ See detailed specification: `docs/FEATURE_PORTFOLIO_NEWS.md`
 
 ## Feature Requests
 
-### 3. Post-Onboarding Re-entry Flows
+### 3. Post-Onboarding Re-entry Flows (Partially Complete)
 **Vision:** When returning users want to add accounts, change countries, or edit goals, the experience should feel like a natural continuation of onboarding — not a separate admin panel.
 
-**Current state:** Users go to `/settings` for country/retirement changes and `/accounts` for account management. These UIs are functional but don't share the component language of onboarding.
+**Current state:** Unified `/settings` page covers Countries, Accounts, Goals, Style, and Check-ins — all independently saveable. The `/dev/reset` tool covers rapid onboarding re-runs. The Settings UX intentionally echoes onboarding aesthetics.
 
-**Proposed:**
-- "Add countries" and "Add accounts" actions on the dashboard that open flows reusing `StepCountries` and `StepConnect`
-- Goal editing that renders the same goal card UI as `StepGoals`
-- Entry points from the dashboard ("Connect another account", "Add a goal")
-- Dev-mode "Reset onboarding" button in settings
+**Still open:**
+- Dashboard entry points ("Connect another account", "Add a goal") that reuse step components inline
+- Goal editing modal using the same goal card UI as `StepGoals`
 
 **Reference:** `docs/PRODUCT_PRINCIPLES.md#onboarding-consistency`
-**Priority:** Medium
+**Priority:** Low (post-launch, driven by user feedback)
 **Effort:** Medium (~4-6 hours)
 
 ---

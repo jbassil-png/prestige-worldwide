@@ -127,6 +127,32 @@ Currently the Connect step shows both Plaid and manual tabs for all users. Free 
 - [ ] Show upgrade CTA on Plaid tab for free users; keep manual tab accessible
 - [ ] Wire "Upgrade" to Stripe checkout flow
 
+**Open question:** Should this gate be in the onboarding wizard (Option A), or should onboarding remain frictionless and gating happen post-onboarding (Option B)? Documented in `SESSION_NOTES.md`.
+
+### Task 26: Free vs Paid Onboarding Map 📋 DECISION PENDING
+Define and document the exact user experience for free vs paid onboarding paths. Currently the code gates Plaid in Connect step, but the full UX flow hasn't been formally mapped.
+
+**Sub-tasks:**
+- [ ] Define what "free onboarding" looks like end-to-end (entry → step sequence → dashboard)
+- [ ] Define what "paid onboarding" adds or changes
+- [ ] Decide whether Connect step is skippable for free users or shows an upgrade prompt
+- [ ] Document in this roadmap once decided
+- [ ] Test both paths manually before launch
+
+**Dependency:** Resolves the Option A/B/C question for Task 21.
+
+### Task 27: Synthetic Test Data for Free + Paid Flows 📋
+Enable rapid testing of both onboarding paths without manual data entry each time.
+
+**Current state:** `/dev/reset` (at `ALLOW_DEV_RESET=true`) clears all user data and redirects to `/onboarding`. This covers the reset part. What's missing is a fixed set of test accounts that can be quickly loaded.
+
+**Sub-tasks:**
+- [ ] Define canonical free-user test scenario (e.g. 2 manual accounts, no Plaid, US+CA)
+- [ ] Define canonical paid-user test scenario (e.g. Plaid sandbox accounts, US+CA)
+- [ ] Decide on seeding format: seed button in `/dev/reset`, fixture file, or Supabase seed script
+- [ ] Implement chosen format
+- [ ] Document in `IMPLEMENTATION_ROADMAP.md#dev-utilities`
+
 ---
 
 ## 📋 Phase 4 — Post-Launch (User Testing Driven)
@@ -145,10 +171,13 @@ Country-specific advisor personas (e.g. Gordon for Canada, Brad for US). Special
 Let users assign accounts to goals so the unallocated bucket is accurate.
 
 **Sub-tasks:**
+- [ ] Decide placement: during onboarding (inline after Goals step), post-onboarding nudge, or settings-only
 - [ ] Goal card UI with "Add accounts" action
 - [ ] Multi-select from connected accounts
 - [ ] Update `user_goals.linked_account_ids`
 - [ ] Recalculate unallocated: net worth minus linked account balances
+
+**Open question:** Whether to surface goal-account linking during onboarding is deferred until Task 26 (Free vs Paid Onboarding Map) is decided. Documented in `SESSION_NOTES.md`.
 
 ### Task 24: Scheduled Check-in Email Delivery
 **Sub-tasks:**

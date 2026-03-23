@@ -1,6 +1,6 @@
 # Product Principles — Prestige Worldwide
 
-**Last Updated:** 2026-03-21
+**Last Updated:** 2026-03-23
 
 This document captures the product decisions and UX philosophy that should guide every feature we build. When facing a design trade-off, refer here first.
 
@@ -51,7 +51,7 @@ We ask for a **target retirement year** (e.g. 2055), not current age and retirem
 
 ## 4. Default Goals Reduce Blank-Slate Anxiety
 
-When a user reaches Step 3 of onboarding, they see a **pre-populated retirement goal card** (default: $2,000,000 / target year ~30 years out). They can:
+When a user reaches Step 1 of onboarding (Goals), they see a **pre-populated retirement goal card** (default: $2,000,000 / target year ~30 years out). They can:
 
 - Edit the target amount
 - Edit the target year
@@ -142,14 +142,14 @@ Country of residence is the most important piece of context for a cross-border f
 - Account type suggestions
 - Retirement country projections
 
-Country is captured in **Step 1 of onboarding** (which countries you have assets in) and **Step 3** (current residence, optional retirement country). Settings allows updating both. No screen should be reached without knowing at least one country.
+Country is captured in **Step 2 of onboarding** (Assets step — "Where are your assets?"), which collects both residence and retirement country selections. Settings allows updating both. No screen should be reached without knowing at least one country.
 
 ---
 
 ## 10. Developer Ergonomics — Onboarding Iteration
 
-During active development, we need to be able to quickly edit and re-run the onboarding flow. See `docs/IMPLEMENTATION_ROADMAP.md#dev-utilities` for current options.
+During active development, we need to be able to quickly edit and re-run the onboarding flow.
 
-**Planned:** A dev-mode "Reset & re-run onboarding" button in Settings (visible only when `NODE_ENV === 'development'`) that clears `user_plans` for the current user and redirects to `/onboarding`.
+**Live:** Navigate to `/dev/reset` — requires `ALLOW_DEV_RESET=true` env var. Clears all user data for the current account (10 tables) and shows a "Start onboarding →" button. Not linked from the app UI; navigate directly. API route: `POST /api/dev/reset`.
 
-This allows rapid iteration on the onboarding UX without needing to use Supabase dashboard each time.
+See `docs/IMPLEMENTATION_ROADMAP.md#dev-utilities` for full details.
