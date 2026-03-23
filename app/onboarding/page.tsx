@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
 import StepGoals, { type GoalsData } from "./steps/StepGoals";
@@ -19,6 +19,7 @@ type StepNum = 1 | 2 | 3 | 4;
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [step, setStep] = useState<StepNum>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
@@ -27,10 +28,15 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (posthog.__loaded) {
-      posthog.capture("onboarding_started");
+    if (!posthog.__loaded) return;
+    posthog.capture("onboarding_started");
+    // Fire user_signed_up for magic link sign-ups (email/password fires it on the sign-up page).
+    // Guard with sessionStorage so it only fires once even if the user refreshes.
+    if (searchParams.get("new_signup") === "true" && !sessionStorage.getItem("pw_signup_tracked")) {
+      posthog.capture("user_signed_up", { method: "magic_link" });
+      sessionStorage.setItem("pw_signup_tracked", "1");
     }
-  }, []);
+  }, [searchParams]);
 
   async function handleFinish(accounts: Account[]) {
     const { goals, selections } = wizardData as WizardData;
@@ -83,6 +89,7 @@ export default function OnboardingPage() {
       const meta = { ...payload, selections, accounts, goals, theme };
 
       if (user) {
+        const manualAccounts = accounts.filter((a) => a.source === "manual");
         await Promise.all([
           supabase.from("user_plans").insert({
             user_id: user.id,
@@ -91,6 +98,17 @@ export default function OnboardingPage() {
           supabase.from("user_preferences").upsert(
             { user_id: user.id, theme },
             { onConflict: "user_id" }
+          ),
+          ...manualAccounts.map((a) =>
+            supabase.from("user_accounts").insert({
+              user_id: user.id,
+              account_id: `manual_${crypto.randomUUID()}`,
+              account_name: a.name,
+              account_type: a.type,
+              current_balance: a.balanceUsd,
+              currency: a.currency.toUpperCase(),
+              plaid_item_id: null,
+            })
           ),
         ]);
       } else {

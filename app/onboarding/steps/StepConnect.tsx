@@ -16,6 +16,7 @@ export type Account = {
   currency: string;
   countryCode: string;
   institution?: string;
+  source: "plaid" | "manual";
 };
 
 interface Props {
@@ -27,8 +28,8 @@ interface Props {
 
 // Stub mock accounts used when Plaid is not configured
 const MOCK_ACCOUNTS: Account[] = [
-  { name: "Chase Checking", type: "401(k)", balanceUsd: 85000, currency: "USD", countryCode: "US", institution: "Chase" },
-  { name: "TD RRSP", type: "RRSP", balanceUsd: 62000, currency: "CAD", countryCode: "CA", institution: "TD Bank" },
+  { name: "Chase Checking", type: "401(k)", balanceUsd: 85000, currency: "USD", countryCode: "US", institution: "Chase", source: "plaid" },
+  { name: "TD RRSP", type: "RRSP", balanceUsd: 62000, currency: "CAD", countryCode: "CA", institution: "TD Bank", source: "plaid" },
 ];
 
 function PlaidConnect({ selections, onAccounts }: { selections: CountrySelection[]; onAccounts: (a: Account[]) => void }) {
@@ -66,7 +67,7 @@ function PlaidConnect({ selections, onAccounts }: { selections: CountrySelection
         body: JSON.stringify({ public_token: publicToken }),
       });
       const data = await res.json();
-      setAccounts(data.accounts);
+      setAccounts((data.accounts ?? []).map((a: Omit<Account, "source">) => ({ ...a, source: "plaid" as const })));
       setLinkToken(null);
 
       // Track successful bank connection
@@ -169,6 +170,7 @@ function ManualEntry({ selections, onAccounts }: { selections: CountrySelection[
       balanceUsd: parseFloat(balances[r.key] ?? "0") || 0,
       currency: r.currency,
       countryCode: r.flag,
+      source: "manual",
     }));
     onAccounts(accounts);
   }

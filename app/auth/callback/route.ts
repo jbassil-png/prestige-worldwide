@@ -29,9 +29,18 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      // If this looks like a new sign-up (user created within the last 60 seconds),
+      // pass a flag so the destination page can fire the user_signed_up analytics event.
+      const user = data.session?.user;
+      const isNewUser =
+        user?.created_at &&
+        Date.now() - new Date(user.created_at).getTime() < 60_000;
+      const destination = isNewUser
+        ? `${origin}${next}${next.includes("?") ? "&" : "?"}new_signup=true`
+        : `${origin}${next}`;
+      return NextResponse.redirect(destination);
     }
   }
 
