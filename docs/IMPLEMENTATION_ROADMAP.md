@@ -212,9 +212,10 @@ See `docs/POLISH_BACKLOG.md` for details. Intentionally deferred until post-laun
 ## Dev Utilities
 
 **Relaunching onboarding during development:**
-- Option A: Delete the user's row from `user_plans` in Supabase dashboard, then navigate to `/onboarding`
-- Option B: Navigate directly to `/onboarding` — middleware only blocks unauthenticated users
-- Option C (planned): Add a dev-only "Reset onboarding" button in settings
+Navigate to `/dev/reset` — wipes all user data for the current account and shows a "Start onboarding →" button.
+Requires `ALLOW_DEV_RESET=true` env var. Works in any environment when explicitly enabled.
+Tables cleared: `user_plans`, `user_accounts`, `user_profiles`, `user_preferences`, `user_holdings`, `user_balance_history`, `user_portfolio_news`, `plaid_items`, `user_checkin_schedule`, `plan_history`.
+Not linked from the app UI — navigate directly. API route: `POST /api/dev/reset`.
 
 **Testing the Stripe webhook locally:**
 ```bash

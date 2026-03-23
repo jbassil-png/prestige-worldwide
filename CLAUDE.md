@@ -209,6 +209,7 @@ app/api/
 - **Preview page:** Navigate to `/onboarding/preview` — no auth required, no data written
 - **OpenRouter:** `OPENROUTER_API_KEY` and `OPENROUTER_PLAN_MODEL` set in Vercel for all environments
 - **Admin client:** `createAdminClient()` in `lib/supabase/admin.ts` — uses `SUPABASE_SERVICE_ROLE_KEY`, bypasses RLS. Only use server-side in trusted contexts.
+- **Dev reset:** Navigate to `/dev/reset` to wipe all user data for the current account and restart onboarding. Requires `ALLOW_DEV_RESET=true` env var — works in any environment when explicitly set. Not linked from the UI; visit directly.
 
 ---
 

@@ -87,11 +87,11 @@ All new users start as free (`is_paid = false`). No current path to arrive at on
 - **Q: What does "paid onboarding" mean — different step 4 UX, or a different flow entirely?**
 
 _Synthetic test data:_
-Three delivery options:
-- SQL seed script (run in Supabase SQL editor — no code changes)
-- Dev-mode reset button in settings UI
-- CLI script (`npm run seed:test`) using service-role key
-- **Q: Which format? Fixed test emails (e.g. free@test / paid@test) with known password for Playwright?**
+`/dev/reset` (gated by `ALLOW_DEV_RESET=true`) already handles the "easily refresh" requirement — wipes all user data and routes back to onboarding. Confirmed live.
+What still needs deciding:
+- Fixed test accounts (e.g. `free@test.prestige` / `paid@test.prestige`) with known credentials for Playwright automation?
+- A seed script to populate those accounts with representative data (accounts, goals, plan) in one command?
+- **Q: Should synthetic data be seeded via SQL script, CLI (`npm run seed:test`), or the dev reset page itself extended to optionally seed fixture data after clearing?**
 
 ---
 
