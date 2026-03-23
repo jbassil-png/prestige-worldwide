@@ -46,23 +46,9 @@ export default function SignUpPage() {
       }
       setRedirecting(true);
       setLoading(false);
-      setTimeout(() => router.push("/onboarding"), 1200);
-    } else if (data.user) {
-      // User created but no session — try signing in directly in case
-      // email confirmation is disabled but Supabase didn't return a session
-      const { data: signInData } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInData?.session) {
-        posthog.identify(data.user.id, { email: data.user.email });
-        posthog.capture('user_signed_up', { method: 'email_password' });
-        setRedirecting(true);
-        setLoading(false);
-        setTimeout(() => router.push("/onboarding"), 1200);
-      } else {
-        // Truly requires email confirmation
-        setConfirmationSent(true);
-        setLoading(false);
-      }
+      setTimeout(() => router.push("/onboarding"), 1000);
     } else {
+      // No session returned — email confirmation is required
       setConfirmationSent(true);
       setLoading(false);
     }

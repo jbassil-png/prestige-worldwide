@@ -21,10 +21,11 @@ export type CountrySelection = {
 
 interface Props {
   onNext: (selections: CountrySelection[]) => void;
+  onBack?: () => void;
   initialValues?: CountrySelection[];
 }
 
-export default function StepCountries({ onNext, initialValues }: Props) {
+export default function StepCountries({ onNext, onBack, initialValues }: Props) {
   const [selected, setSelected] = useState<Record<string, string[]>>(
     () => Object.fromEntries((initialValues ?? []).map((s) => [s.countryCode, s.accountTypes]))
   );
@@ -135,8 +136,14 @@ export default function StepCountries({ onNext, initialValues }: Props) {
         disabled={!hasValidSelection}
         className="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-40"
       >
-        Next: Connect accounts
+        Continue →
       </button>
+
+      {onBack && (
+        <button type="button" onClick={onBack} className="w-full text-sm text-gray-500 hover:underline">
+          Back
+        </button>
+      )}
     </div>
   );
 }

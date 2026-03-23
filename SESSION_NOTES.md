@@ -9,6 +9,61 @@
 
 ---
 
+### Session: Mar 22, 2026 — Codebase audit, auth fixes, onboarding reorder
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Comprehensive codebase review**
+   - Confirmed Tasks 17 (plan history UI) and 18 (sign-up redirect UX) were already fully implemented despite being marked open in docs
+   - Identified all actual remaining issues: auth messiness, Stripe webhook auth bug, migration idempotency bug
+
+2. ✅ **Auth cleanup (Task 19)**
+   - Removed `signInWithPassword` fallback from sign-up page — it was a workaround for a Supabase quirk; with email confirmation disabled, `signUp()` always returns a session immediately
+   - Reduced redirect delay from 1200ms → 1000ms (the "Account created!" spinner state is shown during this window — UX is correct, not broken)
+   - Settled: email confirmation is **disabled** in Supabase; sign-up → immediate session → 1s delay → `/onboarding`
+
+3. ✅ **Stripe webhook fix — critical bug**
+   - Webhook was using the SSR anon client (`createClient()` from `lib/supabase/server`) with no user session
+   - RLS on `user_profiles` blocked all updates — `is_paid` was never being flipped by Stripe events
+   - Fix: created `lib/supabase/admin.ts` (service-role client, bypasses RLS) and wired it into the webhook handler
+   - **Owner action:** ensure `SUPABASE_SERVICE_ROLE_KEY` is set in Vercel env vars (it's in `.env.example`)
+
+4. ✅ **Migration idempotency fix**
+   - `20260321_add_goals_and_checkins.sql` had bare `ALTER COLUMN current_age/retirement_age DROP NOT NULL` statements that fail on fresh databases where those columns don't exist
+   - Wrapped in `DO $$ BEGIN ... EXCEPTION WHEN undefined_column THEN NULL; END $$;` blocks to match the pattern in `20260322_fix_user_profiles_retirement_year.sql`
+
+5. ✅ **Onboarding reorder (Task 20)**
+   - New sequence: **Goals → Assets → Style (opt) → Connect (opt, paid)**
+   - Matches the `/onboarding/preview` page sequence exactly
+   - Steps 3 (Style) and 4 (Connect) are optional — Style has built-in "Skip" button; Connect has a wizard-level "Skip — I'll connect accounts later" link
+   - Plan generates at the end of step 4 (or after skip) with whatever data is collected
+   - Loading state replaced inline button disable with full-screen overlay (spinner + "Building your plan…")
+   - `StepCountries` gained `onBack?` prop; "Next: Connect accounts" label → "Continue →"
+   - `StepConnect` "Next: Set your goals" label → "Build my plan →"
+   - `WizardData` restructured: `goals` (step 1) + `selections` (step 2); `accounts` passed directly to `handleFinish()`
+
+6. ✅ **Documentation fully updated**
+   - `CLAUDE.md`: tasks 17/18/19/20 marked done; onboarding structure updated; new Key Decisions entries; admin client documented
+   - `SESSION_NOTES.md`: this entry
+   - `IMPLEMENTATION_ROADMAP.md`: full rewrite to reflect current state
+
+**Key decisions made this session:**
+- Email confirmation is OFF in Supabase — single sign-up path, no fallback
+- Stripe webhook MUST use service-role client — anon client + RLS = silent failure
+- Onboarding sequence locked: Goals → Assets → Style → Connect (matches preview page)
+- Connect step is the last wizard step; plan generates there (or on skip)
+- Admin client (`createAdminClient()`) is the pattern for all server-only trusted contexts going forward
+
+**Stopping point / next session:**
+1. **Stripe account setup** — owner action; steps in CLAUDE.md; ensure `SUPABASE_SERVICE_ROLE_KEY` is in Vercel
+2. **Plaid gating in Connect step** — currently shows both Plaid and manual tabs for all users; should show upgrade prompt for free users on the Plaid tab
+3. **Ship to real users** — post-Stripe setup
+4. **Post-launch iteration** — driven by user testing
+
+---
+
 ### Session: Mar 22, 2026 (cont.) — Tasks 14 + 15 Delivered
 
 **Branch:** `claude/review-documentation-rgCPT`
