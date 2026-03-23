@@ -8,8 +8,9 @@ export async function POST() {
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
+  if (!user) return NextResponse.json({ error: "Unauthorized — make sure you are signed in." }, { status: 401 });
 
   const tables = [
     "plan_history",
