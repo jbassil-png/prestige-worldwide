@@ -210,6 +210,11 @@ Let users assign accounts to goals so the unallocated bucket is accurate.
 
 ## 📋 Phase 5 — Polish Backlog
 
+### Paid User Badge
+Show a visual indicator (badge, tag, or icon) somewhere in the UI when a paid user is logged in — confirming their subscription is active and differentiating their experience. Exact placement TBD (dashboard header, settings page, or both).
+
+
+
 See `docs/POLISH_BACKLOG.md` for details. Intentionally deferred until post-launch user data.
 
 - Full-screen loading reveal (themed 3-beat animation on plan gen)
