@@ -119,6 +119,21 @@ Steps documented in `CLAUDE.md` → "Current Task". Requires:
 4. Register webhook endpoint in Stripe dashboard
 5. Run `supabase/migrations/20260322b_add_stripe_customer_id.sql`
 
+### NEXT_PUBLIC_APP_URL in Vercel 🔜 OWNER ACTION
+Required for server-side plan regeneration in production. Without it, `PUT /api/profile` falls back to `localhost:3000` and plan re-gen silently fails when a user updates their countries. Set to `https://prestige-worldwide-kappa.vercel.app` (or custom domain). ~2 minutes.
+
+### Missing `user_plans` Migration 📋
+The app writes plans to `user_plans` but there is no migration file for this table in `supabase/migrations/`. Fresh database installs will fail silently. Write a migration that matches the table structure the app already uses.
+**Effort:** ~30 min. **Depends on:** Nothing — can be done any time.
+
+### Manual Accounts Not Persisted from Onboarding 📋
+Accounts entered manually in the Connect step (Step 4) are passed directly to `handleFinish()` for plan generation but are never written to `user_accounts`. After onboarding, the accounts panel in Settings shows empty. Fix: save accounts to `user_accounts` at the end of the wizard before generating the plan.
+**Effort:** ~1h. **Depends on:** Nothing — can be done any time.
+
+### Magic Link Sign-up Analytics 📋
+When a user signs up via magic link, the `user_signed_up` PostHog event is never fired (it's only captured in the email/password sign-up path). Fix: fire the event in the auth callback handler.
+**Effort:** ~20 min. **Depends on:** Nothing — can be done any time.
+
 ### Task 21: Plaid Gating in Connect Step 📋
 Currently the Connect step shows both Plaid and manual tabs for all users. Free users should see an upgrade prompt on the Plaid tab (same pattern as the Settings accounts section). Manual entry remains available.
 
@@ -194,6 +209,11 @@ Let users assign accounts to goals so the unallocated bucket is accurate.
 ---
 
 ## 📋 Phase 5 — Polish Backlog
+
+### Paid User Badge
+Show a visual indicator (badge, tag, or icon) somewhere in the UI when a paid user is logged in — confirming their subscription is active and differentiating their experience. Exact placement TBD (dashboard header, settings page, or both).
+
+
 
 See `docs/POLISH_BACKLOG.md` for details. Intentionally deferred until post-launch user data.
 

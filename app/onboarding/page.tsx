@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
 import StepGoals, { type GoalsData } from "./steps/StepGoals";
@@ -16,6 +16,19 @@ type WizardData = {
 
 const STEPS = ["Goals", "Assets", "Style", "Connect"] as const;
 type StepNum = 1 | 2 | 3 | 4;
+
+// Separate component so useSearchParams is inside a Suspense boundary
+function SignupTracker() {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (!posthog.__loaded) return;
+    if (searchParams.get("new_signup") === "true" && !sessionStorage.getItem("pw_signup_tracked")) {
+      posthog.capture("user_signed_up", { method: "magic_link" });
+      sessionStorage.setItem("pw_signup_tracked", "1");
+    }
+  }, [searchParams]);
+  return null;
+}
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -83,6 +96,7 @@ export default function OnboardingPage() {
       const meta = { ...payload, selections, accounts, goals, theme };
 
       if (user) {
+        const manualAccounts = accounts.filter((a) => a.source === "manual");
         await Promise.all([
           supabase.from("user_plans").insert({
             user_id: user.id,
@@ -91,6 +105,17 @@ export default function OnboardingPage() {
           supabase.from("user_preferences").upsert(
             { user_id: user.id, theme },
             { onConflict: "user_id" }
+          ),
+          ...manualAccounts.map((a) =>
+            supabase.from("user_accounts").insert({
+              user_id: user.id,
+              account_id: `manual_${crypto.randomUUID()}`,
+              account_name: a.name,
+              account_type: a.type,
+              current_balance: a.balanceUsd,
+              currency: a.currency.toUpperCase(),
+              plaid_item_id: null,
+            })
           ),
         ]);
       } else {
@@ -116,6 +141,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen overflow-hidden relative bg-gradient-to-br from-brand-50 to-white">
+      <Suspense><SignupTracker /></Suspense>
       {/* ── Fixed progress header ─────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-lg mx-auto px-4 py-3">
