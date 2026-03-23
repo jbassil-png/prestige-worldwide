@@ -156,6 +156,45 @@ Define and document the exact user experience for free vs paid onboarding paths.
 
 **Dependency:** Resolves the Option A/B/C question for Task 21.
 
+---
+
+**Session notes (2026-03-23):**
+
+The paywall scope is being expanded beyond Plaid. Proposed feature-tier mapping:
+
+| Feature | Tier |
+|---------|------|
+| Plan generation (AI) | Free |
+| Dashboard, chat, news | Free |
+| Manual account entry | Free |
+| Goals + Assets onboarding steps | Free |
+| Plaid bank connection | Paid |
+| Theme selection (all 3 themes) | Paid |
+| Geographic AI advisors | Paid |
+
+**Resulting onboarding flows:**
+
+Free (3 steps):
+```
+Goals (req) → Assets (req) → Connect (manual-only, skippable)
+```
+
+Paid (4–5 steps):
+```
+Goals (req) → Assets (req) → Style (opt) → Connect (Plaid+manual, opt) → [Advisors, future]
+```
+
+**Open decisions before implementation:**
+
+1. **Default theme for free users** — Is Swiss Alps still applied to free users (locked), or do free users get no theme customisation at all? Simplest answer: free users get Swiss Alps locked in; paid users can pick any of the three.
+
+2. **Advisors step in paid onboarding** — Does it appear now as a locked/teaser step, or only after Task 22 ships? Options: (a) skip the step entirely until Task 22 is built, (b) show a "coming soon" teaser as the final paid onboarding step.
+
+**Design considerations noted:**
+- Theme as a paywall works best as part of a capability bundle (themes + Plaid + advisors), not as a standalone driver. Cosmetic gating alone rarely converts.
+- Free users will always see Swiss Alps — the default theme must be polished, not feel like a "trial" state.
+- Free onboarding is shorter and less personalised by design, which gives paid onboarding a meaningfully more premium feel from the first session.
+
 ### Task 27: Synthetic Test Data for Free + Paid Flows 📋
 Enable rapid testing of both onboarding paths without manual data entry each time.
 
