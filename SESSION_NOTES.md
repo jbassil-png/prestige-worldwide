@@ -37,9 +37,11 @@ Full onboarding restructure. All open questions from Task 26 (free vs paid onboa
 
 7. **Demo accounts (Task 27)** — Two dedicated accounts (free + paid), seeded with canonical scenarios, each independently resettable via `/dev/reset`.
 
+8. **Plan generation timing** — Deferred to end of full wizard. Free: after step 3 (Connect). Paid: after step 4 (Personalise). Ensures paid plan payload includes theme, advisor IDs, and audit frequency.
+
 **Stopping point / next session:**
-- Tasks 23, 21, 28 are unblocked and fully specced — any of them is a clean starting point
-- Suggested order: 23 first (highest user value, all users affected), then 21 (quick win), then 28
+- Tasks 23, 21, 28 are unblocked and fully specced
+- Starting with Task 23 (goal-account linking in Assets step)
 
 ---
 

@@ -197,6 +197,7 @@ The Personalise step (paid step 4) bundles:
 - Free users get the current single generalist chat advisor. Paid users get country-specific advisors auto-assigned from their selected countries.
 - Portfolio audit is an expansion of the check-in concept (Task 24) — more thorough AI-generated report, surfaced during paid onboarding in the Personalise step.
 - StepStyle is removed from the free onboarding flow entirely and folded into the paid Personalise step.
+- **Plan generation deferred to end of full wizard.** Free: generates after step 3 (Connect). Paid: generates after step 4 (Personalise). Ensures plan has complete context before first generation.
 
 **Demo accounts decision:**
 - Two dedicated test accounts: one configured as free tier, one as paid tier.
@@ -234,11 +235,14 @@ New final step in paid onboarding. Bundles three customisation capabilities into
 - [ ] Panel 2: advisor cards (auto-assigned from countries; show name, country, expertise; toggle active)
 - [ ] Panel 3: audit frequency selector (radio or segmented control; 4 options)
 - [ ] Wire into wizard orchestrator: shown only when `is_paid === true` after Connect step
-- [ ] Saves: theme → `user_preferences`; advisor selections → new or existing table (TBD); frequency → `user_checkin_schedule`
-- [ ] Skip button — "I'll set this up later in Settings"
+- [ ] **Plan generation fires here** — after Personalise completes or is skipped. Payload includes theme + advisor IDs + audit frequency alongside goals, selections, and accounts.
+- [ ] Personalise selections passed into `handleFinish()` alongside accounts (or saved to Supabase before plan gen if preferred)
+- [ ] Saves at plan gen: theme → `user_preferences`; advisor selections → TBD table; frequency → `user_checkin_schedule`
+- [ ] Skip button — "I'll set this up later in Settings" — still triggers plan generation with defaults
 - [ ] All three settings editable in Settings page post-onboarding
 
 **Note:** `StepStyle.tsx` stays in codebase for Settings re-use but is removed from the free onboarding sequence.
+**Plan generation timing:** Free users: plan generates at end of step 3 (Connect). Paid users: plan generates at end of step 4 (Personalise). This ensures the plan has full context — theme, advisors, audit frequency — before first generation.
 
 ---
 
