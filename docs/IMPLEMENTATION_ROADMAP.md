@@ -134,109 +134,157 @@ Accounts entered manually in the Connect step (Step 4) are passed directly to `h
 When a user signs up via magic link, the `user_signed_up` PostHog event is never fired (it's only captured in the email/password sign-up path). Fix: fire the event in the auth callback handler.
 **Effort:** ~20 min. **Depends on:** Nothing — can be done any time.
 
-### Task 21: Plaid Gating in Connect Step 📋
-Currently the Connect step shows both Plaid and manual tabs for all users. Free users should see an upgrade prompt on the Plaid tab (same pattern as the Settings accounts section). Manual entry remains available.
+### Task 21: Plaid Gating + Free-Tier Messaging in Connect Step 📋
+The Connect step must clearly communicate to free users that manual entry is their limit — not just a silently-defaulted tab. The gate is explicitly stated, with an upgrade path available.
 
 **Sub-tasks:**
-- [ ] Check `is_paid` in StepConnect (fetch from `/api/profile` or pass as prop from wizard)
-- [ ] Show upgrade CTA on Plaid tab for free users; keep manual tab accessible
-- [ ] Wire "Upgrade" to Stripe checkout flow
+- [ ] Pass `is_paid` into StepConnect from the wizard (fetch from `/api/profile` or prop from orchestrator)
+- [ ] For free users: show a clear banner/callout ("You're on the free plan — manual account entry only. Upgrade to connect via Plaid.") rather than hiding or silently disabling the Plaid option
+- [ ] Show upgrade CTA wired to Stripe checkout; keep manual entry as the primary free action
+- [ ] For paid users: show both Plaid and manual tabs as normal
 
-**Open question:** Should this gate be in the onboarding wizard (Option A), or should onboarding remain frictionless and gating happen post-onboarding (Option B)? Documented in `SESSION_NOTES.md`.
+**Decision settled:** Gate is in the onboarding wizard (Option A). Honest, explicit messaging is the approach — not frictionless bypass.
 
-### Task 26: Free vs Paid Onboarding Map 📋 DECISION PENDING
-Define and document the exact user experience for free vs paid onboarding paths. Currently the code gates Plaid in Connect step, but the full UX flow hasn't been formally mapped.
+### Task 26: Free vs Paid Onboarding Map ✅ RESOLVED
+Decided in session Mar 23, 2026. See session notes above for full decision record.
 
-**Sub-tasks:**
-- [ ] Define what "free onboarding" looks like end-to-end (entry → step sequence → dashboard)
-- [ ] Define what "paid onboarding" adds or changes
-- [ ] Decide whether Connect step is skippable for free users or shows an upgrade prompt
-- [ ] Document in this roadmap once decided
-- [ ] Test both paths manually before launch
+**Free (3 steps):** Goals → Assets + Goal Linking → Connect (manual-only, explicit gate, skippable)
+**Paid (4 steps):** Goals → Assets + Goal Linking → Connect (Plaid+manual, skippable) → Personalise (opt)
 
-**Dependency:** Resolves the Option A/B/C question for Task 21.
+**Remaining:** Test both paths manually before launch (covered by Task 27 demo accounts).
 
 ---
 
-**Session notes (2026-03-23):**
+**Session notes (2026-03-23, decision session):**
 
-The paywall scope is being expanded beyond Plaid. Proposed feature-tier mapping:
+Full onboarding restructure decided. All open questions from previous session now resolved.
 
-| Feature | Tier |
-|---------|------|
-| Plan generation (AI) | Free |
-| Dashboard, chat, news | Free |
-| Manual account entry | Free |
-| Goals + Assets onboarding steps | Free |
-| Plaid bank connection | Paid |
-| Theme selection (all 3 themes) | Paid |
-| Geographic AI advisors | Paid |
+**Final feature-tier mapping:**
 
-**Resulting onboarding flows:**
+| Feature | Free | Paid |
+|---------|------|------|
+| Plan generation (AI) | ✅ | ✅ |
+| Dashboard, chat, news | ✅ | ✅ |
+| Manual account entry | ✅ | ✅ |
+| Goal-account linking (Assets step) | ✅ | ✅ |
+| Connect step — manual only | ✅ | ✅ |
+| Plaid bank connection | ❌ | ✅ |
+| Theme selection (non-default) | ❌ | ✅ |
+| Geographic AI advisors (country-specific) | ❌ (generalist) | ✅ |
+| Portfolio audit scheduling (onboarding) | ❌ | ✅ |
+
+**Final onboarding flows:**
 
 Free (3 steps):
 ```
-Goals (req) → Assets (req) → Connect (manual-only, skippable)
+Goals (req) → Assets + Goal Linking (req) → Connect (manual-only, explicit gating, skippable)
 ```
 
-Paid (4–5 steps):
+Paid (4 steps):
 ```
-Goals (req) → Assets (req) → Style (opt) → Connect (Plaid+manual, opt) → [Advisors, future]
+Goals (req) → Assets + Goal Linking (req) → Connect (Plaid+manual, skippable) → Personalise (opt)
 ```
 
-**Open decisions before implementation:**
+The Personalise step (paid step 4) bundles:
+1. Theme selection — alternate to Swiss Alps default
+2. Geographic advisor selection — paid users get auto-assigned advisors for each selected country
+3. Portfolio audit frequency — expanded check-in scheduling (thorough AI-generated report, not just snapshot email)
 
-1. **Default theme for free users** — Is Swiss Alps still applied to free users (locked), or do free users get no theme customisation at all? Simplest answer: free users get Swiss Alps locked in; paid users can pick any of the three.
+**Key decisions settled:**
+- Goal-account linking is for ALL users, in the Assets step inline. Not deferred, not settings-only.
+- Free users see an explicit explanation in the Connect step ("you're on the free plan — manual entry only"), not a silently-disabled tab.
+- Swiss Alps is the locked default for free users. No theme step in free onboarding.
+- Free users get the current single generalist chat advisor. Paid users get country-specific advisors auto-assigned from their selected countries.
+- Portfolio audit is an expansion of the check-in concept (Task 24) — more thorough AI-generated report, surfaced during paid onboarding in the Personalise step.
+- StepStyle is removed from the free onboarding flow entirely and folded into the paid Personalise step.
 
-2. **Advisors step in paid onboarding** — Does it appear now as a locked/teaser step, or only after Task 22 ships? Options: (a) skip the step entirely until Task 22 is built, (b) show a "coming soon" teaser as the final paid onboarding step.
+**Demo accounts decision:**
+- Two dedicated test accounts: one configured as free tier, one as paid tier.
+- Each independently resettable via `/dev/reset` (visit with the relevant account session active).
+- Avoids manual data entry on every test run. Enables side-by-side flow comparison.
 
-**Design considerations noted:**
-- Theme as a paywall works best as part of a capability bundle (themes + Plaid + advisors), not as a standalone driver. Cosmetic gating alone rarely converts.
-- Free users will always see Swiss Alps — the default theme must be polished, not feel like a "trial" state.
-- Free onboarding is shorter and less personalised by design, which gives paid onboarding a meaningfully more premium feel from the first session.
+### Task 27: Demo Accounts for Free + Paid Flow Testing 📋
+Two dedicated test accounts — one free, one paid — each independently resettable. Enables side-by-side flow comparison without manual data entry.
 
-### Task 27: Synthetic Test Data for Free + Paid Flows 📋
-Enable rapid testing of both onboarding paths without manual data entry each time.
-
-**Current state:** `/dev/reset` (at `ALLOW_DEV_RESET=true`) clears all user data and redirects to `/onboarding`. This covers the reset part. What's missing is a fixed set of test accounts that can be quickly loaded.
+**Approach:** Two real Supabase accounts (separate email addresses). `is_paid` set manually or via Stripe test mode on the paid account. Each can be reset independently by visiting `/dev/reset` while logged in as that account.
 
 **Sub-tasks:**
-- [ ] Define canonical free-user test scenario (e.g. 2 manual accounts, no Plaid, US+CA)
-- [ ] Define canonical paid-user test scenario (e.g. Plaid sandbox accounts, US+CA)
-- [ ] Decide on seeding format: seed button in `/dev/reset`, fixture file, or Supabase seed script
-- [ ] Implement chosen format
-- [ ] Document in `IMPLEMENTATION_ROADMAP.md#dev-utilities`
+- [ ] Create two accounts: `demo-free@prestige-worldwide.dev` and `demo-paid@prestige-worldwide.dev` (or similar)
+- [ ] Flip `is_paid = true` on the paid demo account (direct Supabase update or Stripe test webhook)
+- [ ] Define canonical free scenario: 2 manual accounts, US+CA, no Plaid, no goals linked
+- [ ] Define canonical paid scenario: Plaid sandbox accounts, US+CA, goals linked, theme + advisors selected
+- [ ] Seed both accounts with their canonical data (seed button in `/dev/reset` or Supabase seed script)
+- [ ] Document account credentials in `.env.local` (never commit) or a local secure note
+- [ ] Verify `/dev/reset` fully clears + resets each account independently
+
+### Task 28: Paid "Personalise" Step (Onboarding Step 4) 📋
+New final step in paid onboarding. Bundles three customisation capabilities into a single optional step. Only shown to paid users; free users end at Connect (step 3).
+
+**Three panels in this step:**
+
+1. **Theme** — Pick from Swiss Alps Retreat (default), Gaudy Miami, or Clooney's Positano. Swiss Alps is pre-selected; this step gives paid users a reason to engage with it.
+
+2. **Advisors** — Review auto-assigned country advisors (derived from countries selected in step 2). Each advisor shown with name, country flag, and expertise focus. User can deactivate an advisor or (in future) select a different persona for the same country.
+
+3. **Audit frequency** — How often they want a thorough portfolio audit delivered by email. Options: monthly, quarterly, twice yearly, annually. Pre-fills from `user_checkin_schedule` default (twice yearly).
+
+**Sub-tasks:**
+- [ ] Create `StepPersonalise.tsx` — three-panel layout with independent save state per panel
+- [ ] Panel 1: theme picker (reuse `StepStyle` visual cards; remove `StepStyle` from free flow)
+- [ ] Panel 2: advisor cards (auto-assigned from countries; show name, country, expertise; toggle active)
+- [ ] Panel 3: audit frequency selector (radio or segmented control; 4 options)
+- [ ] Wire into wizard orchestrator: shown only when `is_paid === true` after Connect step
+- [ ] Saves: theme → `user_preferences`; advisor selections → new or existing table (TBD); frequency → `user_checkin_schedule`
+- [ ] Skip button — "I'll set this up later in Settings"
+- [ ] All three settings editable in Settings page post-onboarding
+
+**Note:** `StepStyle.tsx` stays in codebase for Settings re-use but is removed from the free onboarding sequence.
 
 ---
 
 ## 📋 Phase 4 — Post-Launch (User Testing Driven)
 
-### Task 22: Geographic AI Advisors
-Country-specific advisor personas (e.g. Gordon for Canada, Brad for US). Specialised chat agents reading from the same plan. Depends on theming being complete (it is).
+### Task 22: Geographic AI Advisors 📋
+Country-specific advisor personas for paid users. Free users get a single generalist advisor (the current chat assistant, repurposed). Paid users get advisors auto-assigned based on their selected countries — one per country.
+
+**Free tier:** Single generalist chat persona. No country specialisation. Current `/api/chat` behaviour unchanged.
+
+**Paid tier:** Country-specific advisor personas (e.g. Gordon for Canada, Brad for US). Auto-assigned from user's `user_profiles.countries`. User can view/select active advisor in the Personalise step and in Settings.
 
 **Sub-tasks:**
-- [ ] Design advisor persona schema (country, name, expertise, personality, visual)
-- [ ] Per-country system prompts
-- [ ] Advisor detection logic (which advisors are relevant to user's countries)
-- [ ] Advisor selector UI
-- [ ] Theme-aware visual identity per advisor
+- [ ] Design advisor persona schema: country code, name, expertise focus, personality description, visual avatar
+- [ ] Per-country system prompts — localised financial/tax context injected into chat
+- [ ] Auto-assignment logic: derive active advisors from user's selected countries at session load
+- [ ] Advisor selector UI in Personalise step (paid onboarding step 4) and Settings
+- [ ] Extend `/api/chat` to accept an `advisorId` param and switch system prompt accordingly
+- [ ] Theme-aware visual identity per advisor (optional polish)
 
-### Task 23: Goal-Account Linking
-Let users assign accounts to goals so the unallocated bucket is accurate.
+### Task 23: Goal-Account Linking in Assets Step 📋
+All users (free and paid) are prompted to link their accounts to goals during the Assets step. Whatever isn't linked goes into an explicit "unallocated" bucket. This is inline in the wizard — not post-onboarding, not settings-only.
+
+**Placement decision:** Inline in `StepCountries` (the Assets step). After the user has specified their country/account types, they see a goal-linking prompt for each account before proceeding.
 
 **Sub-tasks:**
-- [ ] Decide placement: during onboarding (inline after Goals step), post-onboarding nudge, or settings-only
-- [ ] Goal card UI with "Add accounts" action
-- [ ] Multi-select from connected accounts
-- [ ] Update `user_goals.linked_account_ids`
-- [ ] Recalculate unallocated: net worth minus linked account balances
+- [ ] After account type selection in `StepCountries`, show goal-assignment UI: for each account entry, a dropdown or tag picker of the user's goals
+- [ ] "Unallocated" bucket label shown clearly for anything left unassigned — make it a named bucket, not an absence
+- [ ] Update `user_goals.linked_account_ids` on wizard finish
+- [ ] Recalculate unallocated total: net worth minus sum of linked account balances
+- [ ] Surface unallocated bucket in plan view and allocation charts
+- [ ] Ensure linking survives the onboarding → settings transition (editable in Settings → Goals section)
 
-**Open question:** Whether to surface goal-account linking during onboarding is deferred until Task 26 (Free vs Paid Onboarding Map) is decided. Documented in `SESSION_NOTES.md`.
+### Task 24: Portfolio Audit + Check-in Email Delivery 📋
+Expansion of the original check-in concept. Two tiers of scheduled outreach:
 
-### Task 24: Scheduled Check-in Email Delivery
+**Free:** Basic check-in email — portfolio snapshot + dashboard link (original plan).
+
+**Paid:** Thorough portfolio audit — a deeper AI-generated report covering performance vs. goals, allocation drift, tax considerations by country, and recommended next actions. Richer than a plan refresh; more like an advisor summary letter. Frequency set during onboarding (Personalise step, step 4) or in Settings.
+
 **Sub-tasks:**
 - [ ] Vercel cron job (daily) querying `user_checkin_schedule` for due users
-- [ ] Resend email: portfolio snapshot + dashboard link
+- [ ] Free path: Resend email with portfolio snapshot + dashboard link
+- [ ] Paid path: trigger a deeper AI analysis pass (separate prompt/model call), format as structured report, deliver via Resend
+- [ ] Design audit report prompt — include goals progress, allocation vs. targets, per-country notes, recommended actions
+- [ ] Frequency picker surfaced in paid Personalise step (step 4) and in Settings → Check-ins for all users
 - [ ] Update `last_checkin_at` / `next_checkin_at` after send
 
 ### Task 25: Testing Infrastructure

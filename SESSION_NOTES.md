@@ -9,6 +9,40 @@
 
 ---
 
+### Session: Mar 23, 2026 — Onboarding redesign decisions
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Decided:**
+
+Full onboarding restructure. All open questions from Task 26 (free vs paid onboarding map) resolved. Docs updated across `CLAUDE.md`, `IMPLEMENTATION_ROADMAP.md`, and this file.
+
+**Final flows:**
+- **Free (3 steps):** Goals → Assets + Goal Linking → Connect (manual-only, explicit gating)
+- **Paid (4 steps):** Goals → Assets + Goal Linking → Connect (Plaid+manual) → Personalise (themes + advisors + audit freq)
+
+**Key decisions:**
+
+1. **Goal-account linking (Task 23)** — Goes in the Assets step for ALL users. Inline, not post-onboarding. Each account gets linked to a goal or explicitly lands in the "unallocated" bucket.
+
+2. **Connect step free-tier messaging (Task 21)** — Free users see an explicit callout ("you're on the free plan — manual entry only") with an upgrade CTA. Not a silently-disabled Plaid tab.
+
+3. **Theme gating** — Swiss Alps is locked for free users. Theme selection moves to the paid Personalise step (step 4). `StepStyle.tsx` retained only for Settings re-use.
+
+4. **Geographic advisors (Task 22)** — Free users: single generalist (current chat assistant). Paid users: country-specific advisors auto-assigned from their selected countries. Advisor selector surfaces in Personalise step and Settings.
+
+5. **Portfolio audit (Task 24 expansion)** — Paid-only. A thorough AI-generated report (goals progress, allocation drift, per-country notes, recommended actions) — more substantial than a plan refresh. Builds on the check-in infrastructure. Frequency scheduled in the Personalise step.
+
+6. **New Task 28: Paid Personalise Step** — New `StepPersonalise.tsx`. Three panels: theme picker, advisor cards, audit frequency selector. Optional for paid users; all three settings editable in Settings post-onboarding.
+
+7. **Demo accounts (Task 27)** — Two dedicated accounts (free + paid), seeded with canonical scenarios, each independently resettable via `/dev/reset`.
+
+**Stopping point / next session:**
+- Tasks 23, 21, 28 are unblocked and fully specced — any of them is a clean starting point
+- Suggested order: 23 first (highest user value, all users affected), then 21 (quick win), then 28
+
+---
+
 ### Session: Mar 23, 2026 — Stripe done, build fixes, docs audit
 
 **Branch:** `claude/review-codebase-docs-cLIae`
