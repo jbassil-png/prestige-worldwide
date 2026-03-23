@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // Dev-only endpoint — requires ALLOW_DEV_RESET=true env var
 export async function POST() {
@@ -12,6 +13,9 @@ export async function POST() {
   const user = session?.user;
   if (!user) return NextResponse.json({ error: "Unauthorized — make sure you are signed in." }, { status: 401 });
 
+  // Use admin client to bypass RLS — some tables (e.g. user_preferences) have no DELETE policy
+  const admin = createAdminClient();
+
   const tables = [
     "plan_history",
     "user_plans",
@@ -22,14 +26,18 @@ export async function POST() {
     "plaid_items",
     "user_preferences",
     "user_checkin_schedule",
+    "user_goals",
     "user_profiles",
   ];
 
   const errors: string[] = [];
 
   for (const table of tables) {
-    const { error } = await supabase.from(table).delete().eq("user_id", user.id);
-    if (error) errors.push(`${table}: ${error.message}`);
+    const { error } = await admin.from(table).delete().eq("user_id", user.id);
+    // Ignore "table not found" — means the migration hasn't run yet, nothing to clear
+    if (error && !error.message.includes("schema cache")) {
+      errors.push(`${table}: ${error.message}`);
+    }
   }
 
   return NextResponse.json({

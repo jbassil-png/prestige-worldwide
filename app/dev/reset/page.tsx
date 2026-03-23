@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function DevResetPage() {
   const router = useRouter();
-  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
 
   async function handleReset() {
@@ -14,8 +14,8 @@ export default function DevResetPage() {
       const res = await fetch("/api/dev/reset", { method: "POST" });
       const data = await res.json();
       if (res.ok && data.ok) {
-        setStatus("done");
-        setMessage(data.message);
+        router.push("/onboarding");
+        return;
       } else {
         setStatus("error");
         setMessage(data.errors?.join("\n") ?? data.error ?? "Unknown error");
@@ -35,19 +35,7 @@ export default function DevResetPage() {
           Wipes all your user data so you can run through the full onboarding flow again with the same account.
         </p>
 
-        {status === "done" ? (
-          <div className="space-y-3">
-            <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-              {message}
-            </p>
-            <button
-              onClick={() => router.push("/onboarding")}
-              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 rounded-lg text-sm transition"
-            >
-              Start onboarding →
-            </button>
-          </div>
-        ) : status === "error" ? (
+        {status === "error" ? (
           <div className="space-y-3">
             <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 whitespace-pre-wrap">
               {message}
