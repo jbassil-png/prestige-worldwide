@@ -58,9 +58,40 @@
 
 **Stopping point / next session:**
 1. **Stripe account setup** — owner action; steps in CLAUDE.md; ensure `SUPABASE_SERVICE_ROLE_KEY` is in Vercel
-2. **Plaid gating in Connect step** — currently shows both Plaid and manual tabs for all users; should show upgrade prompt for free users on the Plaid tab
-3. **Ship to real users** — post-Stripe setup
-4. **Post-launch iteration** — driven by user testing
+2. **Plaid gating in Connect step (Task 21)** — decision deferred; see open questions below
+3. **Account-goal linking in onboarding** — decision deferred; see open questions below
+4. **Free vs paid onboarding map** — decision deferred; see open questions below
+5. **Synthetic test data** — decision deferred; see open questions below
+6. **Ship to real users** — post-Stripe setup
+
+**Open questions for next session:**
+
+_Plaid gating in Connect step (Task 21):_
+- Option A: Gate Plaid in onboarding consistently with settings (free users see manual + upgrade CTA)
+- Option B: Don't gate in onboarding (frictionless first run), gate Plaid re-sync in settings
+- Option C: Gate at API level only regardless of UI choice
+- **Q: Which approach? Friction-free onboarding (B) or consistent gating from the start (A)?**
+
+_Account-goal linking during onboarding:_
+Schema supports it (`user_goals.linked_account_ids`). Three placement options:
+- Inline in step 4 after accounts confirmed (longer step 4)
+- As a step 5 (skippable)
+- Post-onboarding only — surface as a dashboard nudge ("$X unallocated")
+- **Q: Which placement? (Current PRODUCT_PRINCIPLES.md leans toward post-onboarding nudge)**
+
+_Free vs paid onboarding map:_
+All new users start as free (`is_paid = false`). No current path to arrive at onboarding already paid.
+- Is the goal to design a differentiated Step 4 experience (free = manual only, paid = Plaid primary)?
+- Or a full separate onboarding path for paid users?
+- Or future support for upgrading mid-onboarding?
+- **Q: What does "paid onboarding" mean — different step 4 UX, or a different flow entirely?**
+
+_Synthetic test data:_
+Three delivery options:
+- SQL seed script (run in Supabase SQL editor — no code changes)
+- Dev-mode reset button in settings UI
+- CLI script (`npm run seed:test`) using service-role key
+- **Q: Which format? Fixed test emails (e.g. free@test / paid@test) with known password for Playwright?**
 
 ---
 
