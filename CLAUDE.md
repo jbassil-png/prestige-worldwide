@@ -15,26 +15,25 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**Stripe setup is done. The app is ready for real users.**
+**Stripe setup is done. The app is ready for real users. Onboarding redesign decided — ready to build.**
 
 ### Open task list (next session — pick up here)
 
-**Blocked on Task 26 decision (free vs paid onboarding map):**
+**Unblocked and ready to implement:**
 
 | # | Task | Status | Effort |
 |---|------|--------|--------|
-| 26 | Free vs paid onboarding map | 🔴 Decision needed | ~2h |
-| 21 | Plaid gating in Connect step | ⏸ Blocked on 26 | ~2h |
-| 23 | Goal-account linking in onboarding | ⏸ Blocked on 26 | ~3–4h |
-| 27 | Synthetic test data | ⏸ Blocked on 26 | ~2h |
+| 23 | Goal-account linking in Assets step | 🟢 Ready | ~3–4h |
+| 21 | Explicit free-tier messaging in Connect step | 🟢 Ready | ~2h |
+| 28 | Paid "Personalise" step (themes + advisors + audit freq) | 🟢 Ready | ~4–5h |
+| 27 | Demo accounts (free + paid, independently resettable) | 🟢 Ready | ~2h |
 
-**Post-launch (user testing driven):**
+**Pre-launch (build before first real users):**
 
 | # | Task | Notes |
 |---|------|-------|
-| 22 | Geographic AI advisors | Highest differentiation |
-| 23 | Goal-account linking (if not in onboarding) | Depends on Task 26 |
-| 24 | Scheduled check-in email delivery | Vercel cron + Resend |
+| 22 | Geographic AI advisors | Depends on Task 28 UI scaffold |
+| 24 | Portfolio audit + check-in email delivery | Vercel cron + Resend; two-tier (free/paid) |
 | 25 | Testing infrastructure (Vitest) | Unit + integration tests |
 
 **Polish backlog (deferred):** Paid user badge, full-screen loading reveal, PDF export, plan comparison, what-if analysis, transaction history, dark mode, WCAG audit, DB column cleanup, centralised Plan types, editable retirement target.
@@ -47,7 +46,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 |-------|-------------|
 | `/` | Marketing landing page |
 | `/sign-in`, `/sign-up` | Supabase Auth |
-| `/onboarding` | 4-step wizard (Goals → Assets → Style → Connect) — one-time only |
+| `/onboarding` | Wizard — Free: 3 steps (Goals → Assets → Connect). Paid: 4 steps (+ Personalise). One-time only. |
 | `/onboarding/preview` | Public preview — no auth, no data written |
 | `/dashboard` | Main authenticated view |
 | `/settings` | Unified settings page — Countries, Accounts, Goals, Style, Check-ins |
@@ -94,7 +93,9 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
-- Plaid Connect in onboarding still shows both tabs (Plaid + manual) for free users — should show upgrade prompt for Plaid tab and encourage manual entry
+- Connect step: free users still see both tabs without explicit free-tier messaging (Task 21)
+- Goal-account linking not yet in Assets step; unallocated bucket not calculated (Task 23)
+- Paid Personalise step (step 4) not yet built; StepStyle still in free flow (Task 28)
 
 ---
 
@@ -102,7 +103,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 | Topic | Decision |
 |-------|----------|
-| Business model | Freemium. Free tier: full app access (onboarding, plan gen, dashboard, chat, news) except Plaid bank connection. Paid tier: Plaid connection unlocked. Manual account entry is always available on free tier. |
+| Business model | Freemium. Free: plan gen, dashboard, chat, news, manual accounts, goal-account linking. Paid: Plaid, non-default themes, country-specific advisors, thorough portfolio audit scheduling. |
 | Paid tier tracking | `is_paid boolean` column on `user_profiles`. Set by Stripe webhook (service-role client, bypasses RLS) on subscription events. Checked client-side in settings page. |
 | Settings UX | Single non-linear page. All sections visible and independently editable. Not a wizard replay. Visually recalls onboarding aesthetic. |
 | Settings entry point | One "Settings" link on the dashboard control bar. `/setup` deleted. |
@@ -113,13 +114,18 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | Structured output | **JSON mode** (`response_format: { type: "json_object" }`), no retry loop. Stub plan is the fallback on API failure. |
 | Theme count | 3 themes |
 | Theme names | Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 |
-| Theme step placement | Step 3 (optional) in onboarding, after Assets, before Connect |
+| Theme step placement | Paid onboarding only — panel 1 of Personalise step (step 4). Not in free onboarding. `StepStyle` retained for Settings re-use. |
+| Theme gating | Free users locked to Swiss Alps (default). Paid users can select any of the three themes during onboarding or in Settings. |
 | Theme default | Swiss Alps Retreat ❄️ (`data-theme="swiss-alps"` on `<html>`) |
 | Theme palettes | Swiss Alps: slate/ice. Gaudy Miami: pink/gold. Positano: linen/terracotta. See `docs/POLISH_BACKLOG.md` for exact values. |
 | Theme typography | Swiss Alps: DM Serif Display + DM Sans. Gaudy Miami: Syne + DM Sans. Positano: Cormorant Garamond + Lato. Loaded via `@fontsource` (self-hosted, no build-time network fetch). |
 | Theme token system | CSS custom properties (`--color-bg`, `--color-primary`, etc.) + `--font-heading`/`--font-body`. Tailwind `theme-*` utilities reference them. Applied via `data-theme` on `<html>`. |
-| Onboarding sequence | Goals (req) → Assets (req) → Style (opt) → Connect (opt, paid). Plan generates at end of wizard (after Connect or skip). |
-| Connect step gating | Plaid connection is paid-tier only. Free users can use manual entry in Connect step or skip entirely. |
+| Onboarding sequence — free | Goals (req) → Assets + Goal Linking (req) → Connect (manual-only, skippable). 3 steps. |
+| Onboarding sequence — paid | Goals (req) → Assets + Goal Linking (req) → Connect (Plaid+manual, skippable) → Personalise (opt). 4 steps. |
+| Connect step gating | Free users see explicit messaging ("you're on the free plan — manual entry only") with an upgrade CTA. Not a silently-disabled tab. |
+| Goal-account linking | In the Assets step for all users (free + paid). Each account linked to a goal or explicitly left in "unallocated" bucket. |
+| Geographic advisors | Free: single generalist advisor (current chat assistant). Paid: country-specific advisors auto-assigned from selected countries. |
+| Portfolio audit | Paid-only. Thorough AI-generated report (goals progress, allocation drift, per-country notes, recommendations). Expansion of check-in concept. Frequency set in Personalise step and Settings. |
 | Preview page | Column view, production-accessible, real components with mock data |
 | Loading reveal | Full-screen themed transition — deferred to Polish backlog |
 | Horizontal scroll | Wizard uses horizontal scroll — one step per viewport, 0.45s cubic-bezier slide transition |
@@ -133,28 +139,33 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ```
 app/onboarding/
-├── page.tsx                ← 4-step wizard orchestrator
+├── page.tsx                ← Wizard orchestrator (free: 3 steps, paid: 4 steps)
 ├── preview/
 │   ├── page.tsx            ← Preview shell (public, no auth)
 │   └── mock.ts             ← Mock US+CA data
 └── steps/
-    ├── StepGoals.tsx       ← Step 1 (required): "Let's get to know your situation"
-    ├── StepCountries.tsx   ← Step 2 (required): "Where are your assets?"
-    ├── StepStyle.tsx       ← Step 3 (optional): "Choose your style"
-    └── StepConnect.tsx     ← Step 4 (optional, paid): "Connect your accounts"
+    ├── StepGoals.tsx       ← Step 1 (required, all): "Let's get to know your situation"
+    ├── StepCountries.tsx   ← Step 2 (required, all): "Where are your assets?" + goal-account linking
+    ├── StepConnect.tsx     ← Step 3 (optional, all): "Connect your accounts" — free shows explicit gate + upgrade CTA; paid shows Plaid+manual
+    ├── StepPersonalise.tsx ← Step 4 (optional, PAID ONLY): themes + advisor selection + audit frequency [Task 28]
+    └── StepStyle.tsx       ← Retained for Settings re-use; not rendered in onboarding wizard
 ```
+
+**Free flow:** Steps 1 → 2 → 3 (plan generates after step 3 or skip)
+**Paid flow:** Steps 1 → 2 → 3 → 4 (plan generates after step 3 or skip, before step 4)
 
 ### WizardData shape
 ```ts
 type WizardData = {
-  goals: GoalsData;       // captured in Step 1
+  goals: GoalsData;               // captured in Step 1
   selections: CountrySelection[]; // captured in Step 2
+  goalLinks: GoalAccountLink[];   // captured in Step 2 (goal-account linking)
   // theme tracked separately (setTheme state)
   // accounts passed directly to handleFinish()
 };
 ```
 
-Plan generates at the end of step 4 (Connect complete or skip). Payload: goals + selections + accounts (empty array if Connect skipped). Theme saved to `user_preferences` and `sessionStorage.pw_theme`.
+Plan generates at the end of the Connect step (step 3, complete or skip). Payload: goals + selections + accounts (empty array if skipped). Personalise step (paid step 4) saves independently — theme → `user_preferences`, advisors → TBD table, audit frequency → `user_checkin_schedule`.
 
 All step components accept `initialValues` props.
 
