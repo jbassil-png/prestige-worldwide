@@ -6,6 +6,7 @@ import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
 import StepGoals, { type GoalsData } from "./steps/StepGoals";
 import StepStyle from "./steps/StepStyle";
+import StepAdvisors from "./steps/StepAdvisors";
 import { createClient } from "@/lib/supabase/client";
 import posthog from "posthog-js";
 
@@ -13,9 +14,6 @@ type WizardData = {
   goals: GoalsData;
   selections: CountrySelection[];
 };
-
-const STEPS = ["Goals", "Assets", "Style", "Connect"] as const;
-type StepNum = 1 | 2 | 3 | 4;
 
 // Separate component so useSearchParams is inside a Suspense boundary
 function SignupTracker() {
@@ -30,20 +28,52 @@ function SignupTracker() {
   return null;
 }
 
+// Step labels per tier
+const FREE_STEPS = ["Goals", "Assets", "Connect"] as const;
+const PAID_STEPS = ["Goals", "Assets", "Style", "Connect", "Advisors"] as const;
+
+// Step positions (1-indexed) per tier
+// Free:  Goals=1, Assets=2, Connect=3
+// Paid:  Goals=1, Assets=2, Style=3, Connect=4, Advisors=5
+
 export default function OnboardingPage() {
   const router = useRouter();
 
-  const [step, setStep] = useState<StepNum>(1);
+  const [isPaid, setIsPaid] = useState<boolean | null>(null); // null = loading
+  const [step, setStep] = useState(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
   const [theme, setTheme] = useState("swiss-alps");
+  const [pendingAccounts, setPendingAccounts] = useState<Account[]>([]);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch is_paid on mount
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { setIsPaid(false); return; }
+      supabase
+        .from("user_profiles")
+        .select("is_paid")
+        .eq("user_id", user.id)
+        .single()
+        .then(({ data }) => setIsPaid(data?.is_paid ?? false));
+    });
+  }, []);
 
   useEffect(() => {
     if (posthog.__loaded) {
       posthog.capture("onboarding_started");
     }
   }, []);
+
+  const steps = isPaid ? PAID_STEPS : FREE_STEPS;
+
+  // Step indices for navigation
+  const STEP_ASSETS = 2;
+  const STEP_STYLE = isPaid ? 3 : null;
+  const STEP_CONNECT = isPaid ? 4 : 3;
+  const STEP_ADVISORS = isPaid ? 5 : null;
 
   async function handleFinish(accounts: Account[]) {
     const { goals, selections } = wizardData as WizardData;
@@ -139,9 +169,48 @@ export default function OnboardingPage() {
     }
   }
 
+  // After Connect: paid users go to Advisors, free users finish directly
+  function handleConnectNext(accounts: Account[]) {
+    if (isPaid) {
+      setPendingAccounts(accounts);
+      setStep(STEP_ADVISORS!);
+    } else {
+      handleFinish(accounts);
+    }
+  }
+
+  function handleConnectSkip() {
+    if (isPaid) {
+      setPendingAccounts([]);
+      setStep(STEP_ADVISORS!);
+    } else {
+      handleFinish([]);
+    }
+  }
+
+  // Loading state while fetching is_paid
+  if (isPaid === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-white">
+        <svg
+          className="animate-spin h-8 w-8 text-brand-400"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+      </div>
+    );
+  }
+
+  const panelWidth = `${100 / steps.length}%`;
+
   return (
     <div className="min-h-screen overflow-hidden relative bg-gradient-to-br from-brand-50 to-white">
       <Suspense><SignupTracker /></Suspense>
+
       {/* ── Fixed progress header ─────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-lg mx-auto px-4 py-3">
@@ -150,8 +219,8 @@ export default function OnboardingPage() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            {STEPS.map((label, i) => {
-              const stepNum = (i + 1) as StepNum;
+            {steps.map((label, i) => {
+              const stepNum = i + 1;
               const isActive = step === stepNum;
               const isDone = step > stepNum;
               const isOptional = stepNum >= 3;
@@ -184,7 +253,7 @@ export default function OnboardingPage() {
                       )}
                     </span>
                   </div>
-                  {i < STEPS.length - 1 && (
+                  {i < steps.length - 1 && (
                     <div
                       className={`h-0.5 flex-1 mb-4 transition-colors ${
                         isDone ? "bg-brand-500" : "bg-gray-200"
@@ -210,62 +279,65 @@ export default function OnboardingPage() {
       <div
         className="flex will-change-transform"
         style={{
-          width: `${STEPS.length * 100}%`,
-          transform: `translateX(calc(-${(step - 1) * (100 / STEPS.length)}%))`,
+          width: `${steps.length * 100}%`,
+          transform: `translateX(calc(-${(step - 1) * (100 / steps.length)}%))`,
           transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        {/* Step 1 — Goals (required) */}
-        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+        {/* Step 1 — Goals (required, all tiers) */}
+        <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
             <StepGoals
               onNext={(goals) => {
                 setWizardData((p) => ({ ...p, goals }));
-                setStep(2);
+                setStep(STEP_ASSETS);
               }}
             />
           </div>
         </div>
 
-        {/* Step 2 — Assets (required) */}
-        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+        {/* Step 2 — Assets (required, all tiers) */}
+        <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
             <StepCountries
               onNext={(selections) => {
                 setWizardData((p) => ({ ...p, selections }));
-                setStep(3);
+                setStep(isPaid ? STEP_STYLE! : STEP_CONNECT);
               }}
               onBack={() => setStep(1)}
             />
           </div>
         </div>
 
-        {/* Step 3 — Style (optional) */}
-        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
-          <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-            <StepStyle
-              onNext={(data) => {
-                setTheme(data.theme);
-                setStep(4);
-              }}
-              onBack={() => setStep(2)}
-            />
+        {/* Step 3 — Style (optional, paid only) */}
+        {isPaid && (
+          <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+              <StepStyle
+                onNext={(data) => {
+                  setTheme(data.theme);
+                  setStep(STEP_CONNECT);
+                }}
+                onBack={() => setStep(STEP_ASSETS)}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Step 4 — Connect (optional, paid) */}
-        <div className="w-1/4 min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+        {/* Step 3 (free) / Step 4 (paid) — Connect */}
+        <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg space-y-4">
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <StepConnect
                 selections={wizardData.selections ?? []}
-                onNext={(accounts) => handleFinish(accounts)}
-                onBack={() => setStep(3)}
+                onNext={handleConnectNext}
+                onBack={() => setStep(isPaid ? STEP_STYLE! : STEP_ASSETS)}
+                isPaid={isPaid}
               />
             </div>
             <div className="text-center space-y-1">
               <button
-                onClick={() => handleFinish([])}
+                onClick={handleConnectSkip}
                 disabled={generating}
                 className="text-sm text-gray-400 hover:text-gray-600 transition disabled:opacity-40"
               >
@@ -275,6 +347,18 @@ export default function OnboardingPage() {
             </div>
           </div>
         </div>
+
+        {/* Step 5 — Advisors teaser (paid only) */}
+        {isPaid && (
+          <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+              <StepAdvisors
+                onNext={() => handleFinish(pendingAccounts)}
+                onBack={() => setStep(STEP_CONNECT)}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Generating overlay ────────────────────────────────────────── */}
