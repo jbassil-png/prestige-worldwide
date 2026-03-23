@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import StepCountries, { type CountrySelection } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
@@ -17,9 +17,21 @@ type WizardData = {
 const STEPS = ["Goals", "Assets", "Style", "Connect"] as const;
 type StepNum = 1 | 2 | 3 | 4;
 
+// Separate component so useSearchParams is inside a Suspense boundary
+function SignupTracker() {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (!posthog.__loaded) return;
+    if (searchParams.get("new_signup") === "true" && !sessionStorage.getItem("pw_signup_tracked")) {
+      posthog.capture("user_signed_up", { method: "magic_link" });
+      sessionStorage.setItem("pw_signup_tracked", "1");
+    }
+  }, [searchParams]);
+  return null;
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [step, setStep] = useState<StepNum>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
@@ -28,15 +40,10 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!posthog.__loaded) return;
-    posthog.capture("onboarding_started");
-    // Fire user_signed_up for magic link sign-ups (email/password fires it on the sign-up page).
-    // Guard with sessionStorage so it only fires once even if the user refreshes.
-    if (searchParams.get("new_signup") === "true" && !sessionStorage.getItem("pw_signup_tracked")) {
-      posthog.capture("user_signed_up", { method: "magic_link" });
-      sessionStorage.setItem("pw_signup_tracked", "1");
+    if (posthog.__loaded) {
+      posthog.capture("onboarding_started");
     }
-  }, [searchParams]);
+  }, []);
 
   async function handleFinish(accounts: Account[]) {
     const { goals, selections } = wizardData as WizardData;
@@ -134,6 +141,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen overflow-hidden relative bg-gradient-to-br from-brand-50 to-white">
+      <Suspense><SignupTracker /></Suspense>
       {/* ── Fixed progress header ─────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-lg mx-auto px-4 py-3">
