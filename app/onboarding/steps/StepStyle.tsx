@@ -33,7 +33,7 @@ const THEMES: {
     tagline: "Bold moves. Bright future.",
     mood: "Art Deco energy — your wealth, dressed for a rooftop at sunset.",
     colors: { bg: "#FFF0F6", primary: "#DB2777", accent: "#F59E0B" },
-    fonts: "Syne + Inter",
+    fonts: "Syne + DM Sans",
   },
   {
     id: "positano",
