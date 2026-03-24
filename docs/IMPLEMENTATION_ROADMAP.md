@@ -1,7 +1,7 @@
 # Implementation Roadmap
 
 **Status:** Active
-**Last Updated:** 2026-03-24
+**Last Updated:** 2026-03-24 (Task 28 complete)
 
 ---
 
@@ -101,8 +101,7 @@ Spec: `docs/FEATURE_PORTFOLIO_NEWS.md`
 - Fixed `20260321_add_goals_and_checkins.sql` — wrapped `ALTER COLUMN` statements in idempotent DO blocks
 
 ### Task 20: Onboarding Reorder ✅
-- New sequence: **Goals (req) → Assets (req) → Style (opt) → Connect (opt, paid)**
-- Matches `/onboarding/preview` sequence exactly
+- New sequence: **Goals (req) → Assets (req) → Style (opt) → Connect (opt, paid)** *(subsequently refactored in Task 28 to Goals → Assets → Connect → Personalise)*
 - Loading state moved from inline button → full-screen overlay with spinner
 - `StepCountries` gained `onBack?` prop
 - Button labels updated to reflect new step order
@@ -210,31 +209,17 @@ Two dedicated test accounts — one free, one paid — each independently resett
 - [ ] Document account credentials in `.env.local` (never commit) or a local secure note
 - [ ] Verify `/dev/reset` fully clears + resets each account independently
 
-### Task 28: Paid "Personalise" Step (Onboarding Step 4) 📋
+### Task 28: Paid "Personalise" Step (Onboarding Step 4) ✅
 New final step in paid onboarding. Bundles three customisation capabilities into a single optional step. Only shown to paid users; free users end at Connect (step 3).
 
-**Three panels in this step:**
-
-1. **Theme** — Pick from Swiss Alps Retreat (default), Gaudy Miami, or Clooney's Positano. Swiss Alps is pre-selected; this step gives paid users a reason to engage with it.
-
-2. **Advisors** — Review auto-assigned country advisors (derived from countries selected in step 2). Each advisor shown with name, country flag, and expertise focus. User can deactivate an advisor or (in future) select a different persona for the same country.
-
-3. **Audit frequency** — How often they want a thorough portfolio audit delivered by email. Options: monthly, quarterly, twice yearly, annually. Pre-fills from `user_checkin_schedule` default (twice yearly).
-
-**Sub-tasks:**
-- [ ] Create `StepPersonalise.tsx` — three-panel layout with independent save state per panel
-- [ ] Panel 1: theme picker (reuse `StepStyle` visual cards; remove `StepStyle` from free flow)
-- [ ] Panel 2: advisor cards (auto-assigned from countries; show name, country, expertise; toggle active)
-- [ ] Panel 3: audit frequency selector (radio or segmented control; 4 options)
-- [ ] Wire into wizard orchestrator: shown only when `is_paid === true` after Connect step
-- [ ] **Plan generation fires here** — after Personalise completes or is skipped. Payload includes theme + advisor IDs + audit frequency alongside goals, selections, and accounts.
-- [ ] Personalise selections passed into `handleFinish()` alongside accounts (or saved to Supabase before plan gen if preferred)
-- [ ] Saves at plan gen: theme → `user_preferences`; advisor selections → TBD table; frequency → `user_checkin_schedule`
-- [ ] Skip button — "I'll set this up later in Settings" — still triggers plan generation with defaults
-- [ ] All three settings editable in Settings page post-onboarding
-
-**Note:** `StepStyle.tsx` stays in codebase for Settings re-use but is removed from the free onboarding sequence.
-**Plan generation timing:** Free users: plan generates at end of step 3 (Connect). Paid users: plan generates at end of step 4 (Personalise). This ensures the plan has full context — theme, advisors, audit frequency — before first generation.
+**Implementation:**
+- `StepPersonalise.tsx` — single scrollable step with three clearly labelled sections
+- Panel 1: Theme picker — reuses exported `THEMES` from `StepStyle.tsx`; swiss-alps pre-selected
+- Panel 2: Advisor cards — auto-assigned from user's country selections via `ADVISORS_BY_CODE` map (US/CA/GB/SG/AU/DE/FR); "Coming soon" overlays until Task 22 ships
+- Panel 3: Audit frequency — 2×2 grid (Monthly / Quarterly / Twice yearly ✓ / Annually); defaults to 182 days
+- Skip button — "I'll set this up later in Settings" — generates plan with swiss-alps + 182-day defaults
+- `handleFinish(accounts, personalise?)` receives `PersonaliseData { theme, auditFrequency }` — saves theme to `user_preferences` and frequency to `user_checkin_schedule` in same `Promise.all` batch
+- Wizard refactored from 5-step to 4-step paid flow; `THEMES` exported from `StepStyle`; `StepAdvisors` removed from wizard import
 
 ---
 

@@ -23,14 +23,13 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 | # | Task | Status | Effort |
 |---|------|--------|--------|
-| 28 | Paid "Personalise" step (themes + advisors + audit freq) | 🟢 Ready | ~4–5h |
 | 27 | Demo accounts (free + paid, independently resettable) | 🟢 Ready | ~2h |
 
 **Pre-launch (build before first real users):**
 
 | # | Task | Notes |
 |---|------|-------|
-| 22 | Geographic AI advisors | Depends on Task 28 UI scaffold |
+| 22 | Geographic AI advisors | Task 28 scaffold done — now unblocked |
 | 24 | Portfolio audit + check-in email delivery | Vercel cron + Resend; two-tier (free/paid) |
 | 25 | Testing infrastructure (Vitest) | Unit + integration tests |
 
@@ -84,10 +83,10 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | 20 | Onboarding reorder | ✅ DONE — new sequence: Goals → Assets → Style (opt) → Connect (opt, paid); plan generates at end |
 | 21 | Explicit free-tier messaging in Connect step | ✅ DONE — amber banner replaces silently-disabled Plaid tab; inline upgrade CTA; free users go straight to manual entry |
 | 23 | Goal-account linking in Assets step | ✅ DONE — `GoalLink` type + per-account dropdown in `StepCountries`; unallocated bucket; wired into `WizardData` |
+| 28 | Paid "Personalise" step | ✅ DONE — `StepPersonalise.tsx`; three panels: theme picker, advisor cards (coming-soon overlays), audit frequency selector; saves theme to `user_preferences` + frequency to `user_checkin_schedule` at plan gen |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
-- Paid Personalise step (step 4) not yet built (Task 28)
 - Demo accounts not yet seeded (Task 27)
 
 ---
@@ -141,7 +140,7 @@ app/onboarding/
     ├── StepGoals.tsx       ← Step 1 (required, all): "Let's get to know your situation"
     ├── StepCountries.tsx   ← Step 2 (required, all): "Where are your assets?" + goal-account linking
     ├── StepConnect.tsx     ← Step 3 (optional, all): "Connect your accounts" — free shows explicit gate + upgrade CTA; paid shows Plaid+manual
-    ├── StepPersonalise.tsx ← Step 4 (optional, PAID ONLY): themes + advisor selection + audit frequency [Task 28]
+    ├── StepPersonalise.tsx ← Step 4 (optional, PAID ONLY): themes + advisor selection + audit frequency
     └── StepStyle.tsx       ← Retained for Settings re-use; not rendered in onboarding wizard
 ```
 
@@ -154,8 +153,8 @@ type WizardData = {
   goals: GoalsData;               // captured in Step 1
   selections: CountrySelection[]; // captured in Step 2
   goalLinks: GoalAccountLink[];   // captured in Step 2 (goal-account linking)
-  // theme tracked separately (setTheme state)
   // accounts passed directly to handleFinish()
+  // theme + auditFrequency passed via PersonaliseData to handleFinish() (paid users only)
 };
 ```
 
