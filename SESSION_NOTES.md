@@ -9,7 +9,7 @@
 
 ---
 
-### Session: Mar 24, 2026 — Task 28 complete (Paid Personalise step)
+### Session: Mar 24, 2026 — Task 28 complete + Task 27 plan finalised
 
 **Branch:** `claude/review-codebase-docs-cLIae`
 
@@ -27,9 +27,36 @@
    - `THEMES` exported from `StepStyle.tsx`; `StepAdvisors.tsx` and separate Style step removed from wizard (StepStyle and StepAdvisors remain in codebase for future reuse)
    - Tested as paid user — all three panels functional, plan generates correctly after step 4
 
-**Stopping point / next session:**
-- Task 27 (demo accounts — free + paid, independently resettable) is next. ~2h.
-- Task 22 (geographic AI advisors) is now unblocked — the Personalise step UI scaffold is in place.
+2. ✅ **Task 27 approach decided — manual seeding, two existing + new account**
+
+**Stopping point / next session — START HERE:**
+
+**Task 27: Seed demo accounts (manual process — ~1h)**
+
+The approach is manual (sign in → run onboarding → done). No seed script needed.
+
+**Free demo account** — already exists, already wired into the landing page "Try Demo" button:
+- **Email:** `demo@prestigeworldwide.com` / **Password:** `demo123456`
+- **`is_paid`:** `false` (verify in Supabase — should be default)
+- **Canonical scenario:** US + Canada, retirement 2050, two manual accounts (401k $85k, RRSP $62k), goals linked, Swiss Alps theme
+- **To seed:** Sign in → `/dev/reset` to wipe any existing data → run through free onboarding with the scenario above
+
+**Paid demo account** — needs to be created:
+- **Email:** `demo-paid@prestigeworldwide.com` (or similar — decide at session start)
+- **`is_paid`:** `true` — set directly in Supabase dashboard after account creation (Table Editor → `user_profiles` → flip `is_paid`)
+- **Canonical scenario:** US + UK, retirement 2045, Plaid sandbox accounts (Chase + TD), Gaudy Miami or Positano theme, quarterly audit
+- **To seed:** Create account → sign up normally → run through paid onboarding with the scenario above
+- **Not linked publicly** — internal/testing use only
+
+**Steps for the session:**
+1. Open Supabase dashboard — confirm `demo@prestigeworldwide.com` exists and `is_paid = false`
+2. Sign in as free demo → `/dev/reset` → run free onboarding with canonical scenario above → verify dashboard looks good
+3. Create `demo-paid@...` in Supabase Auth (or via sign-up page) → flip `is_paid = true` in Table Editor
+4. Sign in as paid demo → run paid onboarding (all 4 steps) with canonical scenario above → verify paid features visible
+5. Sign back into free demo → confirm free gating still correct
+6. Mark Task 27 done in `CLAUDE.md` + `IMPLEMENTATION_ROADMAP.md`
+
+**Note on `/dev/reset`:** The page calls Supabase directly from the client — the `ALLOW_DEV_RESET=true` env var check in docs is not actually enforced in the current code. Reset works for any logged-in user.
 
 ---
 
