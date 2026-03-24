@@ -19,15 +19,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ### Open task list (next session — pick up here)
 
-**In progress:**
-
-| # | Task | Status | Notes |
-|---|------|--------|-------|
-| 27 | Demo accounts | 🔶 In progress | Free done ✅ — paid account still needs seeding |
-
-**Unblocked and ready to implement (after Task 27):**
-
-**Pre-launch (build before first real users — pick up after Task 27):**
+**Pre-launch (build before first real users):**
 
 | # | Task | Notes |
 |---|------|-------|
@@ -88,7 +80,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | 28 | Paid "Personalise" step | ✅ DONE — `StepPersonalise.tsx`; three panels: theme picker, advisor cards (coming-soon overlays), audit frequency selector; saves theme to `user_preferences` + frequency to `user_checkin_schedule` at plan gen |
 | — | Bug fix — `user_profiles` not written on onboarding | ✅ DONE — `handleFinish()` now upserts `residence_country`, `retirement_country`, `retirement_year` to `user_profiles` |
 | — | Bug fix — `user_accounts` RLS blocked inserts | ✅ DONE — migration `20260324_fix_user_accounts_rls.sql` adds INSERT/UPDATE/DELETE policies + grants for authenticated users |
-| 27 | Demo accounts — free | ✅ DONE — `demo@prestigeworldwide.com`; US+CA, retirement 2050, 401(k) $85k + RRSP $62k, Swiss Alps theme. See demo accounts section below. |
+| 27 | Demo accounts | ✅ DONE — free + paid both seeded. See demo accounts section below. |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
@@ -247,16 +239,16 @@ Two dedicated accounts for testing and sharing. Both use fake email addresses �
 | Account | Email | Password | `is_paid` | Status |
 |---------|-------|----------|-----------|--------|
 | Free demo | `demo@prestigeworldwide.com` | `demo123456` | `false` | ✅ Seeded |
-| Paid demo | `paid@prestigeworldwide.com` | TBD | `true` | 🔶 Not yet seeded |
+| Paid demo | `paid@prestigeworldwide.com` | `demo123456` | `true` | ✅ Seeded |
 
 **Free demo canonical scenario:**
 - Residence: US, Retirement: Canada, Year: 2050
 - Accounts: 401(k) $85,000 USD + RRSP $62,000 CAD (both linked to retirement goal)
 - Theme: Swiss Alps (default)
 
-**Paid demo canonical scenario (planned):**
+**Paid demo canonical scenario:**
 - Residence: US, Retirement: UK, Year: 2045
-- Accounts: US 401(k) + UK ISA (manual balances)
+- Accounts: US 401(k) $90,000 USD + UK ISA £55,000 GBP (manual, both linked to retirement goal)
 - Theme: Gaudy Miami or Positano
 - Audit frequency: Quarterly
 
