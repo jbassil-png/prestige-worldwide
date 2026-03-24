@@ -23,8 +23,6 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 | # | Task | Status | Effort |
 |---|------|--------|--------|
-| 23 | Goal-account linking in Assets step | 🟢 Ready | ~3–4h |
-| 21 | Explicit free-tier messaging in Connect step | 🟢 Ready | ~2h |
 | 28 | Paid "Personalise" step (themes + advisors + audit freq) | 🟢 Ready | ~4–5h |
 | 27 | Demo accounts (free + paid, independently resettable) | 🟢 Ready | ~2h |
 
@@ -84,18 +82,13 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | 18 | Sign-up redirect UX | ✅ DONE — spinner + "Account created!" state shown during 1s redirect delay |
 | 19 | Auth cleanup | ✅ DONE — removed signInWithPassword fallback; Stripe webhook now uses service-role client |
 | 20 | Onboarding reorder | ✅ DONE — new sequence: Goals → Assets → Style (opt) → Connect (opt, paid); plan generates at end |
-
-**Post-launch (driven by user testing):**
-- Geographic AI advisors
-- Goal-account linking + unallocated bucket accuracy
-- Check-in email delivery (Vercel cron + Resend)
-- Polish backlog (loading reveal, PDF export, what-if analysis)
+| 21 | Explicit free-tier messaging in Connect step | ✅ DONE — amber banner replaces silently-disabled Plaid tab; inline upgrade CTA; free users go straight to manual entry |
+| 23 | Goal-account linking in Assets step | ✅ DONE — `GoalLink` type + per-account dropdown in `StepCountries`; unallocated bucket; wired into `WizardData` |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
-- Connect step: free users still see both tabs without explicit free-tier messaging (Task 21)
-- Goal-account linking not yet in Assets step; unallocated bucket not calculated (Task 23)
-- Paid Personalise step (step 4) not yet built; StepStyle still in free flow (Task 28)
+- Paid Personalise step (step 4) not yet built (Task 28)
+- Demo accounts not yet seeded (Task 27)
 
 ---
 

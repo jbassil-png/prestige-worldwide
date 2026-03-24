@@ -9,6 +9,32 @@
 
 ---
 
+### Session: Mar 24, 2026 — Tasks 21 & 23 complete, docs updated
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 21 complete — Explicit free-tier messaging in Connect step**
+   - Free users no longer see a Plaid/manual tab switcher. Replaced with an amber banner ("You're on the free plan — manual entry only") + inline "Upgrade →" link wired to Stripe checkout.
+   - Free users land directly in the manual balance form — no discovery required.
+   - Paid users: tab switcher unchanged; dead "Plaid is a paid feature" panel removed — the Plaid tab just works.
+   - File: `app/onboarding/steps/StepConnect.tsx`
+
+2. ✅ **Task 23 confirmed complete — Goal-account linking in Assets step**
+   - Already fully built in `StepCountries.tsx`: `GoalLink` type, per-account goal dropdown, "Unallocated" bucket, wired into `WizardData`.
+   - Docs were out of date; corrected across `CLAUDE.md`, `IMPLEMENTATION_ROADMAP.md`, and here.
+
+3. ✅ **Documentation audit + corrections**
+   - `CLAUDE.md`: task list pruned (23 + 21 removed from open tasks), added to What's Been Built, Known gaps updated.
+   - `IMPLEMENTATION_ROADMAP.md`: Tasks 21 and 23 marked ✅ with implementation summary; last updated date bumped.
+
+**Stopping point / next session:**
+- Task 28 (Paid Personalise step) is the highest-value remaining unblocked task — unlocks Task 22 (geographic advisors).
+- Task 27 (demo accounts) is ~2h and can be done alongside or after.
+
+---
+
 ### Session: Mar 23, 2026 — Onboarding redesign decisions
 
 **Branch:** `claude/review-codebase-docs-cLIae`
