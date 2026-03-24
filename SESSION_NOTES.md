@@ -24,7 +24,10 @@
 
 **Stopping point / next session — START HERE:**
 
-Task 29: Build `presentation/index.html` (see CLAUDE.md task list for full spec)
+Task 29: First draft complete at `presentation/index.html`. Next session — START HERE:
+1. Move file to `public/presentation/index.html` so it's live on Vercel
+2. Share URL with user for review
+3. Iterate on content based on feedback
 
 ---
 
