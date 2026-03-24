@@ -2,9 +2,9 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import StepCountries, { type CountrySelection } from "./steps/StepCountries";
+import StepCountries, { type CountrySelection, type GoalLink } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
-import StepGoals, { type GoalsData } from "./steps/StepGoals";
+import StepGoals, { type GoalsData, GOAL_TYPES } from "./steps/StepGoals";
 import StepStyle from "./steps/StepStyle";
 import StepAdvisors from "./steps/StepAdvisors";
 import { createClient } from "@/lib/supabase/client";
@@ -13,6 +13,7 @@ import posthog from "posthog-js";
 type WizardData = {
   goals: GoalsData;
   selections: CountrySelection[];
+  goalLinks: GoalLink[];
 };
 
 // Separate component so useSearchParams is inside a Suspense boundary
@@ -123,10 +124,63 @@ export default function OnboardingPage() {
         data: { user },
       } = await supabase.auth.getUser();
 
+      const { goalLinks = [] } = wizardData as WizardData;
       const meta = { ...payload, selections, accounts, goals, theme };
 
       if (user) {
         const manualAccounts = accounts.filter((a) => a.source === "manual");
+
+        // Insert manual accounts and capture DB-generated IDs for goal linking
+        const insertedAccountMeta: { dbId: string; type: string; countryCode: string }[] = [];
+        await Promise.all(
+          manualAccounts.map(async (a) => {
+            const { data } = await supabase
+              .from("user_accounts")
+              .insert({
+                user_id: user.id,
+                account_id: `manual_${crypto.randomUUID()}`,
+                account_name: a.name,
+                account_type: a.type,
+                current_balance: a.balanceUsd,
+                currency: a.currency.toUpperCase(),
+                plaid_item_id: null,
+              })
+              .select("id")
+              .single();
+            if (data?.id) {
+              insertedAccountMeta.push({ dbId: data.id, type: a.type, countryCode: a.countryCode });
+            }
+          })
+        );
+
+        // Build goal rows — one per selected goal type, with linked account IDs
+        const goalRows = goals.goalTypes.map((goalTypeId) => {
+          const linkedIds = goalLinks
+            .filter((gl) => gl.goalId === goalTypeId)
+            .map((gl) =>
+              insertedAccountMeta.find(
+                (a) => a.type === gl.accountType && a.countryCode === gl.countryCode
+              )?.dbId
+            )
+            .filter((id): id is string => !!id);
+
+          const goalMeta = GOAL_TYPES.find((g) => g.id === goalTypeId);
+          return {
+            user_id: user.id,
+            goal_type: goalTypeId,
+            label: goalMeta?.label ?? goalTypeId,
+            target_amount_usd:
+              goalTypeId === "retirement" && goals.retirementGoal
+                ? goals.retirementGoal.targetAmountUsd
+                : null,
+            target_year:
+              goalTypeId === "retirement" && goals.retirementGoal
+                ? goals.retirementGoal.targetYear
+                : null,
+            linked_account_ids: linkedIds,
+          };
+        });
+
         await Promise.all([
           supabase.from("user_plans").insert({
             user_id: user.id,
@@ -136,17 +190,9 @@ export default function OnboardingPage() {
             { user_id: user.id, theme },
             { onConflict: "user_id" }
           ),
-          ...manualAccounts.map((a) =>
-            supabase.from("user_accounts").insert({
-              user_id: user.id,
-              account_id: `manual_${crypto.randomUUID()}`,
-              account_name: a.name,
-              account_type: a.type,
-              current_balance: a.balanceUsd,
-              currency: a.currency.toUpperCase(),
-              plaid_item_id: null,
-            })
-          ),
+          ...(goalRows.length > 0
+            ? [supabase.from("user_goals").insert(goalRows)]
+            : []),
         ]);
       } else {
         sessionStorage.setItem("pw_plan", JSON.stringify({ ...plan, meta }));
@@ -300,8 +346,9 @@ export default function OnboardingPage() {
         <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
             <StepCountries
-              onNext={(selections) => {
-                setWizardData((p) => ({ ...p, selections }));
+              goals={wizardData.goals}
+              onNext={(selections, goalLinks) => {
+                setWizardData((p) => ({ ...p, selections, goalLinks }));
                 setStep(isPaid ? STEP_STYLE! : STEP_CONNECT);
               }}
               onBack={() => setStep(1)}
