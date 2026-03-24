@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import StepCountries, { type CountrySelection, type GoalLink } from "./steps/StepCountries";
 import StepConnect, { type Account } from "./steps/StepConnect";
 import StepGoals, { type GoalsData, GOAL_TYPES } from "./steps/StepGoals";
-import StepStyle from "./steps/StepStyle";
-import StepAdvisors from "./steps/StepAdvisors";
+import StepPersonalise, { type PersonaliseData } from "./steps/StepPersonalise";
 import { createClient } from "@/lib/supabase/client";
 import posthog from "posthog-js";
 
@@ -31,11 +30,11 @@ function SignupTracker() {
 
 // Step labels per tier
 const FREE_STEPS = ["Goals", "Assets", "Connect"] as const;
-const PAID_STEPS = ["Goals", "Assets", "Style", "Connect", "Advisors"] as const;
+const PAID_STEPS = ["Goals", "Assets", "Connect", "Personalise"] as const;
 
 // Step positions (1-indexed) per tier
 // Free:  Goals=1, Assets=2, Connect=3
-// Paid:  Goals=1, Assets=2, Style=3, Connect=4, Advisors=5
+// Paid:  Goals=1, Assets=2, Connect=3, Personalise=4
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -43,7 +42,6 @@ export default function OnboardingPage() {
   const [isPaid, setIsPaid] = useState<boolean | null>(null); // null = loading
   const [step, setStep] = useState(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
-  const [theme, setTheme] = useState("swiss-alps");
   const [pendingAccounts, setPendingAccounts] = useState<Account[]>([]);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,18 +68,17 @@ export default function OnboardingPage() {
 
   const steps = isPaid ? PAID_STEPS : FREE_STEPS;
 
-  // Step indices for navigation
   const STEP_ASSETS = 2;
-  const STEP_STYLE = isPaid ? 3 : null;
-  const STEP_CONNECT = isPaid ? 4 : 3;
-  const STEP_ADVISORS = isPaid ? 5 : null;
+  const STEP_CONNECT = 3;
+  const STEP_PERSONALISE = isPaid ? 4 : null;
 
-  async function handleFinish(accounts: Account[]) {
+  async function handleFinish(accounts: Account[], personalise?: PersonaliseData) {
     const { goals, selections } = wizardData as WizardData;
+    const resolvedTheme = personalise?.theme ?? "swiss-alps";
     setGenerating(true);
     setError(null);
 
-    sessionStorage.setItem("pw_theme", theme);
+    sessionStorage.setItem("pw_theme", resolvedTheme);
 
     try {
       const currentYear = new Date().getFullYear();
@@ -116,7 +113,7 @@ export default function OnboardingPage() {
           ? goals.retirementYear - currentYear
           : null,
         has_retirement_goal: !!goals.retirementGoal,
-        theme,
+        theme: resolvedTheme,
       });
 
       const supabase = createClient();
@@ -125,7 +122,7 @@ export default function OnboardingPage() {
       } = await supabase.auth.getUser();
 
       const { goalLinks = [] } = wizardData as WizardData;
-      const meta = { ...payload, selections, accounts, goals, theme };
+      const meta = { ...payload, selections, accounts, goals, theme: resolvedTheme };
 
       if (user) {
         const manualAccounts = accounts.filter((a) => a.source === "manual");
@@ -181,19 +178,37 @@ export default function OnboardingPage() {
           };
         });
 
-        await Promise.all([
+        const saves: PromiseLike<unknown>[] = [
           supabase.from("user_plans").insert({
             user_id: user.id,
             plan: { ...plan, meta },
           }),
           supabase.from("user_preferences").upsert(
-            { user_id: user.id, theme },
+            { user_id: user.id, theme: resolvedTheme },
             { onConflict: "user_id" }
           ),
           ...(goalRows.length > 0
             ? [supabase.from("user_goals").insert(goalRows)]
             : []),
-        ]);
+        ];
+
+        // Save audit frequency for paid users if provided
+        if (personalise?.auditFrequency) {
+          saves.push(
+            supabase.from("user_checkin_schedule").upsert(
+              {
+                user_id: user.id,
+                frequency_days: personalise.auditFrequency,
+                next_checkin_at: new Date(
+                  Date.now() + personalise.auditFrequency * 24 * 60 * 60 * 1000
+                ).toISOString(),
+              },
+              { onConflict: "user_id" }
+            )
+          );
+        }
+
+        await Promise.all(saves);
       } else {
         sessionStorage.setItem("pw_plan", JSON.stringify({ ...plan, meta }));
       }
@@ -205,7 +220,7 @@ export default function OnboardingPage() {
         years_to_retirement: goals.retirementYear
           ? goals.retirementYear - currentYear
           : null,
-        theme,
+        theme: resolvedTheme,
       });
 
       router.push("/dashboard");
@@ -215,11 +230,11 @@ export default function OnboardingPage() {
     }
   }
 
-  // After Connect: paid users go to Advisors, free users finish directly
+  // After Connect: paid users go to Personalise, free users finish directly
   function handleConnectNext(accounts: Account[]) {
     if (isPaid) {
       setPendingAccounts(accounts);
-      setStep(STEP_ADVISORS!);
+      setStep(STEP_PERSONALISE!);
     } else {
       handleFinish(accounts);
     }
@@ -228,7 +243,7 @@ export default function OnboardingPage() {
   function handleConnectSkip() {
     if (isPaid) {
       setPendingAccounts([]);
-      setStep(STEP_ADVISORS!);
+      setStep(STEP_PERSONALISE!);
     } else {
       handleFinish([]);
     }
@@ -349,36 +364,21 @@ export default function OnboardingPage() {
               goals={wizardData.goals}
               onNext={(selections, goalLinks) => {
                 setWizardData((p) => ({ ...p, selections, goalLinks }));
-                setStep(isPaid ? STEP_STYLE! : STEP_CONNECT);
+                setStep(STEP_CONNECT);
               }}
               onBack={() => setStep(1)}
             />
           </div>
         </div>
 
-        {/* Step 3 — Style (optional, paid only) */}
-        {isPaid && (
-          <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
-            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-              <StepStyle
-                onNext={(data) => {
-                  setTheme(data.theme);
-                  setStep(STEP_CONNECT);
-                }}
-                onBack={() => setStep(STEP_ASSETS)}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Step 3 (free) / Step 4 (paid) — Connect */}
+        {/* Step 3 — Connect (optional, all tiers) */}
         <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
           <div className="w-full max-w-lg space-y-4">
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <StepConnect
                 selections={wizardData.selections ?? []}
                 onNext={handleConnectNext}
-                onBack={() => setStep(isPaid ? STEP_STYLE! : STEP_ASSETS)}
+                onBack={() => setStep(STEP_ASSETS)}
                 isPaid={isPaid}
               />
             </div>
@@ -395,12 +395,13 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        {/* Step 5 — Advisors teaser (paid only) */}
+        {/* Step 4 — Personalise (optional, PAID ONLY) */}
         {isPaid && (
           <div style={{ width: panelWidth }} className="min-h-screen flex items-center justify-center px-4 pt-32 pb-8">
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
-              <StepAdvisors
-                onNext={() => handleFinish(pendingAccounts)}
+              <StepPersonalise
+                selections={wizardData.selections ?? []}
+                onNext={(personalise) => handleFinish(pendingAccounts, personalise)}
                 onBack={() => setStep(STEP_CONNECT)}
               />
             </div>
