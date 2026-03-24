@@ -8,7 +8,7 @@ export type StyleData = {
   theme: ThemeId;
 };
 
-const THEMES: {
+export const THEMES: {
   id: ThemeId;
   name: string;
   emoji: string;
