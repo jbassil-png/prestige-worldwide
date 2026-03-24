@@ -9,6 +9,47 @@
 
 ---
 
+### Session: Mar 24, 2026 — Bug fixes + Task 27 free demo seeded
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Bug fix — `user_profiles` never written during onboarding**
+   - `handleFinish()` in `app/onboarding/page.tsx` was saving to `user_plans`, `user_accounts`, `user_preferences`, and `user_goals` but never upserting `user_profiles`.
+   - Added upsert of `residence_country`, `retirement_country`, `retirement_year` to the `saves` batch.
+   - Verified: `user_profiles` now has a row after onboarding completes.
+
+2. ✅ **Bug fix — `user_accounts` inserts silently blocked by RLS**
+   - `user_accounts` table only had a `SELECT` policy for authenticated users. `INSERT`, `UPDATE`, and `DELETE` were missing.
+   - Added migration `20260324_fix_user_accounts_rls.sql` with the three missing policies + `GRANT INSERT, UPDATE, DELETE ON user_accounts TO authenticated`.
+   - Applied to Supabase via SQL editor. Verified: policies now show SELECT, INSERT, UPDATE, DELETE + service role ALL.
+   - Verified: `user_accounts` now has rows after onboarding completes.
+
+3. ✅ **Task 27 (partial) — Free demo account seeded and verified**
+   - **Email:** `demo@prestigeworldwide.com` — no real inbox, email confirmation is disabled in Supabase
+   - **Canonical scenario:** US + Canada, retirement 2050, 401(k) $85k USD + RRSP $62k CAD, retirement goal linked to both accounts, Swiss Alps theme
+   - Verified in Supabase: `user_profiles` row correct, `user_accounts` has 2 rows, `user_plans` has plan row
+
+**Stopping point / next session — START HERE:**
+
+**Task 27: Seed paid demo account (in progress)**
+
+- **Email:** `paid@prestigeworldwide.com` (fake — no real inbox needed, email confirmation disabled)
+- **Step 1:** Sign up at `/sign-up` with that email
+- **Step 2:** In Supabase Table Editor → `user_profiles` → find the row → flip `is_paid = true`
+- **Step 3:** Sign in → run through paid onboarding (4 steps):
+  - Goals: US residence, UK retirement, 2045
+  - Assets: select US 401(k) + UK ISA, link both to retirement goal
+  - Connect: enter manual balances (or use Plaid sandbox if configured)
+  - Personalise: pick Gaudy Miami or Positano theme, set quarterly audit frequency
+- **Step 4:** Verify dashboard shows paid features (theme applied, advisor cards visible)
+- **Step 5:** Mark Task 27 fully done in `CLAUDE.md` + `IMPLEMENTATION_ROADMAP.md`
+
+**Auth note:** Email confirmation is disabled in Supabase — sign-up returns a session immediately, no verification email sent or required.
+
+---
+
 ### Session: Mar 24, 2026 — Task 28 complete + Task 27 plan finalised
 
 **Branch:** `claude/review-codebase-docs-cLIae`
