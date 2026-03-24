@@ -9,6 +9,25 @@
 
 ---
 
+### Session: Mar 24, 2026 — Task 29 scoped (class presentation)
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 29 scoped — class presentation**
+   - Format: standalone HTML file (`presentation/index.html`)
+   - Style: VC-pitch, succinct
+   - Content: problem framing, MVP overview, build workflow, models used + rationale (Claude Haiku for plan/chat, Gemini Flash for insights), tech stack, freemium model
+   - Final slide: both demo account credentials for live login during/after presentation
+   - No blockers — all required content already in codebase + docs
+
+**Stopping point / next session — START HERE:**
+
+Task 29: Build `presentation/index.html` (see CLAUDE.md task list for full spec)
+
+---
+
 ### Session: Mar 24, 2026 — Task 27 complete + bug fixes
 
 **Branch:** `claude/review-codebase-docs-cLIae`
