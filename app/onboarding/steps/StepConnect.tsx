@@ -250,6 +250,46 @@ export default function StepConnect({ selections, onNext, onBack, isPaid, initia
     );
   }
 
+  // ── Free tier: no tab switcher — manual entry only, with upgrade CTA ─────
+  if (!isPaid) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800">Add your balances</h2>
+          <p className="text-sm text-gray-500 mt-1">Enter approximate balances to personalise your plan.</p>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <span className="text-base mt-0.5">🔒</span>
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-amber-800">You&apos;re on the free plan — manual entry only</p>
+            <p className="text-xs text-amber-700 leading-relaxed">
+              Upgrade to sync live balances automatically via Plaid.{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  fetch("/api/stripe/checkout", { method: "POST" })
+                    .then((r) => r.json())
+                    .then((d) => { if (d.url) window.location.href = d.url; });
+                }}
+                className="font-semibold underline underline-offset-2 hover:text-amber-900 transition"
+              >
+                Upgrade →
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <ManualEntry selections={selections} onAccounts={setAccounts} />
+
+        <button onClick={onBack} className="w-full text-sm text-gray-500 hover:underline">
+          Back
+        </button>
+      </div>
+    );
+  }
+
+  // ── Paid tier: Plaid + manual tabs ────────────────────────────────────────
   return (
     <div className="space-y-4">
       <div>
@@ -272,35 +312,7 @@ export default function StepConnect({ selections, onNext, onBack, isPaid, initia
       </div>
 
       {tab === "plaid" ? (
-        isPaid ? (
-          <PlaidConnect selections={selections} onAccounts={setAccounts} />
-        ) : (
-          <div className="rounded-xl border border-brand-200 bg-brand-50 p-5 space-y-3 text-center">
-            <p className="text-sm font-semibold text-brand-800">Plaid connection is a paid feature</p>
-            <p className="text-xs text-brand-600 leading-relaxed">
-              Upgrade to automatically sync live balances from your banks. Manual entry is always free.
-            </p>
-            <a
-              href="/api/stripe/checkout"
-              onClick={(e) => {
-                e.preventDefault();
-                fetch("/api/stripe/checkout", { method: "POST" })
-                  .then((r) => r.json())
-                  .then((d) => { if (d.url) window.location.href = d.url; });
-              }}
-              className="inline-block w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-lg text-sm transition"
-            >
-              Upgrade to connect via Plaid
-            </a>
-            <button
-              type="button"
-              onClick={() => setTab("manual")}
-              className="text-xs text-brand-500 hover:underline"
-            >
-              Use manual entry instead
-            </button>
-          </div>
-        )
+        <PlaidConnect selections={selections} onAccounts={setAccounts} />
       ) : (
         <ManualEntry selections={selections} onAccounts={setAccounts} />
       )}
