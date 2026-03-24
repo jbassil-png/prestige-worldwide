@@ -9,7 +9,7 @@
 
 ---
 
-### Session: Mar 24, 2026 — Bug fixes + Task 27 free demo seeded
+### Session: Mar 24, 2026 — Task 27 complete + bug fixes
 
 **Branch:** `claude/review-codebase-docs-cLIae`
 
@@ -26,27 +26,27 @@
    - Applied to Supabase via SQL editor. Verified: policies now show SELECT, INSERT, UPDATE, DELETE + service role ALL.
    - Verified: `user_accounts` now has rows after onboarding completes.
 
-3. ✅ **Task 27 (partial) — Free demo account seeded and verified**
-   - **Email:** `demo@prestigeworldwide.com` — no real inbox, email confirmation is disabled in Supabase
-   - **Canonical scenario:** US + Canada, retirement 2050, 401(k) $85k USD + RRSP $62k CAD, retirement goal linked to both accounts, Swiss Alps theme
-   - Verified in Supabase: `user_profiles` row correct, `user_accounts` has 2 rows, `user_plans` has plan row
+3. ✅ **Task 27 complete — Both demo accounts seeded and verified**
+   - **Free:** `demo@prestigeworldwide.com` / `demo123456` — US+CA, 2050, 401(k) $85k + RRSP $62k, Swiss Alps
+   - **Paid:** `paid@prestigeworldwide.com` / `demo123456` — US+UK, 2045, 401(k) $90k + ISA £55k, Gaudy Miami/Positano, quarterly audit
+   - Verified in Supabase: `user_profiles`, `user_accounts`, `user_preferences`, `user_checkin_schedule`, `user_plans` all correct for both accounts
+
+4. ✅ **Bug fix — `user_profiles` stub upsert on onboarding mount**
+   - New accounts had no `user_profiles` row until `handleFinish()` ran, causing `is_paid` to always read `false`
+   - Onboarding now upserts a stub row on mount so admins can flip `is_paid` before the user starts the wizard
+
+5. ✅ **Bug fix — Connect step showed "Build my plan" for paid users**
+   - CTA now reads "Next →" for paid users (who have a step 4 still to complete)
 
 **Stopping point / next session — START HERE:**
 
-**Task 27: Seed paid demo account (in progress)**
+Pre-launch tasks, pick any:
 
-- **Email:** `paid@prestigeworldwide.com` (fake — no real inbox needed, email confirmation disabled)
-- **Step 1:** Sign up at `/sign-up` with that email
-- **Step 2:** In Supabase Table Editor → `user_profiles` → find the row → flip `is_paid = true`
-- **Step 3:** Sign in → run through paid onboarding (4 steps):
-  - Goals: US residence, UK retirement, 2045
-  - Assets: select US 401(k) + UK ISA, link both to retirement goal
-  - Connect: enter manual balances (or use Plaid sandbox if configured)
-  - Personalise: pick Gaudy Miami or Positano theme, set quarterly audit frequency
-- **Step 4:** Verify dashboard shows paid features (theme applied, advisor cards visible)
-- **Step 5:** Mark Task 27 fully done in `CLAUDE.md` + `IMPLEMENTATION_ROADMAP.md`
-
-**Auth note:** Email confirmation is disabled in Supabase — sign-up returns a session immediately, no verification email sent or required.
+| # | Task | Notes |
+|---|------|-------|
+| 22 | Geographic AI advisors | Task 28 scaffold done — now unblocked |
+| 24 | Portfolio audit + check-in email delivery | Vercel cron + Resend; two-tier (free/paid) |
+| 25 | Testing infrastructure (Vitest) | Unit + integration tests |
 
 ---
 
