@@ -23,7 +23,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 | # | Task | Notes |
 |---|------|-------|
-| 29 | Class presentation | Standalone HTML file; VC-pitch style; covers problem, MVP, build workflow, models used + rationale; ends with demo account slide. Output: `presentation/index.html` |
+| 29 | Class presentation | ✅ DONE — `presentation/index.html` built and pushed. Next: move to `public/presentation/index.html` so it's served at `/presentation/index.html` on the live site. |
 
 **Pre-launch (build before first real users):**
 
@@ -87,10 +87,10 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | — | Bug fix — `user_profiles` not written on onboarding | ✅ DONE — `handleFinish()` now upserts `residence_country`, `retirement_country`, `retirement_year` to `user_profiles` |
 | — | Bug fix — `user_accounts` RLS blocked inserts | ✅ DONE — migration `20260324_fix_user_accounts_rls.sql` adds INSERT/UPDATE/DELETE policies + grants for authenticated users |
 | 27 | Demo accounts | ✅ DONE — free + paid both seeded. See demo accounts section below. |
+| 29 | Class presentation | ✅ DONE — `presentation/index.html`; 10-slide VC-pitch deck; keyboard-navigable. Pending: move to `public/` for live hosting at `/presentation/index.html`. |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
-- Paid demo account not yet seeded (Task 27 in progress)
 
 ---
 
