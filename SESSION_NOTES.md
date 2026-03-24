@@ -9,6 +9,30 @@
 
 ---
 
+### Session: Mar 24, 2026 — Task 28 complete (Paid Personalise step)
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 28 complete — Paid "Personalise" step (onboarding step 4)**
+   - Created `StepPersonalise.tsx` — single scrollable step with three panels:
+     - **Theme picker** — reuses `THEMES` from `StepStyle` (now exported); swiss-alps pre-selected
+     - **Advisor cards** — auto-derived from user's country selections using `ADVISORS_BY_CODE` map (US/CA/GB/SG/AU/DE/FR); "Coming soon" overlays in place until Task 22
+     - **Audit frequency** — 2×2 grid (Monthly / Quarterly / Twice yearly / Annually); defaults to twice yearly (182 days)
+   - Refactored `page.tsx` from 5-step paid flow (Goals, Assets, Style, Connect, Advisors) to 4-step (Goals, Assets, Connect, Personalise) per spec
+   - Free flow unchanged at 3 steps
+   - `handleFinish()` now accepts optional `PersonaliseData`; saves theme to `user_preferences` and `frequency_days` to `user_checkin_schedule` in the same `Promise.all` batch
+   - Skip button uses swiss-alps + 182-day defaults
+   - `THEMES` exported from `StepStyle.tsx`; `StepAdvisors.tsx` and separate Style step removed from wizard (StepStyle and StepAdvisors remain in codebase for future reuse)
+   - Tested as paid user — all three panels functional, plan generates correctly after step 4
+
+**Stopping point / next session:**
+- Task 27 (demo accounts — free + paid, independently resettable) is next. ~2h.
+- Task 22 (geographic AI advisors) is now unblocked — the Personalise step UI scaffold is in place.
+
+---
+
 ### Session: Mar 24, 2026 — Tasks 21 & 23 complete, docs updated
 
 **Branch:** `claude/review-codebase-docs-cLIae`
