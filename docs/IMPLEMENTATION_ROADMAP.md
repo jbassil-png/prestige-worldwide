@@ -1,7 +1,7 @@
 # Implementation Roadmap
 
 **Status:** Active
-**Last Updated:** 2026-03-22
+**Last Updated:** 2026-03-24
 
 ---
 
@@ -134,16 +134,8 @@ Accounts entered manually in the Connect step (Step 4) are passed directly to `h
 When a user signs up via magic link, the `user_signed_up` PostHog event is never fired (it's only captured in the email/password sign-up path). Fix: fire the event in the auth callback handler.
 **Effort:** ~20 min. **Depends on:** Nothing — can be done any time.
 
-### Task 21: Plaid Gating + Free-Tier Messaging in Connect Step 📋
-The Connect step must clearly communicate to free users that manual entry is their limit — not just a silently-defaulted tab. The gate is explicitly stated, with an upgrade path available.
-
-**Sub-tasks:**
-- [ ] Pass `is_paid` into StepConnect from the wizard (fetch from `/api/profile` or prop from orchestrator)
-- [ ] For free users: show a clear banner/callout ("You're on the free plan — manual account entry only. Upgrade to connect via Plaid.") rather than hiding or silently disabling the Plaid option
-- [ ] Show upgrade CTA wired to Stripe checkout; keep manual entry as the primary free action
-- [ ] For paid users: show both Plaid and manual tabs as normal
-
-**Decision settled:** Gate is in the onboarding wizard (Option A). Honest, explicit messaging is the approach — not frictionless bypass.
+### Task 21: Plaid Gating + Free-Tier Messaging in Connect Step ✅
+Free users no longer see a tab switcher. An amber banner at the top of the Connect step clearly states "You're on the free plan — manual entry only" with an inline "Upgrade →" link wired to Stripe checkout. Free users land directly in the manual balance form. Paid users keep the Plaid/manual tab switcher, now without the dead "paid feature" panel.
 
 ### Task 26: Free vs Paid Onboarding Map ✅ RESOLVED
 Decided in session Mar 23, 2026. See session notes above for full decision record.
@@ -263,18 +255,8 @@ Country-specific advisor personas for paid users. Free users get a single genera
 - [ ] Extend `/api/chat` to accept an `advisorId` param and switch system prompt accordingly
 - [ ] Theme-aware visual identity per advisor (optional polish)
 
-### Task 23: Goal-Account Linking in Assets Step 📋
-All users (free and paid) are prompted to link their accounts to goals during the Assets step. Whatever isn't linked goes into an explicit "unallocated" bucket. This is inline in the wizard — not post-onboarding, not settings-only.
-
-**Placement decision:** Inline in `StepCountries` (the Assets step). After the user has specified their country/account types, they see a goal-linking prompt for each account before proceeding.
-
-**Sub-tasks:**
-- [ ] After account type selection in `StepCountries`, show goal-assignment UI: for each account entry, a dropdown or tag picker of the user's goals
-- [ ] "Unallocated" bucket label shown clearly for anything left unassigned — make it a named bucket, not an absence
-- [ ] Update `user_goals.linked_account_ids` on wizard finish
-- [ ] Recalculate unallocated total: net worth minus sum of linked account balances
-- [ ] Surface unallocated bucket in plan view and allocation charts
-- [ ] Ensure linking survives the onboarding → settings transition (editable in Settings → Goals section)
+### Task 23: Goal-Account Linking in Assets Step ✅
+Inline in `StepCountries`. After specifying country/account types, users see a per-account goal dropdown before proceeding. Anything unlinked lands in an explicit "Unallocated" bucket. `GoalLink[]` is captured in `WizardData` and passed through `handleFinish()`. Available for all users (free and paid).
 
 ### Task 24: Portfolio Audit + Check-in Email Delivery 📋
 Expansion of the original check-in concept. Two tiers of scheduled outreach:
