@@ -46,17 +46,21 @@ export default function OnboardingPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch is_paid on mount
+  // Fetch is_paid on mount — upsert stub row so the row exists for admin to flip before onboarding
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { setIsPaid(false); return; }
-      supabase
+      // Ensure the row exists (no-op if already there)
+      await supabase
+        .from("user_profiles")
+        .upsert({ user_id: user.id }, { onConflict: "user_id", ignoreDuplicates: true });
+      const { data } = await supabase
         .from("user_profiles")
         .select("is_paid")
         .eq("user_id", user.id)
-        .single()
-        .then(({ data }) => setIsPaid(data?.is_paid ?? false));
+        .single();
+      setIsPaid(data?.is_paid ?? false);
     });
   }, []);
 
