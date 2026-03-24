@@ -19,13 +19,15 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ### Open task list (next session — pick up here)
 
-**Unblocked and ready to implement:**
+**In progress:**
 
-| # | Task | Status | Effort |
-|---|------|--------|--------|
-| 27 | Demo accounts (free + paid, independently resettable) | 🟢 Ready | ~2h |
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 27 | Demo accounts | 🔶 In progress | Free done ✅ — paid account still needs seeding |
 
-**Pre-launch (build before first real users):**
+**Unblocked and ready to implement (after Task 27):**
+
+**Pre-launch (build before first real users — pick up after Task 27):**
 
 | # | Task | Notes |
 |---|------|-------|
@@ -84,10 +86,13 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | 21 | Explicit free-tier messaging in Connect step | ✅ DONE — amber banner replaces silently-disabled Plaid tab; inline upgrade CTA; free users go straight to manual entry |
 | 23 | Goal-account linking in Assets step | ✅ DONE — `GoalLink` type + per-account dropdown in `StepCountries`; unallocated bucket; wired into `WizardData` |
 | 28 | Paid "Personalise" step | ✅ DONE — `StepPersonalise.tsx`; three panels: theme picker, advisor cards (coming-soon overlays), audit frequency selector; saves theme to `user_preferences` + frequency to `user_checkin_schedule` at plan gen |
+| — | Bug fix — `user_profiles` not written on onboarding | ✅ DONE — `handleFinish()` now upserts `residence_country`, `retirement_country`, `retirement_year` to `user_profiles` |
+| — | Bug fix — `user_accounts` RLS blocked inserts | ✅ DONE — migration `20260324_fix_user_accounts_rls.sql` adds INSERT/UPDATE/DELETE policies + grants for authenticated users |
+| 27 | Demo accounts — free | ✅ DONE — `demo@prestigeworldwide.com`; US+CA, retirement 2050, 401(k) $85k + RRSP $62k, Swiss Alps theme. See demo accounts section below. |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
-- Demo accounts not yet seeded (Task 27)
+- Paid demo account not yet seeded (Task 27 in progress)
 
 ---
 
@@ -231,6 +236,31 @@ app/api/
 - **OpenRouter:** `OPENROUTER_API_KEY` and `OPENROUTER_PLAN_MODEL` set in Vercel for all environments
 - **Admin client:** `createAdminClient()` in `lib/supabase/admin.ts` — uses `SUPABASE_SERVICE_ROLE_KEY`, bypasses RLS. Only use server-side in trusted contexts.
 - **Dev reset:** Navigate to `/dev/reset` to wipe all user data for the current account and restart onboarding. Requires `ALLOW_DEV_RESET=true` env var — works in any environment when explicitly set. Not linked from the UI; visit directly.
+- **Email confirmation:** Disabled in Supabase. `signUp()` returns a session immediately. Demo accounts use fake emails — no real inbox required.
+
+---
+
+## Demo Accounts
+
+Two dedicated accounts for testing and sharing. Both use fake email addresses — no real inboxes, email confirmation is disabled.
+
+| Account | Email | Password | `is_paid` | Status |
+|---------|-------|----------|-----------|--------|
+| Free demo | `demo@prestigeworldwide.com` | `demo123456` | `false` | ✅ Seeded |
+| Paid demo | `paid@prestigeworldwide.com` | TBD | `true` | 🔶 Not yet seeded |
+
+**Free demo canonical scenario:**
+- Residence: US, Retirement: Canada, Year: 2050
+- Accounts: 401(k) $85,000 USD + RRSP $62,000 CAD (both linked to retirement goal)
+- Theme: Swiss Alps (default)
+
+**Paid demo canonical scenario (planned):**
+- Residence: US, Retirement: UK, Year: 2045
+- Accounts: US 401(k) + UK ISA (manual balances)
+- Theme: Gaudy Miami or Positano
+- Audit frequency: Quarterly
+
+**To reset either account:** Sign in as that account → navigate to `/dev/reset`.
 
 ---
 
