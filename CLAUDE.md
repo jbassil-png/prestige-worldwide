@@ -19,6 +19,12 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ### Open task list (next session — pick up here)
 
+**Immediate (due this week):**
+
+| # | Task | Notes |
+|---|------|-------|
+| 29 | Class presentation | Standalone HTML file; VC-pitch style; covers problem, MVP, build workflow, models used + rationale; ends with demo account slide. Output: `presentation/index.html` |
+
 **Pre-launch (build before first real users):**
 
 | # | Task | Notes |
