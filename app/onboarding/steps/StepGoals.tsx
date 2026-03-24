@@ -7,7 +7,7 @@ import { COUNTRIES } from "./StepCountries";
 const CURRENT_YEAR = new Date().getFullYear();
 const DEFAULT_RETIREMENT_YEAR = CURRENT_YEAR + 29;
 
-const GOAL_TYPES = [
+export const GOAL_TYPES = [
   { id: "retirement", label: "Retirement", emoji: "🏖️" },
   { id: "property", label: "Property purchase", emoji: "🏠" },
   { id: "education", label: "Children's education", emoji: "🎓" },

@@ -120,8 +120,9 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | Theme palettes | Swiss Alps: slate/ice. Gaudy Miami: pink/gold. Positano: linen/terracotta. See `docs/POLISH_BACKLOG.md` for exact values. |
 | Theme typography | Swiss Alps: DM Serif Display + DM Sans. Gaudy Miami: Syne + DM Sans. Positano: Cormorant Garamond + Lato. Loaded via `@fontsource` (self-hosted, no build-time network fetch). |
 | Theme token system | CSS custom properties (`--color-bg`, `--color-primary`, etc.) + `--font-heading`/`--font-body`. Tailwind `theme-*` utilities reference them. Applied via `data-theme` on `<html>`. |
-| Onboarding sequence — free | Goals (req) → Assets + Goal Linking (req) → Connect (manual-only, skippable). 3 steps. |
-| Onboarding sequence — paid | Goals (req) → Assets + Goal Linking (req) → Connect (Plaid+manual, skippable) → Personalise (opt). 4 steps. |
+| Onboarding sequence — free | Goals (req) → Assets + Goal Linking (req) → Connect (manual-only, skippable) → plan generates. 3 steps. |
+| Onboarding sequence — paid | Goals (req) → Assets + Goal Linking (req) → Connect (Plaid+manual, skippable) → Personalise (opt) → plan generates. 4 steps. |
+| Plan generation timing | Deferred to end of full wizard. Free: generates after step 3. Paid: generates after step 4. Personalise step data (theme, advisors, frequency) included in plan payload for paid users. |
 | Connect step gating | Free users see explicit messaging ("you're on the free plan — manual entry only") with an upgrade CTA. Not a silently-disabled tab. |
 | Goal-account linking | In the Assets step for all users (free + paid). Each account linked to a goal or explicitly left in "unallocated" bucket. |
 | Geographic advisors | Free: single generalist advisor (current chat assistant). Paid: country-specific advisors auto-assigned from selected countries. |
@@ -151,8 +152,8 @@ app/onboarding/
     └── StepStyle.tsx       ← Retained for Settings re-use; not rendered in onboarding wizard
 ```
 
-**Free flow:** Steps 1 → 2 → 3 (plan generates after step 3 or skip)
-**Paid flow:** Steps 1 → 2 → 3 → 4 (plan generates after step 3 or skip, before step 4)
+**Free flow:** Steps 1 → 2 → 3 → **plan generates** (after Connect complete or skip)
+**Paid flow:** Steps 1 → 2 → 3 → 4 → **plan generates** (after Personalise complete or skip)
 
 ### WizardData shape
 ```ts
@@ -165,7 +166,7 @@ type WizardData = {
 };
 ```
 
-Plan generates at the end of the Connect step (step 3, complete or skip). Payload: goals + selections + accounts (empty array if skipped). Personalise step (paid step 4) saves independently — theme → `user_preferences`, advisors → TBD table, audit frequency → `user_checkin_schedule`.
+Plan generates at the end of onboarding — after step 3 (Connect) for free users, after step 4 (Personalise) for paid users. This ensures the plan has full context: theme, advisors, and audit frequency are part of the payload for paid users. Payload: goals + selections + accounts + (paid) theme + advisor IDs + audit frequency. Accounts is empty array if Connect skipped.
 
 All step components accept `initialValues` props.
 

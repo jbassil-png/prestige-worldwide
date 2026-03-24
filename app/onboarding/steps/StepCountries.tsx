@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { GOAL_TYPES, type GoalsData } from "./StepGoals";
 
 export const COUNTRIES: { code: string; label: string; flag: string; accountTypes: string[] }[] = [
   { code: "US", label: "United States", flag: "🇺🇸", accountTypes: ["401(k)", "IRA / Roth IRA", "Brokerage", "529 (Education)"] },
@@ -19,16 +20,28 @@ export type CountrySelection = {
   accountTypes: string[];
 };
 
+export type GoalLink = {
+  countryCode: string;
+  accountType: string;
+  goalId: string; // goal type ID (e.g. "retirement") or "unallocated"
+};
+
 interface Props {
-  onNext: (selections: CountrySelection[]) => void;
+  onNext: (selections: CountrySelection[], goalLinks: GoalLink[]) => void;
   onBack?: () => void;
   initialValues?: CountrySelection[];
+  goals?: GoalsData;
 }
 
-export default function StepCountries({ onNext, onBack, initialValues }: Props) {
+export default function StepCountries({ onNext, onBack, initialValues, goals }: Props) {
   const [selected, setSelected] = useState<Record<string, string[]>>(
     () => Object.fromEntries((initialValues ?? []).map((s) => [s.countryCode, s.accountTypes]))
   );
+  const [phase, setPhase] = useState<"selection" | "linking">("selection");
+  const [goalLinks, setGoalLinks] = useState<GoalLink[]>([]);
+
+  const goalTypes = goals?.goalTypes ?? [];
+  const hasGoals = goalTypes.length > 0;
 
   function toggleCountry(code: string) {
     setSelected((prev) => {
@@ -51,21 +64,138 @@ export default function StepCountries({ onNext, onBack, initialValues }: Props) 
     });
   }
 
-  function handleNext() {
-    const selections: CountrySelection[] = COUNTRIES.filter(
+  function buildSelections(): CountrySelection[] {
+    return COUNTRIES.filter(
       (c) => selected[c.code] && selected[c.code].length > 0
     ).map((c) => ({
       country: c.label,
       countryCode: c.code,
       accountTypes: selected[c.code],
     }));
+  }
 
+  // All selected account type rows (countryCode + accountType pairs)
+  function buildAccountRows() {
+    return COUNTRIES.flatMap((c) =>
+      (selected[c.code] ?? []).map((type) => ({
+        key: `${c.code}__${type}`,
+        countryCode: c.code,
+        flag: c.flag,
+        accountType: type,
+      }))
+    );
+  }
+
+  function handleSelectionNext() {
+    const selections = buildSelections();
     if (selections.length === 0) return;
-    onNext(selections);
+
+    if (!hasGoals) {
+      // No goals selected — skip linking, mark everything unallocated
+      const links = buildAccountRows().map((r) => ({
+        countryCode: r.countryCode,
+        accountType: r.accountType,
+        goalId: "unallocated",
+      }));
+      onNext(selections, links);
+      return;
+    }
+
+    // Initialise goalLinks with all accounts set to "unallocated"
+    setGoalLinks(
+      buildAccountRows().map((r) => ({
+        countryCode: r.countryCode,
+        accountType: r.accountType,
+        goalId: "unallocated",
+      }))
+    );
+    setPhase("linking");
+  }
+
+  function setLink(countryCode: string, accountType: string, goalId: string) {
+    setGoalLinks((prev) =>
+      prev.map((l) =>
+        l.countryCode === countryCode && l.accountType === accountType
+          ? { ...l, goalId }
+          : l
+      )
+    );
+  }
+
+  function handleLinkingNext() {
+    onNext(buildSelections(), goalLinks);
   }
 
   const hasValidSelection = Object.values(selected).some((types) => types.length > 0);
+  const accountRows = buildAccountRows();
 
+  // ── Phase 2: Goal linking ───────────────────────────────────────────────────
+  if (phase === "linking") {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800">Assign accounts to your goals</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Which goal does each account support? Anything left unassigned goes into your{" "}
+            <span className="font-medium text-gray-700">Unallocated</span> bucket.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          {accountRows.map((row) => {
+            const link = goalLinks.find(
+              (l) => l.countryCode === row.countryCode && l.accountType === row.accountType
+            );
+            return (
+              <div
+                key={row.key}
+                className="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-2.5 bg-white"
+              >
+                <span className="text-base shrink-0">{row.flag}</span>
+                <span className="text-sm text-gray-700 flex-1 min-w-0 truncate">{row.accountType}</span>
+                <select
+                  value={link?.goalId ?? "unallocated"}
+                  onChange={(e) => setLink(row.countryCode, row.accountType, e.target.value)}
+                  className="text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white shrink-0"
+                >
+                  <option value="unallocated">Unallocated</option>
+                  {goalTypes.map((id) => {
+                    const meta = GOAL_TYPES.find((g) => g.id === id);
+                    return (
+                      <option key={id} value={id}>
+                        {meta ? `${meta.emoji} ${meta.label}` : id}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="text-xs text-gray-400">
+          You can update these assignments any time from Settings.
+        </p>
+
+        <button
+          onClick={handleLinkingNext}
+          className="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition"
+        >
+          Continue →
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setPhase("selection")}
+          className="w-full text-sm text-gray-500 hover:underline"
+        >
+          Back
+        </button>
+      </div>
+    );
+  }
+
+  // ── Phase 1: Country + account type selection ───────────────────────────────
   return (
     <div className="space-y-4">
       <div>
@@ -132,11 +262,11 @@ export default function StepCountries({ onNext, onBack, initialValues }: Props) 
       </div>
 
       <button
-        onClick={handleNext}
+        onClick={handleSelectionNext}
         disabled={!hasValidSelection}
         className="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-40"
       >
-        Continue →
+        {hasGoals ? "Continue →" : "Continue →"}
       </button>
 
       {onBack && (
