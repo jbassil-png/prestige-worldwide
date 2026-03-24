@@ -54,7 +54,10 @@ export default function OnboardingPage() {
       // Ensure the row exists (no-op if already there)
       await supabase
         .from("user_profiles")
-        .upsert({ user_id: user.id }, { onConflict: "user_id", ignoreDuplicates: true });
+        .upsert(
+          { user_id: user.id, residence_country: "US", retirement_country: "US" },
+          { onConflict: "user_id", ignoreDuplicates: true }
+        );
       const { data } = await supabase
         .from("user_profiles")
         .select("is_paid")
