@@ -187,6 +187,15 @@ export default function OnboardingPage() {
             { user_id: user.id, theme: resolvedTheme },
             { onConflict: "user_id" }
           ),
+          supabase.from("user_profiles").upsert(
+            {
+              user_id: user.id,
+              residence_country: goals.residenceCountry,
+              retirement_country: goals.retirementCountry,
+              retirement_year: goals.retirementYear ?? null,
+            },
+            { onConflict: "user_id" }
+          ),
           ...(goalRows.length > 0
             ? [supabase.from("user_goals").insert(goalRows)]
             : []),
