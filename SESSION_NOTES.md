@@ -9,7 +9,7 @@
 
 ---
 
-### Session: Mar 25, 2026 — Task 29 complete + Task 30 scoped
+### Session: Mar 25, 2026 — Task 29 complete + presentation demo flow finalised
 
 **Branch:** `claude/review-codebase-docs-cLIae`
 
@@ -20,21 +20,22 @@
    - Live at: https://prestige-worldwide-kappa.vercel.app/presentation/index.html
    - No content changes this session — user reviewed and approved as-is
 
-2. 📋 **Task 30 scoped — presentation-safe multi-user demo flow**
-   - Identified during class presentation prep: multiple users sharing the same demo account will overwrite each other's Supabase data if they all complete onboarding simultaneously
-   - Wizard steps themselves are fine (client-side state only); the conflict happens at `handleFinish()` when all writes race to the same DB row
-   - Solution: a `/demo` route — fully interactive onboarding wizard backed by sessionStorage only; no auth required, no DB writes; calls `/api/plan` and stores result as `pw_plan`; redirects to `/dashboard` which already reads from sessionStorage when no Supabase session
-   - Update presentation final slide to point to `/demo` instead of shared credentials
+2. ✅ **Presentation demo flow finalised — `/dev/reset` + credentials approach**
+   - Considered building a `/demo` route (sessionStorage-only wizard) but the dashboard auth wall would require a separate result page, adding scope
+   - Decision: keep shared credentials on the final slide; add a `/dev/reset` link so testers reset the account before starting — also gives each tester the choice of free or paid flow
+   - Updated presentation slide 10: subtitle updated, reset link added as a styled block below the credential cards
+   - **Owner action required:** confirm `ALLOW_DEV_RESET=true` is set in Vercel production environment
 
 **Stopping point / next session — START HERE:**
 
-Task 30: Multi-user demo flow. Full spec in `docs/IMPLEMENTATION_ROADMAP.md` → Task 30.
+Pre-launch tasks — pick any:
 
-Short version:
-1. Create `app/demo/page.tsx` — renders the full wizard (free 3-step flow), all state in sessionStorage, no Supabase writes
-2. On "Build my plan", POST to `/api/plan` (pass mock/guest user context), store result as `pw_plan` in sessionStorage
-3. Redirect to `/dashboard` — already reads `pw_plan` from sessionStorage when no session
-4. Update the presentation's final slide to replace the login credentials with the `/demo` URL
+| # | Task | Notes |
+|---|------|-------|
+| — | Confirm `ALLOW_DEV_RESET=true` in Vercel | Owner action, ~2 min — required for presentation reset link |
+| 22 | Geographic AI advisors | Task 28 scaffold done — now unblocked |
+| 24 | Portfolio audit + check-in email delivery | Vercel cron + Resend; two-tier (free/paid) |
+| 25 | Testing infrastructure (Vitest) | Unit + integration tests |
 
 ---
 

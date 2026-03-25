@@ -116,26 +116,6 @@ Live at: https://prestige-worldwide-kappa.vercel.app/presentation/index.html
 
 ---
 
-### Task 30: Presentation-Safe Multi-User Demo Flow 📋 — START HERE
-
-**Problem:** Multiple simultaneous users on the same demo account overwrite each other's Supabase data when `handleFinish()` is called. The wizard steps themselves are fine (client-side state only); the race condition is at the point of DB writes.
-
-**Solution:** A `/demo` route — fully interactive 3-step onboarding wizard backed entirely by sessionStorage. No auth, no DB writes. On "Build my plan", calls `/api/plan` with the sessionStorage data and stores the result as `pw_plan`. Redirects to `/dashboard`, which already reads from `pw_plan` when no Supabase session is present.
-
-**Why not `/onboarding/preview`?** Preview uses hardcoded mock data. `/demo` accepts real user input and generates a real AI plan — the full experience, just ephemeral.
-
-**Sub-tasks:**
-- [ ] Create `app/demo/page.tsx` — renders `StepGoals`, `StepCountries`, `StepConnect` (free 3-step flow) with all state in React local state; no Supabase calls anywhere in the flow
-- [ ] On "Build my plan", POST to `/api/plan` with wizard data (goals + selections + accounts); store response as `pw_plan` in sessionStorage; redirect to `/dashboard`
-- [ ] Ensure `/api/plan` can handle an unauthenticated call with an explicit payload (it may already — check if it reads from Supabase or solely from the request body)
-- [ ] Add `/demo` to middleware matcher exclusion so it's publicly accessible without auth
-- [ ] Update presentation final slide: replace credential table with `/demo` URL + one-line instruction ("visit on any device — no login needed")
-- [ ] Verify: 10 browser tabs can complete the wizard independently without any shared state
-
-**Effort:** ~2–3h. **Depends on:** Nothing — fully self-contained.
-
----
-
 ### Task 16: Stripe Account Setup 🔜 OWNER ACTION
 Steps documented in `CLAUDE.md` → "Current Task". Requires:
 1. Stripe account + product + price
