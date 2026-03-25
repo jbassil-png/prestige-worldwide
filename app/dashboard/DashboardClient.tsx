@@ -28,6 +28,8 @@ interface Props {
   residenceCurrency?: string;
   retirementCurrency?: string;
   initialTheme?: string;
+  userEmail?: string;
+  isPaid?: boolean;
 }
 
 export default function DashboardClient({
@@ -39,6 +41,8 @@ export default function DashboardClient({
   residenceCurrency = "USD",
   retirementCurrency = "USD",
   initialTheme,
+  userEmail,
+  isPaid = false,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -150,18 +154,40 @@ export default function DashboardClient({
 
   return (
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
-      {/* Top bar — brand + sign out only */}
+      {/* Top bar — brand + user identity + sign out */}
       <header className="w-full bg-white border-b border-gray-100 px-3 sm:px-4 md:px-6 py-3 flex items-center">
         <span className="font-bold text-brand-700 text-sm sm:text-base md:text-lg">
           <span className="hidden sm:inline">Prestige Worldwide</span>
           <span className="sm:hidden">Prestige</span>
         </span>
-        <button
-          onClick={handleSignOut}
-          className="ml-auto text-xs text-gray-400 hover:text-red-600 transition"
-        >
-          Sign out
-        </button>
+        {userEmail && (
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <span className="hidden sm:block text-xs text-gray-400 truncate max-w-[180px]">
+              {userEmail}
+            </span>
+            {userEmail === "demo@prestigeworldwide.com" ? (
+              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Free demo</span>
+            ) : userEmail === "paid@prestigeworldwide.com" ? (
+              <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">Paid demo</span>
+            ) : isPaid ? (
+              <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">Pro</span>
+            ) : null}
+            <button
+              onClick={handleSignOut}
+              className="text-xs text-gray-400 hover:text-red-600 transition"
+            >
+              Sign out
+            </button>
+          </div>
+        )}
+        {!userEmail && (
+          <button
+            onClick={handleSignOut}
+            className="ml-auto text-xs text-gray-400 hover:text-red-600 transition"
+          >
+            Sign out
+          </button>
+        )}
       </header>
 
       {/* Demo mode: marketing banner */}

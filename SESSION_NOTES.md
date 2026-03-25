@@ -9,6 +9,38 @@
 
 ---
 
+### Session: Mar 25, 2026 (continued) — dashboard identity, presentation polish, landing page refresh
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **`ALLOW_DEV_RESET=true` confirmed in Vercel production**
+
+2. ✅ **Dashboard header: logged-in user identity**
+   - Server page fetches `is_paid` + passes `userEmail` / `isPaid` to `DashboardClient`
+   - Header shows email (hidden on mobile) + badge: "Free demo" / "Paid demo" / "Pro"
+   - Demo accounts detected by exact email; real paid users get "Pro" badge
+
+3. ✅ **Presentation slide 10 restructured as 3 sequential steps**
+   - Step 1: reset (`/dev/reset`), Step 2: free login, Step 3: paid login
+   - Each row has numbered circle, label, credentials/URL inline
+
+4. ✅ **Landing page refreshed**
+   - `Features`: now reflects what's actually built (AI plan, unified accounts, plan history + check-ins)
+   - `HowItWorks`: step 1 → "Tell us your situation"; step 3 → mentions chat + check-ins
+   - `CTASection`: single button replaced with Free vs Pro two-column pricing table
+
+**Stopping point / next session — START HERE:**
+
+| # | Task | Notes |
+|---|------|-------|
+| 22 | Geographic AI advisors | Task 28 scaffold done — now unblocked |
+| 24 | Portfolio audit + check-in email delivery | Vercel cron + Resend; two-tier (free/paid) |
+| 25 | Testing infrastructure (Vitest) | Unit + integration tests |
+
+---
+
 ### Session: Mar 25, 2026 — Task 29 complete + presentation demo flow finalised
 
 **Branch:** `claude/review-codebase-docs-cLIae`

@@ -1,21 +1,21 @@
 const features = [
   {
+    icon: "🤖",
+    title: "AI-powered financial plan",
+    description:
+      "Tell us your countries, accounts, and retirement goals. Get a personalized plan with cross-border tax insights, currency strategy, and on-track status — generated in seconds.",
+  },
+  {
     icon: "🏦",
-    title: "Retirement across jurisdictions",
+    title: "All your accounts, unified",
     description:
-      "See all your retirement accounts in one place — 401(k), pension, ISA, superannuation, and more. Model withdrawal strategies that account for each country's rules and treaties.",
+      "Add accounts manually or connect via Plaid. See your net worth across 401(k)s, RRSPs, ISAs, and more — all in one place, converted to your preferred currency.",
   },
   {
-    icon: "📊",
-    title: "Tax optimization",
+    icon: "📈",
+    title: "Plans that evolve with you",
     description:
-      "Understand your real tax burden across countries. Identify treaty benefits, avoid double taxation, and plan around filing deadlines in every jurisdiction you touch.",
-  },
-  {
-    icon: "💱",
-    title: "Cash flow & currency",
-    description:
-      "Track income, expenses, and savings across currencies. Model FX risk, optimize when and where to hold assets, and project net worth in any base currency.",
+      "Refresh your plan any time. Track how your outlook changes across every generation. Scheduled portfolio check-ins keep you informed between sessions.",
   },
 ];
 

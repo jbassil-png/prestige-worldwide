@@ -1,21 +1,21 @@
 const steps = [
   {
     number: "01",
-    title: "Connect your accounts",
+    title: "Tell us your situation",
     description:
-      "Link bank accounts, brokerage accounts, pension providers, and property holdings — no matter which country they're in.",
+      "Set your retirement goals, select your countries, and add your accounts — manually or connected via Plaid. Takes about two minutes.",
   },
   {
     number: "02",
-    title: "See your full picture",
+    title: "Get your AI plan",
     description:
-      "Your net worth, tax exposure, retirement runway, and cash flow — all unified, in your preferred currency.",
+      "We calculate your net worth, projected retirement balance, and on-track status. Claude generates personalized cross-border tax and timing recommendations.",
   },
   {
     number: "03",
-    title: "Get a personalized plan",
+    title: "Refine as life changes",
     description:
-      "Receive actionable recommendations tailored to your countries, accounts, and goals. No generic advice.",
+      "Refresh your plan anytime. Ask follow-up questions via chat. Get scheduled portfolio check-ins delivered to your inbox.",
   },
 ];
 

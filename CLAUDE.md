@@ -23,7 +23,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 | # | Task | Notes |
 |---|------|-------|
-| — | Confirm `ALLOW_DEV_RESET=true` in Vercel | Required for the `/dev/reset` reset link on the presentation's final slide to work in production. ~2 min. |
+| — | ~~Confirm `ALLOW_DEV_RESET=true` in Vercel~~ | ✅ Confirmed set in Vercel production. |
 
 **Pre-launch (build before first real users):**
 

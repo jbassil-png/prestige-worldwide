@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NavbarAuthButtons from "./NavbarAuthButtons";
 
 export default function Navbar() {
   return (
@@ -9,18 +10,7 @@ export default function Navbar() {
           <span className="sm:hidden">Prestige</span>
         </Link>
         <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
-          <Link
-            href="/sign-in"
-            className="text-slate-700 hover:text-slate-900 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/sign-up"
-            className="bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-medium px-2.5 sm:px-3 md:px-5 py-1.5 sm:py-2 md:py-2.5 rounded-lg transition-colors whitespace-nowrap"
-          >
-            Sign up
-          </Link>
+          <NavbarAuthButtons />
         </div>
       </div>
     </nav>
