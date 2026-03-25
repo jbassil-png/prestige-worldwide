@@ -40,6 +40,7 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   const [isPaid, setIsPaid] = useState<boolean | null>(null); // null = loading
+  const [demoLabel, setDemoLabel] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
   const [pendingAccounts, setPendingAccounts] = useState<Account[]>([]);
@@ -64,6 +65,8 @@ export default function OnboardingPage() {
         .eq("user_id", user.id)
         .single();
       setIsPaid(data?.is_paid ?? false);
+      if (user.email === "demo@prestigeworldwide.com") setDemoLabel("Free demo");
+      else if (user.email === "paid@prestigeworldwide.com") setDemoLabel("Paid demo");
     });
   }, []);
 
@@ -291,8 +294,17 @@ export default function OnboardingPage() {
       {/* ── Fixed progress header ─────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-lg mx-auto px-4 py-3">
-          <div className="mb-2 text-center">
+          <div className="mb-2 flex items-center justify-center relative">
             <span className="text-sm font-bold text-brand-700">Prestige Worldwide</span>
+            {demoLabel && (
+              <span className={`absolute right-0 text-xs px-2 py-0.5 rounded-full ${
+                demoLabel === "Paid demo"
+                  ? "bg-brand-100 text-brand-700"
+                  : "bg-gray-100 text-gray-500"
+              }`}>
+                {demoLabel}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5">
