@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
+const RESET_TABLES = [
+  "plan_history", "user_plans", "user_accounts", "user_holdings",
+  "user_balance_history", "user_portfolio_news", "plaid_items",
+  "user_preferences", "user_checkin_schedule", "user_goals", "user_profiles",
+] as const;
+
 const DEMOS = [
   {
     key: "free",
@@ -34,12 +40,23 @@ export default function TryPage() {
     setLoading(demo.key);
     setError(null);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: demo.email,
         password: demo.password,
       });
       if (error) throw error;
-      router.push("/dev/reset");
+
+      // Reset account silently so the user always starts from a clean state
+      const userId = data.user?.id;
+      if (userId) {
+        await Promise.all(
+          RESET_TABLES.map((table) =>
+            supabase.from(table).delete().eq("user_id", userId)
+          )
+        );
+      }
+
+      router.push("/onboarding");
     } catch {
       setError("Sign in failed. Please try again.");
       setLoading(null);
@@ -98,7 +115,7 @@ export default function TryPage() {
                   disabled={loading !== null}
                   className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg text-sm transition"
                 >
-                  {loading === demo.key ? "Signing in…" : `Try ${demo.label} →`}
+                  {loading === demo.key ? "Setting up…" : `Try ${demo.label} →`}
                 </button>
               </div>
             ))}
