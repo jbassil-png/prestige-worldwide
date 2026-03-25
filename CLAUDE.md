@@ -15,15 +15,15 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ## Current Task — START HERE
 
-**Stripe setup is done. The app is ready for real users. Onboarding redesign decided — ready to build.**
+**Stripe setup is done. The app is ready for real users. Class presentation live. Multi-user demo flow is next.**
 
 ### Open task list (next session — pick up here)
 
-**Immediate (due this week):**
+**Immediate — START HERE:**
 
 | # | Task | Notes |
 |---|------|-------|
-| 29 | Class presentation | 🔄 IN PROGRESS — first draft at `presentation/index.html`. Next session: (1) move to `public/presentation/index.html` for live hosting, (2) review + iterate on content. |
+| 30 | Multi-user demo flow (`/demo` route) | Build a `/demo` route: full 3-step wizard, sessionStorage only (no auth, no DB writes), calls `/api/plan`, stores result as `pw_plan`, redirects to `/dashboard`. Update presentation final slide to use `/demo` URL. Full spec in `docs/IMPLEMENTATION_ROADMAP.md`. |
 
 **Pre-launch (build before first real users):**
 
@@ -45,6 +45,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | `/sign-in`, `/sign-up` | Supabase Auth |
 | `/onboarding` | Wizard — Free: 3 steps (Goals → Assets → Connect). Paid: 4 steps (+ Personalise). One-time only. |
 | `/onboarding/preview` | Public preview — no auth, no data written |
+| `/demo` | Public interactive demo — full 3-step wizard, sessionStorage only, no auth, no DB writes |
 | `/dashboard` | Main authenticated view |
 | `/settings` | Unified settings page — Countries, Accounts, Goals, Style, Check-ins |
 | `/accounts` | Manage Plaid-connected accounts |
@@ -87,7 +88,8 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | — | Bug fix — `user_profiles` not written on onboarding | ✅ DONE — `handleFinish()` now upserts `residence_country`, `retirement_country`, `retirement_year` to `user_profiles` |
 | — | Bug fix — `user_accounts` RLS blocked inserts | ✅ DONE — migration `20260324_fix_user_accounts_rls.sql` adds INSERT/UPDATE/DELETE policies + grants for authenticated users |
 | 27 | Demo accounts | ✅ DONE — free + paid both seeded. See demo accounts section below. |
-| 29 | Class presentation | 🔄 IN PROGRESS — first draft at `presentation/index.html`; 10-slide VC-pitch deck; keyboard-navigable. Pending: move to `public/` for live hosting, then review + iterate. |
+| 29 | Class presentation | ✅ DONE — live at `/presentation/index.html`; 10-slide VC-pitch deck; keyboard-navigable. |
+| 30 | Multi-user demo flow | 📋 NEXT — `/demo` route; full wizard backed by sessionStorage; no auth, no DB writes. |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
