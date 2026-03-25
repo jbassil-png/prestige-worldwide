@@ -156,10 +156,10 @@ export default function DashboardClient({
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       {/* Top bar — brand + user identity + sign out */}
       <header className="w-full bg-white border-b border-gray-100 px-3 sm:px-4 md:px-6 py-3 flex items-center">
-        <span className="font-bold text-brand-700 text-sm sm:text-base md:text-lg">
+        <Link href="/" className="font-bold text-brand-700 text-sm sm:text-base md:text-lg hover:text-brand-800 transition-colors">
           <span className="hidden sm:inline">Prestige Worldwide</span>
           <span className="sm:hidden">Prestige</span>
-        </span>
+        </Link>
         {userEmail && (
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <span className="hidden sm:block text-xs text-gray-400 truncate max-w-[180px]">
