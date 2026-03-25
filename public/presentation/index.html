@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prestige Worldwide — Class Presentation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f7f4;
+      --surface: #ffffff;
+      --primary: #1a2e44;
+      --accent: #c9a84c;
+      --text: #1a2e44;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --tag-bg: #eef2f7;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Georgia', serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ── Slide container ── */
+    .deck {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slide {
+      min-width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 80px;
+      text-align: center;
+      transition: transform 0.45s cubic-bezier(0.77, 0, 0.18, 1);
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translateX(100%);
+    }
+
+    .slide.active  { transform: translateX(0); }
+    .slide.prev    { transform: translateX(-100%); }
+
+    /* ── Navigation ── */
+    .nav {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: 'Georgia', serif;
+      transition: opacity 0.2s;
+    }
+
+    .nav button:hover { opacity: 0.85; }
+    .nav button:disabled { opacity: 0.25; cursor: default; }
+
+    .nav .counter {
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* ── Progress dots ── */
+    .dots {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .dot.active { background: var(--primary); }
+
+    /* ── Typography ── */
+    .eyebrow {
+      font-size: 12px;
+      font-family: 'Arial', sans-serif;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h1 { font-size: clamp(36px, 5vw, 64px); line-height: 1.1; margin-bottom: 20px; }
+    h2 { font-size: clamp(28px, 3.5vw, 48px); line-height: 1.15; margin-bottom: 16px; }
+    h3 { font-size: clamp(18px, 2vw, 26px); line-height: 1.3; margin-bottom: 12px; font-family: 'Arial', sans-serif; }
+
+    .subtitle {
+      font-size: clamp(16px, 1.8vw, 22px);
+      color: var(--muted);
+      max-width: 640px;
+      line-height: 1.6;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* ── Cards grid ── */
+    .cards {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 32px;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 24px;
+      flex: 1;
+      min-width: 200px;
+      max-width: 280px;
+      text-align: left;
+    }
+
+    .card .icon { font-size: 28px; margin-bottom: 12px; }
+    .card h4 { font-size: 16px; margin-bottom: 8px; font-family: 'Arial', sans-serif; }
+    .card p { font-size: 14px; color: var(--muted); line-height: 1.5; font-family: 'Arial', sans-serif; }
+
+    /* ── Two-column layout ── */
+    .two-col {
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+      justify-content: center;
+      width: 100%;
+      max-width: 960px;
+      margin-top: 32px;
+      text-align: left;
+    }
+
+    .col { flex: 1; }
+    .col h3 { margin-bottom: 16px; }
+
+    /* ── Lists ── */
+    ul.clean {
+      list-style: none;
+      font-family: 'Arial', sans-serif;
+      font-size: 15px;
+      line-height: 2;
+      color: var(--text);
+    }
+
+    ul.clean li::before { content: "→ "; color: var(--accent); font-weight: bold; }
+
+    /* ── Tags ── */
+    .tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .tag {
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-family: 'Arial', sans-serif;
+      color: var(--text);
+    }
+
+    .tag.accent {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ── Model rows ── */
+    .model-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      text-align: left;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .model-row .model-name {
+      font-size: 15px;
+      font-weight: bold;
+      font-family: 'Arial', sans-serif;
+      min-width: 200px;
+      color: var(--primary);
+    }
+
+    .model-row .model-use {
+      font-size: 14px;
+      font-family: 'Arial', sans-serif;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .model-row .model-badge {
+      font-size: 11px;
+      background: var(--tag-bg);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-top: 4px;
+      display: inline-block;
+      font-family: 'Arial', sans-serif;
+      color: var(--muted);
+    }
+
+    /* ── Freemium table ── */
+    .tier-table {
+      display: flex;
+      gap: 24px;
+      margin-top: 32px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .tier {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: left;
+    }
+
+    .tier.paid { border-color: var(--accent); }
+
+    .tier .tier-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Arial', sans-serif;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .tier h3 { font-size: 20px; margin-bottom: 16px; }
+
+    .tier ul {
+      list-style: none;
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
+      line-height: 1.9;
+      color: var(--text);
+    }
+
+    .tier ul li::before { content: "✓ "; color: #22c55e; }
+    .tier.paid ul li::before { color: var(--accent); }
+
+    /* ── Demo slide ── */
+    .demo-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 48px;
+      margin-top: 28px;
+      display: flex;
+      gap: 60px;
+      justify-content: center;
+    }
+
+    .demo-account h4 {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Arial', sans-serif;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .demo-account .cred {
+      font-size: 18px;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 6px;
+      color: var(--primary);
+    }
+
+    .demo-account .cred span {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .url {
+      font-size: 22px;
+      font-family: 'Courier New', monospace;
+      color: var(--accent);
+      margin-top: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Slide-specific backgrounds ── */
+    #slide-1 { background: var(--primary); color: #fff; }
+    #slide-1 h1 { color: #fff; }
+    #slide-1 .subtitle { color: rgba(255,255,255,0.7); }
+    #slide-1 .eyebrow { color: var(--accent); }
+
+    #slide-10 { background: var(--primary); color: #fff; }
+    #slide-10 h2 { color: #fff; }
+    #slide-10 .subtitle { color: rgba(255,255,255,0.7); }
+    #slide-10 .demo-box { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+    #slide-10 .demo-account .cred { color: #fff; }
+    #slide-10 .demo-account h4 { color: rgba(255,255,255,0.5); }
+
+    /* ── Tool workflow ── */
+    .workflow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 32px;
+      max-width: 860px;
+    }
+
+    .wf-node {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .wf-node .wf-icon { font-size: 24px; margin-bottom: 6px; }
+    .wf-node .wf-name { font-size: 13px; font-weight: bold; font-family: 'Arial', sans-serif; color: var(--primary); }
+    .wf-node .wf-role { font-size: 11px; font-family: 'Arial', sans-serif; color: var(--muted); margin-top: 4px; }
+
+    .wf-arrow {
+      font-size: 20px;
+      color: var(--accent);
+      padding: 0 8px;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* ── Status table ── */
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 28px;
+      width: 100%;
+      max-width: 780px;
+      text-align: left;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'Arial', sans-serif;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .status-item .badge {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Progress dots -->
+<div class="dots" id="dots"></div>
+
+<!-- Slides -->
+<div class="deck" id="deck">
+
+  <!-- 1. Title -->
+  <div class="slide active" id="slide-1">
+    <div class="eyebrow">Build MVP Prototypes Using AI — Spring 2026</div>
+    <h1>Prestige Worldwide</h1>
+    <p class="subtitle">Cross-border financial planning for expats, dual citizens, and global citizens.</p>
+    <div class="tags" style="margin-top:40px;">
+      <span class="tag accent">Live MVP</span>
+      <span class="tag" style="color:#fff;background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);">Next.js · Supabase · OpenRouter</span>
+    </div>
+  </div>
+
+  <!-- 2. Problem -->
+  <div class="slide" id="slide-2">
+    <div class="eyebrow">The Problem</div>
+    <h2>Your money lives in<br/>multiple countries.<br/>Your plan doesn't.</h2>
+    <p class="subtitle" style="margin-top:20px;">
+      Expats and dual citizens hold assets across jurisdictions — different currencies, tax regimes, and retirement systems. No single tool brings it together.
+    </p>
+    <div class="cards" style="margin-top:36px;">
+      <div class="card">
+        <div class="icon">🌍</div>
+        <h4>Multiple jurisdictions</h4>
+        <p>401(k) in the US. RRSP in Canada. ISA in the UK. No unified view.</p>
+      </div>
+      <div class="card">
+        <div class="icon">💱</div>
+        <h4>Currency complexity</h4>
+        <p>Savings in USD, GBP, CAD — no tool tracks net worth across them coherently.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📋</div>
+        <h4>Fragmented advice</h4>
+        <p>Each country's advisors only see their slice. Nobody sees the full picture.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Solution -->
+  <div class="slide" id="slide-3">
+    <div class="eyebrow">The Solution</div>
+    <h2>One plan.<br/>Every country.</h2>
+    <p class="subtitle" style="margin-top:16px;">
+      Prestige Worldwide connects your accounts across borders, generates a unified AI-powered retirement strategy, and gives you an advisor who speaks your full financial picture.
+    </p>
+    <div class="cards" style="margin-top:32px;">
+      <div class="card">
+        <div class="icon">🤖</div>
+        <h4>AI Plan Generation</h4>
+        <p>Claude generates a personalised cross-border retirement plan from your goals and assets.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🏦</div>
+        <h4>Account Aggregation</h4>
+        <p>Connect bank accounts via Plaid or enter manually. Multi-currency, multi-country.</p>
+      </div>
+      <div class="card">
+        <div class="icon">💬</div>
+        <h4>Chat Advisor</h4>
+        <p>Ask questions about your plan in plain language. Context-aware, always available.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Who It's For -->
+  <div class="slide" id="slide-4">
+    <div class="eyebrow">Target Users</div>
+    <h2>Built for global citizens</h2>
+    <div class="two-col" style="margin-top:36px;">
+      <div class="col">
+        <ul class="clean">
+          <li>Expats working abroad with home-country pension contributions</li>
+          <li>Dual citizens with assets split across two countries</li>
+          <li>Recent immigrants building wealth in a new country</li>
+          <li>Remote workers paid in a foreign currency</li>
+          <li>Retirees planning to move across a border</li>
+        </ul>
+      </div>
+      <div class="col" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 24px;">
+        <p class="eyebrow" style="margin-bottom:12px;">Canonical example</p>
+        <h3 style="font-size:17px;margin-bottom:12px;">US resident → retiring in Canada in 2050</h3>
+        <p style="font-family:'Arial',sans-serif;font-size:14px;color:var(--muted);line-height:1.7;">
+          401(k) $85,000 USD<br/>
+          RRSP $62,000 CAD<br/>
+          → Single plan. Both accounts. One retirement target.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Freemium Model -->
+  <div class="slide" id="slide-5">
+    <div class="eyebrow">Business Model</div>
+    <h2>Freemium</h2>
+    <div class="tier-table">
+      <div class="tier">
+        <div class="tier-label">Free</div>
+        <h3>Core</h3>
+        <ul>
+          <li>AI plan generation</li>
+          <li>Dashboard + charts</li>
+          <li>Chat advisor</li>
+          <li>Manual account entry</li>
+          <li>Goal-account linking</li>
+          <li>Portfolio news</li>
+        </ul>
+      </div>
+      <div class="tier paid">
+        <div class="tier-label" style="color:var(--accent);">Paid</div>
+        <h3>Pro</h3>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Plaid bank connection</li>
+          <li>Custom themes</li>
+          <li>Country-specific advisors</li>
+          <li>Portfolio audit emails</li>
+          <li>Configurable check-in schedule</li>
+        </ul>
+      </div>
+    </div>
+    <p class="subtitle" style="margin-top:24px;font-size:14px;">Paid tier tracked via <code style="font-size:13px;background:var(--tag-bg);padding:2px 6px;border-radius:4px;">is_paid</code> on user profile — flipped by Stripe webhook on subscription event.</p>
+  </div>
+
+  <!-- 6. Product Stack -->
+  <div class="slide" id="slide-6">
+    <div class="eyebrow">Product Stack</div>
+    <h2>What the app is built on</h2>
+    <div class="cards" style="margin-top:28px;max-width:1000px;">
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h4>Next.js 16</h4>
+        <p>App router, API routes, server components. Deployed on Vercel.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🗄️</div>
+        <h4>Supabase</h4>
+        <p>Postgres DB + auth + RLS. Stores plans, accounts, preferences, history.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🏦</div>
+        <h4>Plaid</h4>
+        <p>Bank account aggregation (sandbox). Paid-tier only.</p>
+      </div>
+      <div class="card">
+        <div class="icon">💳</div>
+        <h4>Stripe</h4>
+        <p>Checkout + webhook. Subscription events flip <code>is_paid</code> via service role.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📊</div>
+        <h4>PostHog</h4>
+        <p>Product analytics. Tracks onboarding, plan gen, chat, refresh events.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. AI Architecture -->
+  <div class="slide" id="slide-7">
+    <div class="eyebrow">AI Architecture</div>
+    <h2>Three models. Three jobs.</h2>
+    <div style="margin-top:28px;width:100%;">
+      <div class="model-row">
+        <div>
+          <div class="model-name">Claude 3.5 Haiku</div>
+          <div class="model-badge">via OpenRouter · JSON mode</div>
+        </div>
+        <div class="model-use">
+          <strong>Plan generation + chat.</strong> Structured JSON output for the retirement plan. Streaming for the chat advisor. Fast and cost-efficient — runs on every dashboard refresh.
+        </div>
+      </div>
+      <div class="model-row">
+        <div>
+          <div class="model-name">Gemini Flash 1.5</div>
+          <div class="model-badge">via OpenRouter · hardcoded</div>
+        </div>
+        <div class="model-use">
+          <strong>Portfolio insights.</strong> Lightweight daily market summaries. Speed-optimised, low-stakes — ideal for high-frequency, lower-complexity inference.
+        </div>
+      </div>
+      <div class="model-row">
+        <div>
+          <div class="model-name">OpenRouter</div>
+          <div class="model-badge">Unified AI gateway</div>
+        </div>
+        <div class="model-use">
+          <strong>Model abstraction layer.</strong> All AI calls go through OpenRouter — model-agnostic, swappable via env var. No vendor lock-in. Started with N8N workflows, migrated to direct API calls.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Build Toolchain -->
+  <div class="slide" id="slide-8">
+    <div class="eyebrow">How We Built It</div>
+    <h2>The build toolchain</h2>
+    <div class="workflow">
+      <div class="wf-node">
+        <div class="wf-icon">🤖</div>
+        <div class="wf-name">Claude Code</div>
+        <div class="wf-role">Primary dev agent</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node">
+        <div class="wf-icon">📋</div>
+        <div class="wf-name">CLAUDE.md</div>
+        <div class="wf-role">Persistent context</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node">
+        <div class="wf-icon">🔀</div>
+        <div class="wf-name">OpenRouter</div>
+        <div class="wf-role">AI gateway</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node">
+        <div class="wf-icon">🔗</div>
+        <div class="wf-name">N8N</div>
+        <div class="wf-role">Early automation<br/><em style="font-size:10px;">(migrated out)</em></div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node">
+        <div class="wf-icon">▲</div>
+        <div class="wf-name">Vercel</div>
+        <div class="wf-role">Deploy + preview</div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:36px;gap:32px;">
+      <div class="col">
+        <h3 style="font-size:16px;margin-bottom:10px;">Session-based development</h3>
+        <p style="font-family:'Arial',sans-serif;font-size:14px;color:var(--muted);line-height:1.6;">Each session starts with CLAUDE.md + SESSION_NOTES.md — Claude Code resumes exactly where the last session ended. No context lost between sessions.</p>
+      </div>
+      <div class="col">
+        <h3 style="font-size:16px;margin-bottom:10px;">Task-driven iteration</h3>
+        <p style="font-family:'Arial',sans-serif;font-size:14px;color:var(--muted);line-height:1.6;">29 numbered tasks tracked in CLAUDE.md. Each session picks up open tasks, commits, pushes. Full history in SESSION_NOTES.md.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. MVP Status -->
+  <div class="slide" id="slide-9">
+    <div class="eyebrow">MVP Status</div>
+    <h2>What's shipped</h2>
+    <div class="status-grid">
+      <div class="status-item"><span class="badge">✅</span><span>Auth (Supabase magic link + password)</span></div>
+      <div class="status-item"><span class="badge">✅</span><span>Onboarding wizard — free (3 steps) + paid (4 steps)</span></div>
+      <div class="status-item"><span class="badge">✅</span><span>AI plan generation (Claude Haiku, JSON mode)</span></div>
+      <div class="status-item"><span class="badge">✅</span><span>Dashboard — plan, charts, news, chat</span></div>
+      <div class="status-item"><span class="badge">✅</span><span>Freemium gating (Stripe webhook + <code>is_paid</code>)</span></div>
+      <div class="status-item"><span class="badge">✅</span><span>Theme system — 3 themes, CSS custom properties</span></div>
+      <div class="status-item"><span class="badge">✅</span><span>Plan history — last 10 generations, full metrics</span></div>
+      <div class="status-item"><span class="badge">✅</span><span>Settings — countries, accounts, goals, style, check-ins</span></div>
+      <div class="status-item"><span class="badge">🔜</span><span>Country-specific AI advisors (scaffold done)</span></div>
+      <div class="status-item"><span class="badge">🔜</span><span>Portfolio audit emails (Resend + Vercel cron)</span></div>
+    </div>
+  </div>
+
+  <!-- 10. Demo -->
+  <div class="slide" id="slide-10">
+    <div class="eyebrow" style="color:var(--accent);">Try It Now</div>
+    <h2>Live demo</h2>
+    <p class="subtitle">Two accounts ready. No sign-up required.</p>
+    <div class="demo-box">
+      <div class="demo-account">
+        <h4>Free account</h4>
+        <div class="cred"><span>demo</span>@prestigeworldwide.com</div>
+        <div class="cred">Password: <span>demo123456</span></div>
+        <div style="font-family:'Arial',sans-serif;font-size:12px;color:rgba(255,255,255,0.4);margin-top:10px;">US → Canada · 401(k) + RRSP · Swiss Alps theme</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div class="demo-account">
+        <h4>Paid account</h4>
+        <div class="cred"><span>paid</span>@prestigeworldwide.com</div>
+        <div class="cred">Password: <span>demo123456</span></div>
+        <div style="font-family:'Arial',sans-serif;font-size:12px;color:rgba(255,255,255,0.4);margin-top:10px;">US → UK · 401(k) + ISA · Gaudy Miami theme</div>
+      </div>
+    </div>
+    <div class="url">prestige-worldwide-kappa.vercel.app</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <button id="prev" disabled>← Prev</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button id="next">Next →</button>
+</nav>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].className = 'slide prev';
+    if (n < current) {
+      slides[current].className = 'slide';
+      slides[n].style.transform = 'translateX(-100%)';
+      slides[n].className = 'slide';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { slides[n].className = 'slide active'; });
+      });
+    } else {
+      slides[n].className = 'slide active';
+    }
+    document.querySelectorAll('.dot')[current].classList.remove('active');
+    current = n;
+    document.querySelectorAll('.dot')[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('prev').disabled = current === 0;
+    document.getElementById('next').disabled = current === total - 1;
+  }
+
+  document.getElementById('next').addEventListener('click', () => { if (current < total - 1) goTo(current + 1); });
+  document.getElementById('prev').addEventListener('click', () => { if (current > 0) goTo(current - 1); });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (current < total - 1) goTo(current + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { if (current > 0) goTo(current - 1); }
+  });
+</script>
+</body>
+</html>
