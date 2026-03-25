@@ -37,8 +37,8 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 |-------|-------------|
 | `/` | Marketing landing page |
 | `/sign-in`, `/sign-up` | Supabase Auth |
+| `/try` | Public demo page — pick free or paid account; auto-signs in and redirects to `/dev/reset` → fresh onboarding |
 | `/onboarding` | Wizard — Free: 3 steps (Goals → Assets → Connect). Paid: 4 steps (+ Personalise). One-time only. |
-| `/onboarding/preview` | Public preview — no auth, no data written |
 | `/dashboard` | Main authenticated view |
 | `/settings` | Unified settings page — Countries, Accounts, Goals, Style, Check-ins |
 | `/accounts` | Manage Plaid-connected accounts |
@@ -85,6 +85,8 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | — | Dashboard user identity | ✅ DONE — header shows email + "Free demo" / "Paid demo" / "Pro" badge near Sign Out |
 | — | Landing page refresh | ✅ DONE — Features + HowItWorks updated to reflect what's built; CTASection now Free vs Pro pricing table |
 | — | Auth-aware Navbar | ✅ DONE — `NavbarAuthButtons` shows "Dashboard →" when logged in; landing page viewable while authenticated |
+| — | `/try` demo page | ✅ DONE — replaces `/onboarding/preview`; auto-signs in as free or paid demo account → `/dev/reset` → onboarding |
+| — | Hero CTAs | ✅ DONE — three paths: Try demo → `/try`, Sign up free → `/sign-up`, Sign in → `/sign-in` |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data

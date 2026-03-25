@@ -43,8 +43,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Redirect unauthenticated users away from protected routes.
-  // /onboarding/preview is intentionally public — exclude it.
-  if (!user && (pathname.startsWith("/dashboard") || pathname.startsWith("/dev") || (pathname.startsWith("/onboarding") && !pathname.startsWith("/onboarding/preview")))) {
+  if (!user && (pathname.startsWith("/dashboard") || pathname.startsWith("/dev") || pathname.startsWith("/onboarding"))) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     url.searchParams.set("next", pathname);

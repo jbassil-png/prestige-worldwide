@@ -16,21 +16,27 @@ export default function Hero() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/sign-in?demo=true"
+            href="/try"
             className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg transition-colors text-center shadow-lg shadow-brand-600/30"
           >
-            Try Demo — No Signup Required
+            Try demo
           </Link>
           <Link
             href="/sign-up"
             className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg border border-slate-300 transition-colors text-center"
           >
-            Get started free
+            Sign up free
+          </Link>
+          <Link
+            href="/sign-in"
+            className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg border border-slate-300 transition-colors text-center"
+          >
+            Sign in
           </Link>
         </div>
 
         <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-slate-500">
-          No credit card required. See live demo in 30 seconds.
+          No credit card required.
         </p>
       </div>
 
