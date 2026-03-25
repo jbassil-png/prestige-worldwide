@@ -37,7 +37,7 @@ export default async function DashboardPage() {
   const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
   const oneDayAgo    = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const [prefsRow, newsRow, holdingsRows, portfolioNewsRow] = await Promise.all([
+  const [prefsRow, newsRow, holdingsRows, portfolioNewsRow, profileRow] = await Promise.all([
     supabase
       .from("user_preferences")
       .select("theme")
@@ -68,6 +68,12 @@ export default async function DashboardPage() {
       .limit(1)
       .single()
       .then((r) => r.data),
+    supabase
+      .from("user_profiles")
+      .select("is_paid")
+      .eq("user_id", user.id)
+      .single()
+      .then((r) => r.data),
   ]);
 
   return (
@@ -80,6 +86,8 @@ export default async function DashboardPage() {
       residenceCurrency={resolveCurrency(meta?.residenceCountry)}
       retirementCurrency={resolveCurrency(meta?.retirementCountry)}
       initialTheme={prefsRow?.theme ?? "swiss-alps"}
+      userEmail={user.email}
+      isPaid={profileRow?.is_paid ?? false}
     />
   );
 }

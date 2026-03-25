@@ -19,12 +19,6 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ### Open task list (next session — pick up here)
 
-**Immediate — OWNER ACTION:**
-
-| # | Task | Notes |
-|---|------|-------|
-| — | Confirm `ALLOW_DEV_RESET=true` in Vercel | Required for the `/dev/reset` reset link on the presentation's final slide to work in production. ~2 min. |
-
 **Pre-launch (build before first real users):**
 
 | # | Task | Notes |
@@ -33,7 +27,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | 24 | Portfolio audit + check-in email delivery | Vercel cron + Resend; two-tier (free/paid) |
 | 25 | Testing infrastructure (Vitest) | Unit + integration tests |
 
-**Polish backlog (deferred):** Paid user badge, full-screen loading reveal, PDF export, plan comparison, what-if analysis, transaction history, dark mode, WCAG audit, DB column cleanup, centralised Plan types, editable retirement target.
+**Polish backlog (deferred):** Full-screen loading reveal, PDF export, plan comparison, what-if analysis, transaction history, dark mode, WCAG audit, DB column cleanup, centralised Plan types, editable retirement target.
 
 ---
 
@@ -87,7 +81,10 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | — | Bug fix — `user_profiles` not written on onboarding | ✅ DONE — `handleFinish()` now upserts `residence_country`, `retirement_country`, `retirement_year` to `user_profiles` |
 | — | Bug fix — `user_accounts` RLS blocked inserts | ✅ DONE — migration `20260324_fix_user_accounts_rls.sql` adds INSERT/UPDATE/DELETE policies + grants for authenticated users |
 | 27 | Demo accounts | ✅ DONE — free + paid both seeded. See demo accounts section below. |
-| 29 | Class presentation | ✅ DONE — live at `/presentation/index.html`; 10-slide VC-pitch deck; keyboard-navigable. Final slide updated with `/dev/reset` link for testers. |
+| 29 | Class presentation | ✅ DONE — live at `/presentation/index.html`; 10-slide VC-pitch deck; keyboard-navigable. Slide 10 restructured as 3 sequential steps (reset → free login → paid login). |
+| — | Dashboard user identity | ✅ DONE — header shows email + "Free demo" / "Paid demo" / "Pro" badge near Sign Out |
+| — | Landing page refresh | ✅ DONE — Features + HowItWorks updated to reflect what's built; CTASection now Free vs Pro pricing table |
+| — | Auth-aware Navbar | ✅ DONE — `NavbarAuthButtons` shows "Dashboard →" when logged in; landing page viewable while authenticated |
 
 **Known gaps still open:**
 - `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
