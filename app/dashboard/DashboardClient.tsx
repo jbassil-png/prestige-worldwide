@@ -52,6 +52,9 @@ export default function DashboardClient({
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
 
+  // Ensure page always loads at top — browser scroll restoration can cause mid-page jumps
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   // Apply theme — server prop takes precedence; fall back to sessionStorage
   useEffect(() => {
     const theme = initialTheme ?? sessionStorage.getItem("pw_theme") ?? "swiss-alps";
