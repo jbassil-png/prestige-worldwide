@@ -9,6 +9,35 @@
 
 ---
 
+### Session: Mar 25, 2026 — Task 29 complete + Task 30 scoped
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Task 29 complete — presentation moved to `public/` for live Vercel hosting**
+   - Copied `presentation/index.html` → `public/presentation/index.html`
+   - Live at: https://prestige-worldwide-kappa.vercel.app/presentation/index.html
+   - No content changes this session — user reviewed and approved as-is
+
+2. 📋 **Task 30 scoped — presentation-safe multi-user demo flow**
+   - Identified during class presentation prep: multiple users sharing the same demo account will overwrite each other's Supabase data if they all complete onboarding simultaneously
+   - Wizard steps themselves are fine (client-side state only); the conflict happens at `handleFinish()` when all writes race to the same DB row
+   - Solution: a `/demo` route — fully interactive onboarding wizard backed by sessionStorage only; no auth required, no DB writes; calls `/api/plan` and stores result as `pw_plan`; redirects to `/dashboard` which already reads from sessionStorage when no Supabase session
+   - Update presentation final slide to point to `/demo` instead of shared credentials
+
+**Stopping point / next session — START HERE:**
+
+Task 30: Multi-user demo flow. Full spec in `docs/IMPLEMENTATION_ROADMAP.md` → Task 30.
+
+Short version:
+1. Create `app/demo/page.tsx` — renders the full wizard (free 3-step flow), all state in sessionStorage, no Supabase writes
+2. On "Build my plan", POST to `/api/plan` (pass mock/guest user context), store result as `pw_plan` in sessionStorage
+3. Redirect to `/dashboard` — already reads `pw_plan` from sessionStorage when no session
+4. Update the presentation's final slide to replace the login credentials with the `/demo` URL
+
+---
+
 ### Session: Mar 24, 2026 — Task 29 scoped (class presentation)
 
 **Branch:** `claude/review-codebase-docs-cLIae`
@@ -22,12 +51,7 @@
    - Final slide: both demo account credentials for live login during/after presentation
    - No blockers — all required content already in codebase + docs
 
-**Stopping point / next session — START HERE:**
-
-Task 29: First draft complete at `presentation/index.html`. Next session — START HERE:
-1. Move file to `public/presentation/index.html` so it's live on Vercel
-2. Share URL with user for review
-3. Iterate on content based on feedback
+**Stopping point:** ✅ Superseded — see Mar 25 session above.
 
 ---
 
