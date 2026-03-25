@@ -1,7 +1,7 @@
 # Implementation Roadmap
 
 **Status:** Active
-**Last Updated:** 2026-03-25 (Task 29 complete, Task 30 scoped)
+**Last Updated:** 2026-03-25 (presentation polished, landing page refreshed, dashboard identity added)
 
 ---
 
@@ -111,8 +111,19 @@ Spec: `docs/FEATURE_PORTFOLIO_NEWS.md`
 ## 🔜 Phase 3 — Launch Prep (In Progress)
 
 ### Task 29: Class Presentation ✅
-Standalone HTML deck (`public/presentation/index.html`). 10-slide VC-pitch format. Keyboard-navigable (arrow keys + click). Final slide shows both demo account credentials.
+Standalone HTML deck (`public/presentation/index.html`). 10-slide VC-pitch format. Keyboard-navigable (arrow keys + click). Slide 10 restructured as 3 sequential numbered steps: (1) reset via `/dev/reset`, (2) free account login, (3) paid account login. `ALLOW_DEV_RESET=true` confirmed in Vercel production.
 Live at: https://prestige-worldwide-kappa.vercel.app/presentation/index.html
+
+### Dashboard User Identity ✅
+Dashboard header now shows the logged-in email address (hidden on mobile) and a contextual tier badge next to Sign Out: "Free demo" (gray) for `demo@prestigeworldwide.com`, "Paid demo" (brand) for `paid@prestigeworldwide.com`, "Pro" (brand) for real paid subscribers. Implemented by passing `userEmail` + `isPaid` as props from the server page.
+
+### Landing Page Refresh ✅
+- `Features` component: updated from aspirational to accurate — AI plan generation, unified accounts, plan history + check-ins
+- `HowItWorks` component: step 1 → "Tell us your situation" (accurate for free/manual flow); step 3 → mentions chat + scheduled check-ins
+- `CTASection` component: single CTA button replaced with Free vs Pro two-column pricing table listing actual per-tier features
+
+### Auth-Aware Navbar ✅
+New `NavbarAuthButtons` client component checks Supabase session state. Logged-out users see "Sign in" + "Sign up". Logged-in users see "Dashboard →". Landing page is now safely viewable in any tab regardless of auth state — no bounce to `/dashboard`.
 
 ---
 

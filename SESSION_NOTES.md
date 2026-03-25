@@ -31,6 +31,11 @@
    - `HowItWorks`: step 1 → "Tell us your situation"; step 3 → mentions chat + check-ins
    - `CTASection`: single button replaced with Free vs Pro two-column pricing table
 
+5. ✅ **Navbar: auth-aware buttons**
+   - New `NavbarAuthButtons` client component checks Supabase session on mount
+   - Logged-out: shows "Sign in" + "Sign up" (existing behaviour)
+   - Logged-in: shows single "Dashboard →" button — landing page no longer bounces authenticated users
+
 **Stopping point / next session — START HERE:**
 
 | # | Task | Notes |
