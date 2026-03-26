@@ -24,6 +24,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | # | Task | Notes |
 |---|------|-------|
 | — | Test run: paid demo flow | Walk full paid onboarding from /try; verify dashboard with paid features |
+| 30 | Apply paid theming end-to-end | Ensure theme tokens (Swiss Alps / Gaudy Miami / Positano) drive visual changes beyond just CSS variable definitions — cards, headers, buttons, backgrounds should reflect the selected theme; confirm theme persists correctly through onboarding → dashboard |
 
 **Pre-launch (build before first real users):**
 

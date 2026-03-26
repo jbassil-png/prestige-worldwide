@@ -129,6 +129,26 @@ function PlaidConnect({ selections, onAccounts }: { selections: CountrySelection
       <p className="text-sm text-gray-600">
         Connect your bank accounts securely via Plaid to pull live balances.
       </p>
+
+      {/* Security trust callout */}
+      <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 space-y-2">
+        <p className="text-xs font-semibold text-gray-700">How it works</p>
+        <ul className="space-y-1.5 text-xs text-gray-600">
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5 text-green-600">✓</span>
+            <span><strong>Read-only access</strong> — we never see your login credentials or move any money</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5 text-green-600">✓</span>
+            <span><strong>Bank-level encryption</strong> via Plaid, trusted by thousands of financial apps</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5 text-green-600">✓</span>
+            <span><strong>Balances only</strong> — we use your account balances to build your plan, nothing else</span>
+          </li>
+        </ul>
+      </div>
+
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!linkToken ? (
         <button
@@ -179,7 +199,7 @@ function ManualEntry({ selections, onAccounts }: { selections: CountrySelection[
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600">
-        Enter approximate balances. These are used only to personalise your plan.
+        Enter approximate balances for each account. Estimates are fine — you can update them any time from Settings.
       </p>
       <div className="space-y-3">
         {rows.map((r) => (
@@ -294,7 +314,9 @@ export default function StepConnect({ selections, onNext, onBack, isPaid, initia
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-semibold text-gray-800">Connect your accounts</h2>
-        <p className="text-sm text-gray-500 mt-1">Choose how you want to add your balances.</p>
+        <p className="text-sm text-gray-500 mt-1">
+          Link accounts automatically via Plaid, or enter balances manually. Either way, your plan will be personalised to your real numbers.
+        </p>
       </div>
 
       <div className="flex rounded-lg border border-gray-200 overflow-hidden">
