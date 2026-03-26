@@ -70,17 +70,12 @@ export default function TryPage() {
         <Link href="/" className="text-base font-bold text-slate-900 tracking-tight">
           Prestige Worldwide
         </Link>
-        <div className="flex items-center gap-3 text-sm">
-          <Link href="/sign-in" className="text-slate-500 hover:text-slate-800 transition">
-            Sign in
-          </Link>
-          <Link
-            href="/sign-up"
-            className="bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 py-1.5 rounded-lg transition"
-          >
-            Sign up
-          </Link>
-        </div>
+        <Link
+          href="/sign-up"
+          className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-1.5 rounded-lg transition"
+        >
+          Sign up
+        </Link>
       </nav>
 
       {/* Content */}
