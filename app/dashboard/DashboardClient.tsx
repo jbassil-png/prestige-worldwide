@@ -3,12 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import CurrencyToggle, { type CurrencyMode } from "@/components/CurrencyToggle";
 import PlanView, { type Plan } from "@/components/PlanView";
 import NewsPanel from "@/components/NewsPanel";
 import PortfolioNewsPanel from "@/components/PortfolioNewsPanel";
 import ChatPanel from "@/components/ChatPanel";
-import AllocationCharts from "@/components/AllocationCharts";
 import { createClient } from "@/lib/supabase/client";
 import type { PortfolioNewsItem } from "@/components/PortfolioNewsPanel";
 import posthog from "posthog-js";
@@ -48,7 +46,6 @@ export default function DashboardClient({
   const supabase = createClient();
 
   const [plan, setPlan] = useState<Plan | null>(initialPlan ?? null);
-  const [currencyMode, setCurrencyMode] = useState<CurrencyMode>("residence");
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
 
@@ -240,11 +237,6 @@ export default function DashboardClient({
 
             {/* Controls — flush right on desktop */}
             <div className="sm:ml-auto flex flex-wrap items-center gap-3">
-              <CurrencyToggle
-                residenceCurrency={residenceCurrency}
-                retirementCurrency={retirementCurrency}
-                onChange={setCurrencyMode}
-              />
               <div className="flex items-center gap-3 text-xs text-gray-400">
                 {planDate && (
                   <span>
@@ -323,19 +315,10 @@ export default function DashboardClient({
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
             <PlanView
               plan={plan}
-              currencyMode={currencyMode}
               residenceCurrency={residenceCurrency}
               retirementCurrency={retirementCurrency}
             />
           </div>
-
-          {/* Portfolio allocation breakdown */}
-          {!isDemoMode && (
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Portfolio breakdown</h3>
-              <AllocationCharts />
-            </div>
-          )}
         </div>
 
         {/* Right column — chat */}
