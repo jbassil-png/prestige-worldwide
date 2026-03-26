@@ -9,6 +9,62 @@
 
 ---
 
+### Session: Mar 26, 2026 (continued #2) — theme naming + illustration approach
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Decided:**
+
+1. **Theme renamed:** "Swiss Alps Retreat" → **"Swiss Seclusion"** (`data-theme="swiss-seclusion"` — update in real app when wiring in)
+2. **Clooney's Positano** confirmed as final name for the third theme (was already in code)
+3. **Swiss Seclusion background approach changed** — from generative canvas to **randomly chosen static SVG illustrations** (one per session, seeded via `sessionStorage`)
+
+**Swiss Seclusion illustration library (5 subjects):**
+
+| ID | Subject |
+|----|---------|
+| `illus-alps` | Alpine Panorama — mountain layers, pine trees, chalet with lit windows |
+| `illus-watchmaker` | The Watchmaker — hunched figure, loupe, watch movement with gears, workshop spotlight |
+| `illus-jet-deau` | Jet d'Eau, Geneva — the iconic fountain, Pont du Mont-Blanc, lakeside promenade |
+| `illus-beau-rivage` | Beau Rivage, Lausanne — full Belle Époque hotel facade, arched windows, flags, lake |
+| `illus-bank` | Private Banking, Geneva — interior hall (coffered ceiling, chandeliers, columns, teller counter in back) with foreground scene: bespectacled client in nice suit having coffee with the bank manager at a round table |
+
+**Swiss Seclusion UI treatment:**
+- Cards: `background: rgba(255,255,255,0.82); backdrop-filter: blur(14px)` — illustration visible through all cards
+- Header + control bar: same glass treatment
+- Illustration picked by `seed % 5`, seed stored in `sessionStorage('pw_bg_seed')`
+- "↻ New visit" toolbar button regenerates seed
+
+**Entry animations (all one-shot on load, not looping):**
+
+| Theme | Style |
+|-------|-------|
+| Swiss Seclusion | `translateY(18px)→0, opacity 0→1`, `0.32s cubic-bezier(0,0,0.2,1)`, 40ms stagger between elements. Metric numbers tick up from 0 to target (900ms ease-out cubic). |
+| Gaudy Miami | `scale(0.93)+translateY(10px)→normal`, `0.40s cubic-bezier(0.34,1.56,0.64,1)` (spring bounce). |
+| Clooney's Positano | `translateY(8px)→0, opacity 0→1`, `0.72s ease-out`, long stagger. Unhurried. |
+
+**Animation delays (Swiss Seclusion):**
+`header: 0ms → control-bar: 40ms → news: 80ms → plan card: 130ms → metric cards: 170/210/250/290ms → portfolio breakdown: 330ms → goals header: 370ms → goal cards: 400/440ms → disclaimer: 470ms → chat: 100ms`
+
+**What was NOT completed this session:**
+- The `theme-preview.html` rewrite was planned but not executed (kept getting interrupted mid-write)
+- No changes to real app components yet
+
+**Stopping point / next session — START HERE:**
+
+Write `public/theme-preview.html` in a **single Write tool call** — do not plan, do not narrate, just write it. The file must contain:
+1. All 5 SVG illustrations inline (see subjects above)
+2. JS to pick illustration by `seed % 5`
+3. Glassmorphic card CSS for swiss-seclusion (`rgba(255,255,255,0.82)` + backdrop blur)
+4. Three animation keyframes (`seclusion-enter`, `miami-enter`, `positano-enter`)
+5. Metric tick-up JS (swiss-seclusion only, triggered after animation delay)
+6. Dev toolbar: theme buttons, ↻ New visit, ▶ Replay, illustration name display, seed display
+7. Full dashboard mock (header, control-bar, news, plan card with all sections, sticky chat)
+
+Once preview is approved → update `data-theme` value in real app from `swiss-alps` to `swiss-seclusion` → wire glassmorphic surfaces + animations into real components.
+
+---
+
 ### Session: Mar 26, 2026 (continued) — paid demo flow + theming groundwork
 
 **Branch:** `claude/review-codebase-docs-cLIae`

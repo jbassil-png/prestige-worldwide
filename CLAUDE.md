@@ -23,7 +23,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 | # | Task | Notes |
 |---|------|-------|
-| 30 | Apply paid theming end-to-end | (1) Review + iterate on themes using `public/theme-preview.html` (live: `/theme-preview.html`; local: `localhost:3000/theme-preview.html`) — tweak CSS vars in `globals.css`, reload, repeat. (2) Once palettes are approved, wire theme tokens into real components by replacing hardcoded Tailwind classes with CSS-variable-driven utilities. Confirm theme persists correctly onboarding → dashboard. |
+| 30 | Build Swiss Seclusion background system into theme-preview.html | See full spec in SESSION_NOTES.md Mar 26 (continued #2). Write a single complete `public/theme-preview.html` with: 5 inline SVG illustrations, glassmorphic cards, metric tick-up, entry animations. Then wire into real components. |
 
 **Pre-launch (build before first real users):**
 
@@ -114,7 +114,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | Insights model | `google/gemini-flash-1.5` (hardcoded in `/api/insight`) |
 | Structured output | **JSON mode** (`response_format: { type: "json_object" }`), no retry loop. Stub plan is the fallback on API failure. |
 | Theme count | 3 themes |
-| Theme names | Swiss Alps Retreat ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 |
+| Theme names | Swiss Seclusion ❄️, Gaudy Miami 🌴, Clooney's Positano 🇮🇹 |
 | Theme step placement | Paid onboarding only — panel 1 of Personalise step (step 4). Not in free onboarding. `StepStyle` retained for Settings re-use. |
 | Theme gating | Free users locked to Swiss Alps (default). Paid users can select any of the three themes during onboarding or in Settings. |
 | Theme default | Swiss Alps Retreat ❄️ (`data-theme="swiss-alps"` on `<html>`) |
