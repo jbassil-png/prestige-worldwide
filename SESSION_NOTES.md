@@ -9,6 +9,41 @@
 
 ---
 
+### Session: Mar 26, 2026 (continued) — paid demo flow + theming groundwork
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Connect step: Plaid sandbox credentials for demo accounts**
+   - `StepConnect` + `PlaidConnect` accept new `isDemoAccount` prop
+   - Demo users see a branded callout with `user_good` / `pass_good` + institution hint
+   - Real Plaid Link still opens so the full flow is testable
+   - Wizard passes `isDemoAccount={demoLabel !== null}` from onboarding page
+
+2. ✅ **Connect step: guidance copy for paid users**
+   - Header subtext explains both options (Plaid vs manual)
+   - Plaid tab: "How it works" trust callout (read-only, encryption, balances only)
+   - Manual tab: "Estimates are fine — you can update them any time from Settings"
+
+3. ✅ **`/try` page: button state bug fixed**
+   - Idle button dims; active button stays full opacity + shows "Setting up…"
+
+4. ✅ **Theme preview page — `public/theme-preview.html`**
+   - Self-contained dashboard mock, all 3 themes switchable via fixed toolbar
+   - Live at `/theme-preview.html` on Vercel and `localhost:3000/theme-preview.html`
+   - Includes header, news, snapshot, currency toggle, metrics, portfolio bars, goals, chat
+
+5. ✅ **Paid demo walkthrough considered complete**
+
+**Stopping point / next session — START HERE:**
+
+| # | Task | Notes |
+|---|------|-------|
+| 30 | Apply paid theming end-to-end | Review `/theme-preview.html`, give feedback on each palette → iterate CSS vars in `globals.css` → wire tokens into real components |
+
+---
+
 ### Session: Mar 26, 2026 — dashboard UX pass + onboarding fixes
 
 **Branch:** `claude/review-codebase-docs-cLIae`

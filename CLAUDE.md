@@ -23,8 +23,7 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 | # | Task | Notes |
 |---|------|-------|
-| — | Test run: paid demo flow | Walk full paid onboarding from /try; verify dashboard with paid features |
-| 30 | Apply paid theming end-to-end | Ensure theme tokens (Swiss Alps / Gaudy Miami / Positano) drive visual changes beyond just CSS variable definitions — cards, headers, buttons, backgrounds should reflect the selected theme; confirm theme persists correctly through onboarding → dashboard |
+| 30 | Apply paid theming end-to-end | (1) Review + iterate on themes using `public/theme-preview.html` (live: `/theme-preview.html`; local: `localhost:3000/theme-preview.html`) — tweak CSS vars in `globals.css`, reload, repeat. (2) Once palettes are approved, wire theme tokens into real components by replacing hardcoded Tailwind classes with CSS-variable-driven utilities. Confirm theme persists correctly onboarding → dashboard. |
 
 **Pre-launch (build before first real users):**
 
