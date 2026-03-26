@@ -7,6 +7,17 @@ import { COUNTRIES } from "./StepCountries";
 const CURRENT_YEAR = new Date().getFullYear();
 const DEFAULT_RETIREMENT_YEAR = CURRENT_YEAR + 29;
 
+// Map country label → { currency code, symbol }
+const COUNTRY_CURRENCY: Record<string, { code: string; symbol: string }> = {
+  "United States": { code: "USD", symbol: "$" },
+  "Canada":        { code: "CAD", symbol: "CA$" },
+  "United Kingdom":{ code: "GBP", symbol: "£" },
+  "Singapore":     { code: "SGD", symbol: "S$" },
+  "Australia":     { code: "AUD", symbol: "A$" },
+  "Germany":       { code: "EUR", symbol: "€" },
+  "France":        { code: "EUR", symbol: "€" },
+};
+
 export const GOAL_TYPES = [
   { id: "retirement", label: "Retirement", emoji: "🏖️" },
   { id: "property", label: "Property purchase", emoji: "🏠" },
@@ -79,6 +90,7 @@ export default function StepGoals({ countrySelections = [], onNext, onBack, load
 
   const hasRetirement = goalTypes.includes("retirement");
   const yearsAway = parseInt(retirementYear) - CURRENT_YEAR;
+  const retirementCurrency = COUNTRY_CURRENCY[retirementCountry] ?? { code: "USD", symbol: "$" };
   const targetAmountUsd = parseAmount(targetAmountDisplay);
   const retirementYearNum = parseInt(retirementYear);
 
@@ -214,7 +226,7 @@ export default function StepGoals({ countrySelections = [], onNext, onBack, load
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
         />
         <p className="text-xs text-gray-400 mt-1">
-          This goes directly to your planning assistant. The more context, the better the advice.
+          The more context you share, the more personalised your plan will be.
         </p>
       </div>
 
@@ -259,33 +271,22 @@ export default function StepGoals({ countrySelections = [], onNext, onBack, load
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Target amount (USD)
+                      Target amount ({retirementCurrency.code})
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">{retirementCurrency.symbol}</span>
                       <input
                         type="text"
                         inputMode="numeric"
                         value={targetAmountDisplay}
                         onChange={(e) => setTargetAmountDisplay(formatAmount(e.target.value))}
-                        className="w-full border border-gray-300 rounded-lg pl-6 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        className="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                       />
                     </div>
                   </div>
                 </div>
                 <p className="text-xs text-gray-400 leading-relaxed">
-                  Not sure what target to set?{" "}
-                  <button
-                    type="button"
-                    className="text-brand-600 hover:underline font-medium"
-                    onClick={() => {
-                      window.dispatchEvent(new CustomEvent("pw:open-chat", {
-                        detail: { prompt: "Help me figure out how much I need for retirement" }
-                      }));
-                    }}
-                  >
-                    Ask our planning assistant →
-                  </button>
+                  Not sure what target to set? A common rule of thumb is 25× your expected annual retirement expenses.
                 </p>
               </div>
             ) : (

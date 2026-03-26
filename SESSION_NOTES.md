@@ -9,6 +9,46 @@
 
 ---
 
+### Session: Mar 26, 2026 — dashboard UX pass + onboarding fixes
+
+**Branch:** `claude/review-codebase-docs-cLIae`
+
+**What Was Accomplished:**
+
+1. ✅ **Dashboard layout refactor — all changes apply to free and paid dashboards**
+   - Removed Recommendations section from PlanView entirely
+   - Moved `CurrencyToggle` into PlanView, directly below "Your Financial Snapshot" header — all monetary values (metric cards, goal targets, unallocated bucket, projection chart labels) now respond to the toggle
+   - Moved `AllocationCharts` (Portfolio breakdown) into PlanView, between the metric cards and the Goals section
+   - Added "Goals" section header grouping all goal charts and cards
+   - `DashboardClient` no longer owns currency state or the allocation charts block
+
+2. ✅ **Dashboard bug fixes (from free onboarding test run)**
+   - Unallocated bucket now hides when all accounts are linked to goals (previously always showed full net worth)
+   - Non-retirement goals now render as individual cards below the retirement chart
+   - Removed misleading "automatically synced via Plaid" copy; replaced with "based on the account balances you've connected"
+   - PlanView now fetches `user_goals` alongside `user_accounts` on load
+
+3. ✅ **Onboarding: retirement goal target currency**
+   - Target amount input now shows the retirement country's currency (symbol + code) instead of hardcoded USD
+   - Added `COUNTRY_CURRENCY` map: US → USD, CA → CAD, GB → GBP, SG → SGD, AU → AUD, DE/FR → EUR
+   - Symbol updates reactively as user changes "Where do you plan to retire?" dropdown
+
+4. ✅ **Onboarding: removed planning assistant references**
+   - Removed "Ask our planning assistant →" button from retirement goal panel in StepGoals
+   - Removed "This goes directly to your planning assistant" helper text from the notes textarea
+   - Users get the planning assistant on the dashboard after onboarding — not during setup
+
+**Stopping point / next session — START HERE:**
+
+| # | Task | Notes |
+|---|------|-------|
+| — | Test run: paid demo flow | Walk through full paid onboarding from /try and verify dashboard |
+| 22 | Geographic AI advisors | Task 28 scaffold done — now unblocked |
+| 24 | Portfolio audit + check-in email delivery | Vercel cron + Resend; two-tier (free/paid) |
+| 25 | Testing infrastructure (Vitest) | Unit + integration tests |
+
+---
+
 ### Session: Mar 25, 2026 (continued) — dashboard identity, presentation polish, landing page refresh
 
 **Branch:** `claude/review-codebase-docs-cLIae`

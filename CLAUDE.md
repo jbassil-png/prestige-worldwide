@@ -19,6 +19,12 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 
 ### Open task list (next session — pick up here)
 
+**Immediate:**
+
+| # | Task | Notes |
+|---|------|-------|
+| — | Test run: paid demo flow | Walk full paid onboarding from /try; verify dashboard with paid features |
+
 **Pre-launch (build before first real users):**
 
 | # | Task | Notes |
@@ -87,9 +93,10 @@ Cross-border financial planning app for expats, dual citizens, and global citize
 | — | Auth-aware Navbar | ✅ DONE — `NavbarAuthButtons` shows "Dashboard →" when logged in; landing page viewable while authenticated |
 | — | `/try` demo page | ✅ DONE — replaces `/onboarding/preview`; auto-signs in as free or paid demo account → `/dev/reset` → onboarding |
 | — | Hero CTAs | ✅ DONE — three paths: Try demo → `/try`, Sign up free → `/sign-up`, Sign in → `/sign-in` |
-
-**Known gaps still open:**
-- `AllocationCharts` — empty state placeholders in place; needs validation with real multi-account data
+| — | Dashboard layout refactor | ✅ DONE — CurrencyToggle inside PlanView below "Your Financial Snapshot"; AllocationCharts inside PlanView below metric cards; "Goals" section header; Recommendations removed |
+| — | Dashboard: unallocated bucket + goal cards | ✅ DONE — unallocated hides when all accounts linked to goals; non-retirement goals shown as individual cards; PlanView fetches `user_goals` |
+| — | Onboarding: retirement target currency | ✅ DONE — target amount shows retirement country currency (symbol + code); `COUNTRY_CURRENCY` map added to `StepGoals` |
+| — | Onboarding: remove planning assistant refs | ✅ DONE — "Ask our planning assistant" button + helper text removed from `StepGoals`; assistant accessible from dashboard post-onboarding |
 
 ---
 
@@ -193,17 +200,26 @@ app/api/
 
 ## Dashboard Structure
 
-**Layout:** 2-column on desktop (plan/news/allocations left; sticky chat right), single column on mobile.
+**Layout:** 2-column on desktop (plan/news left; sticky chat right), single column on mobile.
 
 **Left column (top to bottom):**
 1. Demo banner (unauthenticated only) — marketing copy + CTA
-2. Personalised control bar (authenticated) — country pair, plan date, currency toggle, refresh plan, Settings link
+2. Personalised control bar (authenticated) — country pair, plan date, refresh plan, Settings link
 3. News panel — portfolio news (Alpha Vantage, 30-min cache) or demo news
-4. Plan view — summary, metrics, projection chart, recommendations
-5. Allocation charts — geo breakdown + account type breakdown
+4. Plan view (single card) — in order:
+   - Plan summary text
+   - "Your Financial Snapshot" header + CurrencyToggle + metric cards
+   - Portfolio breakdown (AllocationCharts — by geography + account type)
+   - Goals section — retirement projection chart, non-retirement goal cards, unallocated bucket if applicable
+   - Plan disclaimer
 
 **Right column (sticky, desktop only):**
-6. Chat panel — streaming chat with plan context
+5. Chat panel — streaming chat with plan context
+
+**Notes:**
+- CurrencyToggle lives inside PlanView (not the control bar); all monetary values update on toggle
+- Recommendations section has been removed from PlanView
+- AllocationCharts shows percentages only (not monetary values); currency toggle does not affect it
 
 ---
 
