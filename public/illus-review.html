@@ -3,418 +3,265 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Illustration Review — Prestige Worldwide</title>
+  <title>Illustration Review — Swiss Seclusion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #0F172A; font-family: 'DM Sans', system-ui, sans-serif; }
-
-    /* Full-screen illustration layer */
-    #stage {
-      position: fixed;
-      inset: 0;
-    }
-    #stage svg {
-      width: 100%;
-      height: 100%;
-      display: none;
-    }
-    #stage svg.active {
-      display: block;
-    }
-
-    /* Toolbar */
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0F172A; font-family: system-ui, sans-serif; }
+    #stage { position: fixed; inset: 0; }
+    #stage svg { width: 100%; height: 100%; display: none; }
+    #stage svg.active { display: block; }
     .toolbar {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 10;
-      background: rgba(15,23,42,0.85);
-      backdrop-filter: blur(10px);
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+      background: rgba(15,23,42,0.88); backdrop-filter: blur(10px);
       border-top: 1px solid rgba(255,255,255,0.08);
-      padding: 14px 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
+      padding: 14px 24px; display: flex; align-items: center; gap: 16px;
     }
     .nav-btn {
-      padding: 8px 20px;
-      border-radius: 8px;
+      padding: 8px 20px; border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.06);
-      color: #CBD5E1;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.15s;
+      background: rgba(255,255,255,0.06); color: #CBD5E1;
+      font-size: 14px; cursor: pointer; transition: background 0.15s;
     }
     .nav-btn:hover { background: rgba(255,255,255,0.14); }
     .nav-btn:disabled { opacity: 0.3; cursor: default; }
-
-    .illus-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: #F1F5F9;
-      letter-spacing: 0.01em;
-    }
-    .illus-counter {
-      font-size: 12px;
-      color: #64748B;
-      margin-left: 6px;
-    }
-    .hint {
-      margin-left: auto;
-      font-size: 11px;
-      color: #334155;
-    }
+    .illus-name { font-size: 16px; font-weight: 600; color: #F1F5F9; }
+    .illus-counter { font-size: 12px; color: #64748B; margin-left: 6px; }
+    .hint { margin-left: auto; font-size: 11px; color: #334155; }
   </style>
 </head>
 <body>
 
 <div id="stage">
 
-  <!-- 1. Alpine Panorama -->
-  <svg class="active" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <!-- 1: Lake Geneva / Jet d'Eau -->
+  <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" class="active" preserveAspectRatio="xMidYMid slice">
     <defs>
-      <linearGradient id="sky-alps" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#B8D4E8"/>
-        <stop offset="100%" stop-color="#E8F4F8"/>
-      </linearGradient>
-      <linearGradient id="snow-g" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#FFFFFF"/>
-        <stop offset="100%" stop-color="#D4E8F0"/>
+      <pattern id="g1-sky" patternUnits="userSpaceOnUse" width="1440" height="10">
+        <line x1="0" y1="5" x2="1440" y2="5" stroke="#0D2B5C" stroke-width="0.5"/>
+      </pattern>
+      <pattern id="g1-h45" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="7" stroke="#0D2B5C" stroke-width="0.7"/>
+      </pattern>
+      <pattern id="g1-h45d" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="4" stroke="#0D2B5C" stroke-width="0.8"/>
+      </pattern>
+      <pattern id="g1-water" patternUnits="userSpaceOnUse" width="60" height="10">
+        <path d="M0,5 Q15,2 30,5 Q45,8 60,5" stroke="#0D2B5C" stroke-width="0.7" fill="none"/>
+      </pattern>
+      <pattern id="g1-stone" patternUnits="userSpaceOnUse" width="8" height="8">
+        <line x1="0" y1="0" x2="8" y2="8" stroke="#0D2B5C" stroke-width="0.4"/>
+        <line x1="8" y1="0" x2="0" y2="8" stroke="#0D2B5C" stroke-width="0.4"/>
+      </pattern>
+      <linearGradient id="g1-fog" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F6F9FF"/>
+        <stop offset="60%" stop-color="#E8F2FF"/>
+        <stop offset="100%" stop-color="#D4E8F8"/>
       </linearGradient>
     </defs>
-    <rect width="1440" height="900" fill="url(#sky-alps)"/>
-    <polygon points="0,520 180,280 360,420 540,260 720,380 900,240 1080,360 1260,280 1440,400 1440,900 0,900" fill="#8AADC0" opacity="0.5"/>
-    <polygon points="0,600 200,340 400,480 600,300 800,440 1000,310 1200,420 1440,350 1440,900 0,900" fill="#6B94AF"/>
-    <polygon points="200,340 240,380 260,355 280,390 320,360 360,400 400,480 200,340" fill="url(#snow-g)" opacity="0.9"/>
-    <polygon points="600,300 640,345 670,320 700,350 740,330 770,360 800,440 600,300" fill="url(#snow-g)" opacity="0.9"/>
-    <polygon points="1000,310 1040,360 1070,330 1100,365 1130,340 1150,370 1200,420 1000,310" fill="url(#snow-g)" opacity="0.9"/>
-    <ellipse cx="200" cy="820" rx="420" ry="180" fill="#2D5016" opacity="0.8"/>
-    <ellipse cx="1240" cy="840" rx="380" ry="160" fill="#2D5016" opacity="0.8"/>
-    <rect x="0" y="780" width="1440" height="120" fill="#1E3A0A"/>
-    <g fill="#1A3008">
-      <polygon points="80,720 95,680 110,720"/><rect x="93" y="720" width="4" height="18"/>
-      <polygon points="120,730 137,685 154,730"/><rect x="135" y="730" width="4" height="20"/>
-      <polygon points="160,715 178,665 196,715"/><rect x="176" y="715" width="4" height="22"/>
-      <polygon points="200,725 216,678 232,725"/><rect x="214" y="725" width="4" height="20"/>
-      <polygon points="240,710 258,660 276,710"/><rect x="256" y="710" width="4" height="22"/>
-    </g>
-    <g fill="#1A3008">
-      <polygon points="1200,720 1215,680 1230,720"/><rect x="1213" y="720" width="4" height="18"/>
-      <polygon points="1240,730 1257,685 1274,730"/><rect x="1255" y="730" width="4" height="20"/>
-      <polygon points="1280,710 1298,660 1316,710"/><rect x="1296" y="710" width="4" height="22"/>
-      <polygon points="1320,722 1336,675 1352,722"/><rect x="1334" y="722" width="4" height="20"/>
-    </g>
-    <g transform="translate(660,620)">
-      <rect x="0" y="60" width="120" height="80" fill="#8B6914" rx="2"/>
-      <polygon points="-15,60 60,10 135,60" fill="#5C3D11"/>
-      <rect x="20" y="80" width="30" height="40" fill="#4A3000" rx="1"/>
-      <rect x="70" y="80" width="25" height="25" fill="#87CEEB" rx="1"/>
-      <rect x="70" y="80" width="25" height="1" fill="#5C3D11"/>
-      <rect x="82" y="80" width="1" height="25" fill="#5C3D11"/>
-      <rect x="70" y="80" width="25" height="25" fill="#FFE066" rx="1" opacity="0.5"/>
-      <rect x="20" y="80" width="30" height="40" fill="#FFE066" rx="1" opacity="0.3"/>
-    </g>
-  </svg>
 
-  <!-- 2. The Watchmaker -->
-  <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <radialGradient id="spotlight" cx="50%" cy="40%" r="40%">
-        <stop offset="0%" stop-color="#FFF8DC" stop-opacity="0.9"/>
-        <stop offset="60%" stop-color="#E8D5A3" stop-opacity="0.4"/>
-        <stop offset="100%" stop-color="#1A1208" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <rect width="1440" height="900" fill="#1A1208"/>
-    <rect width="1440" height="900" fill="url(#spotlight)"/>
-    <rect x="300" y="520" width="840" height="20" fill="#5C3D11" rx="2"/>
-    <rect x="310" y="540" width="820" height="200" fill="#4A3000"/>
-    <g transform="translate(720,420)" opacity="0.85">
-      <circle cx="0" cy="0" r="120" fill="none" stroke="#C8A84B" stroke-width="2.5"/>
-      <circle cx="0" cy="0" r="115" fill="#1C1404" stroke="#8B6914" stroke-width="1"/>
-      <circle cx="0" cy="0" r="40" fill="none" stroke="#C8A84B" stroke-width="2"/>
-      <circle cx="0" cy="0" r="35" fill="#2A1C06" stroke="#8B6914" stroke-width="1"/>
-      <g stroke="#C8A84B" stroke-width="3">
-        <line x1="40" y1="0" x2="48" y2="0"/><line x1="-40" y1="0" x2="-48" y2="0"/>
-        <line x1="0" y1="40" x2="0" y2="48"/><line x1="0" y1="-40" x2="0" y2="-48"/>
-        <line x1="28" y1="28" x2="34" y2="34"/><line x1="-28" y1="28" x2="-34" y2="34"/>
-        <line x1="28" y1="-28" x2="34" y2="-34"/><line x1="-28" y1="-28" x2="-34" y2="-34"/>
-      </g>
-      <circle cx="-65" cy="30" r="22" fill="none" stroke="#C8A84B" stroke-width="1.5"/>
-      <circle cx="-65" cy="30" r="18" fill="#1C1404" stroke="#8B6914" stroke-width="1"/>
-      <g stroke="#C8A84B" stroke-width="2">
-        <line x1="-87" y1="30" x2="-92" y2="30"/><line x1="-43" y1="30" x2="-38" y2="30"/>
-        <line x1="-65" y1="8" x2="-65" y2="3"/><line x1="-65" y1="52" x2="-65" y2="57"/>
-      </g>
-      <circle cx="70" cy="-35" r="18" fill="none" stroke="#C8A84B" stroke-width="1.5"/>
-      <circle cx="70" cy="-35" r="14" fill="#1C1404" stroke="#8B6914" stroke-width="1"/>
-      <circle cx="55" cy="65" r="28" fill="none" stroke="#B8963C" stroke-width="1.5" stroke-dasharray="4,3"/>
-      <circle cx="55" cy="65" r="4" fill="#C8A84B"/>
-      <line x1="0" y1="0" x2="0" y2="-28" stroke="#E8D080" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="0" y1="0" x2="20" y2="0" stroke="#E8D080" stroke-width="1.5" stroke-linecap="round"/>
-    </g>
-    <g transform="translate(680,360)">
-      <ellipse cx="40" cy="120" rx="35" ry="45" fill="#2C2010"/>
-      <circle cx="40" cy="70" r="28" fill="#C8A878"/>
-      <ellipse cx="40" cy="48" rx="28" ry="14" fill="#8B7355"/>
-      <circle cx="52" cy="72" r="12" fill="none" stroke="#888" stroke-width="2"/>
-      <line x1="64" y1="65" x2="70" y2="60" stroke="#888" stroke-width="1.5"/>
-      <path d="M18,110 Q5,130 20,155" stroke="#2C2010" stroke-width="14" fill="none" stroke-linecap="round"/>
-      <path d="M62,110 Q75,130 55,155" stroke="#2C2010" stroke-width="14" fill="none" stroke-linecap="round"/>
-      <ellipse cx="18" cy="155" rx="8" ry="6" fill="#C8A878"/>
-      <ellipse cx="56" cy="155" rx="8" ry="6" fill="#C8A878"/>
-      <line x1="60" y1="155" x2="75" y2="175" stroke="#AAA" stroke-width="1.5"/>
-      <line x1="62" y1="155" x2="78" y2="175" stroke="#AAA" stroke-width="1.5"/>
-    </g>
-    <g fill="#8B6914" opacity="0.6">
-      <rect x="400" y="510" width="60" height="8" rx="2"/>
-      <rect x="480" y="505" width="8" height="12" rx="1"/>
-      <rect x="960" y="508" width="50" height="6" rx="1"/>
-    </g>
-    <g stroke="#3A2800" stroke-width="1" opacity="0.4">
-      <line x1="310" y1="560" x2="1130" y2="560"/>
-      <line x1="310" y1="590" x2="1130" y2="590"/>
-      <line x1="310" y1="620" x2="1130" y2="620"/>
-    </g>
-  </svg>
+    <!-- Paper background -->
+    <rect width="1440" height="900" fill="#F6F9FF"/>
 
-  <!-- 3. Jet d'Eau, Geneva -->
-  <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="sky-jd" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#C5D8EC"/>
-        <stop offset="100%" stop-color="#E8F2F8"/>
-      </linearGradient>
-      <linearGradient id="lake-jd" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#7AACCA"/>
-        <stop offset="100%" stop-color="#4A8BAA"/>
-      </linearGradient>
-    </defs>
-    <rect width="1440" height="900" fill="url(#sky-jd)"/>
-    <polygon points="0,380 200,260 350,320 500,230 700,310 900,250 1100,320 1300,270 1440,310 1440,500 0,500" fill="#9BB8CC" opacity="0.6"/>
-    <rect x="0" y="600" width="1440" height="300" fill="url(#lake-jd)"/>
-    <g stroke="#A0C8E0" stroke-width="1" opacity="0.4">
-      <line x1="100" y1="640" x2="300" y2="640"/><line x1="400" y1="660" x2="650" y2="660"/>
-      <line x1="800" y1="645" x2="1000" y2="645"/><line x1="1100" y1="655" x2="1350" y2="655"/>
-    </g>
-    <rect x="380" y="590" width="680" height="12" fill="#8899AA" rx="2"/>
-    <g fill="#8899AA">
-      <rect x="400" y="550" width="8" height="42"/><rect x="450" y="555" width="8" height="37"/>
-      <rect x="500" y="552" width="8" height="40"/><rect x="560" y="550" width="8" height="42"/>
-      <rect x="620" y="553" width="8" height="39"/><rect x="680" y="550" width="8" height="42"/>
-      <rect x="740" y="553" width="8" height="39"/><rect x="800" y="550" width="8" height="42"/>
-      <rect x="850" y="555" width="8" height="37"/><rect x="900" y="552" width="8" height="40"/>
-      <rect x="940" y="550" width="8" height="42"/>
-    </g>
-    <rect x="0" y="590" width="380" height="12" fill="#B0BEC5"/>
-    <rect x="1060" y="590" width="380" height="12" fill="#B0BEC5"/>
-    <g>
-      <rect x="60" y="530" width="6" height="62" fill="#5C4A3A"/>
-      <ellipse cx="63" cy="520" rx="22" ry="28" fill="#2D5016"/>
-      <rect x="140" y="535" width="6" height="57" fill="#5C4A3A"/>
-      <ellipse cx="143" cy="525" rx="20" ry="26" fill="#2D5016"/>
-      <rect x="220" y="532" width="6" height="60" fill="#5C4A3A"/>
-      <ellipse cx="223" cy="522" rx="21" ry="27" fill="#2D5016"/>
-      <rect x="300" y="535" width="6" height="57" fill="#5C4A3A"/>
-      <ellipse cx="303" cy="525" rx="20" ry="26" fill="#2D5016"/>
-    </g>
-    <g transform="translate(760,0)">
-      <rect x="-20" y="582" width="40" height="18" fill="#7A8899" rx="3"/>
-      <ellipse cx="0" cy="570" rx="6" ry="12" fill="rgba(255,255,255,0.7)"/>
-      <path d="M-5,570 Q-8,400 -2,100 Q0,50 2,100 Q8,400 5,570Z" fill="rgba(255,255,255,0.75)"/>
-      <ellipse cx="0" cy="95" rx="18" ry="12" fill="rgba(255,255,255,0.5)"/>
-      <ellipse cx="0" cy="85" rx="10" ry="8" fill="rgba(255,255,255,0.65)"/>
-      <circle cx="-15" cy="120" r="3" fill="rgba(255,255,255,0.4)"/>
-      <circle cx="18" cy="130" r="2" fill="rgba(255,255,255,0.4)"/>
-      <circle cx="-22" cy="160" r="2" fill="rgba(255,255,255,0.3)"/>
-      <circle cx="25" cy="155" r="3" fill="rgba(255,255,255,0.3)"/>
-      <path d="M-5,598 Q0,650 5,598" fill="rgba(255,255,255,0.3)"/>
-    </g>
-    <g fill="#8A9BAA" opacity="0.6">
-      <rect x="1100" y="500" width="60" height="90"/><rect x="1170" y="520" width="50" height="70"/>
-      <rect x="1230" y="510" width="70" height="80"/><rect x="1310" y="530" width="50" height="60"/>
-    </g>
-  </svg>
+    <!-- Sky atmospheric lines -->
+    <rect x="0" y="0" width="1440" height="380" fill="url(#g1-sky)" opacity="0.18"/>
 
-  <!-- 4. Beau Rivage, Lausanne -->
-  <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="sky-br" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#C8D8E8"/>
-        <stop offset="100%" stop-color="#E8F0F8"/>
-      </linearGradient>
-    </defs>
-    <rect width="1440" height="900" fill="url(#sky-br)"/>
-    <rect x="0" y="780" width="1440" height="120" fill="#7AACCA"/>
-    <g transform="translate(120,200)">
-      <rect x="0" y="0" width="1200" height="540" fill="#F0EAD8"/>
-      <rect x="-20" y="-60" width="1240" height="75" fill="#C8B89A"/>
-      <polygon points="-20,-60 0,0 1200,0 1220,-60" fill="#B8A88A"/>
-      <g fill="#F0EAD8" stroke="#C8B89A" stroke-width="2">
-        <rect x="50" y="-52" width="55" height="45" rx="2"/>
-        <path d="M45,-52 Q77,-75 110,-52" fill="#C8B89A" stroke="none"/>
-        <rect x="200" y="-52" width="55" height="45" rx="2"/>
-        <path d="M195,-52 Q227,-75 260,-52" fill="#C8B89A" stroke="none"/>
-        <rect x="350" y="-52" width="55" height="45" rx="2"/>
-        <path d="M345,-52 Q377,-75 410,-52" fill="#C8B89A" stroke="none"/>
-        <rect x="500" y="-52" width="55" height="45" rx="2"/>
-        <path d="M495,-52 Q527,-75 560,-52" fill="#C8B89A" stroke="none"/>
-        <rect x="650" y="-52" width="55" height="45" rx="2"/>
-        <path d="M645,-52 Q677,-75 710,-52" fill="#C8B89A" stroke="none"/>
-        <rect x="800" y="-52" width="55" height="45" rx="2"/>
-        <path d="M795,-52 Q827,-75 860,-52" fill="#C8B89A" stroke="none"/>
-        <rect x="950" y="-52" width="55" height="45" rx="2"/>
-        <path d="M945,-52 Q977,-75 1010,-52" fill="#C8B89A" stroke="none"/>
-        <rect x="1095" y="-52" width="55" height="45" rx="2"/>
-        <path d="M1090,-52 Q1122,-75 1155,-52" fill="#C8B89A" stroke="none"/>
-      </g>
-      <rect x="0" y="170" width="1200" height="8" fill="#C8B89A"/>
-      <rect x="0" y="340" width="1200" height="8" fill="#C8B89A"/>
-      <g fill="#B8D4E8" stroke="#A09070" stroke-width="1.5">
-        <rect x="40" y="30" width="55" height="120" rx="28"/><rect x="130" y="30" width="55" height="120" rx="28"/>
-        <rect x="220" y="30" width="55" height="120" rx="28"/><rect x="310" y="30" width="55" height="120" rx="28"/>
-        <rect x="400" y="30" width="55" height="120" rx="28"/><rect x="490" y="30" width="55" height="120" rx="28"/>
-        <rect x="580" y="30" width="55" height="120" rx="28"/><rect x="670" y="30" width="55" height="120" rx="28"/>
-        <rect x="760" y="30" width="55" height="120" rx="28"/><rect x="850" y="30" width="55" height="120" rx="28"/>
-        <rect x="940" y="30" width="55" height="120" rx="28"/><rect x="1030" y="30" width="55" height="120" rx="28"/>
-        <rect x="1120" y="30" width="55" height="120" rx="28"/>
-      </g>
-      <g fill="#B8D4E8" stroke="#A09070" stroke-width="1.5">
-        <rect x="40" y="200" width="55" height="110" rx="4"/><rect x="130" y="200" width="55" height="110" rx="4"/>
-        <rect x="220" y="200" width="55" height="110" rx="4"/><rect x="310" y="200" width="55" height="110" rx="4"/>
-        <rect x="400" y="200" width="55" height="110" rx="4"/><rect x="490" y="200" width="55" height="110" rx="4"/>
-        <rect x="580" y="200" width="55" height="110" rx="4"/><rect x="670" y="200" width="55" height="110" rx="4"/>
-        <rect x="760" y="200" width="55" height="110" rx="4"/><rect x="850" y="200" width="55" height="110" rx="4"/>
-        <rect x="940" y="200" width="55" height="110" rx="4"/><rect x="1030" y="200" width="55" height="110" rx="4"/>
-        <rect x="1120" y="200" width="55" height="110" rx="4"/>
-      </g>
-      <rect x="540" y="370" width="120" height="170" rx="4" fill="#8B6914"/>
-      <rect x="540" y="370" width="120" height="80" rx="40" fill="#8B6914"/>
-      <rect x="555" y="385" width="45" height="65" fill="#C8A84B" opacity="0.5"/>
-      <rect x="605" y="385" width="45" height="65" fill="#C8A84B" opacity="0.5"/>
-      <line x1="100" y1="-60" x2="100" y2="-140" stroke="#888" stroke-width="3"/>
-      <rect x="100" y="-140" width="50" height="30" fill="#FF0000" opacity="0.8"/>
-      <line x1="1100" y1="-60" x2="1100" y2="-140" stroke="#888" stroke-width="3"/>
-      <rect x="1100" y="-140" width="50" height="30" fill="#FF0000" opacity="0.8"/>
-      <line x1="600" y1="-60" x2="600" y2="-130" stroke="#888" stroke-width="2"/>
-      <rect x="600" y="-130" width="45" height="28" fill="#003087" opacity="0.8"/>
-    </g>
-    <rect x="0" y="740" width="1440" height="45" fill="#D4C9B0"/>
-    <g fill="#555">
-      <rect x="200" y="680" width="5" height="62"/><circle cx="202" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
-      <rect x="500" y="680" width="5" height="62"/><circle cx="502" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
-      <rect x="800" y="680" width="5" height="62"/><circle cx="802" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
-      <rect x="1100" y="680" width="5" height="62"/><circle cx="1102" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
-      <rect x="1300" y="680" width="5" height="62"/><circle cx="1302" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
-    </g>
-  </svg>
+    <!-- Far mountain range -->
+    <polygon points="0,360 100,240 200,290 340,190 500,260 660,200 820,250 980,185 1100,240 1260,195 1380,230 1440,210 1440,380 0,380" fill="white" stroke="#0D2B5C" stroke-width="1.5"/>
+    <polygon points="0,360 100,240 200,290 340,190 500,260 660,200 820,250 980,185 1100,240 1260,195 1380,230 1440,210 1440,380 0,380" fill="url(#g1-h45)" opacity="0.25"/>
 
-  <!-- 5. Private Banking, Geneva -->
-  <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="hall-grad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#2C2416"/>
-        <stop offset="100%" stop-color="#1A150C"/>
-      </linearGradient>
-      <radialGradient id="chandelier-glow" cx="30%" cy="15%" r="30%">
-        <stop offset="0%" stop-color="#FFF0A0" stop-opacity="0.35"/>
-        <stop offset="100%" stop-color="#FFF0A0" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="chandelier-glow2" cx="70%" cy="12%" r="28%">
-        <stop offset="0%" stop-color="#FFF0A0" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="#FFF0A0" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <rect width="1440" height="900" fill="url(#hall-grad)"/>
-    <rect width="1440" height="900" fill="url(#chandelier-glow)"/>
-    <rect width="1440" height="900" fill="url(#chandelier-glow2)"/>
-    <g stroke="#4A3820" stroke-width="2" fill="none" opacity="0.7">
-      <rect x="60" y="30" width="200" height="120" rx="4"/><rect x="80" y="50" width="160" height="80" rx="2"/>
-      <rect x="280" y="30" width="200" height="120" rx="4"/><rect x="300" y="50" width="160" height="80" rx="2"/>
-      <rect x="500" y="30" width="200" height="120" rx="4"/><rect x="520" y="50" width="160" height="80" rx="2"/>
-      <rect x="720" y="30" width="200" height="120" rx="4"/><rect x="740" y="50" width="160" height="80" rx="2"/>
-      <rect x="940" y="30" width="200" height="120" rx="4"/><rect x="960" y="50" width="160" height="80" rx="2"/>
-      <rect x="1160" y="30" width="220" height="120" rx="4"/><rect x="1180" y="50" width="180" height="80" rx="2"/>
+    <!-- Mid mountain range -->
+    <polygon points="0,400 150,290 300,340 480,260 640,310 800,270 960,320 1100,275 1280,315 1440,285 1440,400 0,400" fill="white" stroke="#0D2B5C" stroke-width="2"/>
+    <polygon points="0,400 150,290 300,340 480,260 640,310 800,270 960,320 1100,275 1280,315 1440,285 1440,400 0,400" fill="url(#g1-h45d)" opacity="0.35"/>
+    <!-- Snow caps -->
+    <polygon points="480,260 510,285 540,270 560,288 590,272 620,292 640,310 480,260" fill="white" stroke="#0D2B5C" stroke-width="1"/>
+    <polygon points="800,270 825,292 850,278 870,294 900,280 960,320 800,270" fill="white" stroke="#0D2B5C" stroke-width="1"/>
+
+    <!-- Lake surface -->
+    <rect x="0" y="400" width="1440" height="220" fill="white" stroke="#0D2B5C" stroke-width="1.5"/>
+    <rect x="0" y="408" width="1440" height="204" fill="url(#g1-water)" opacity="0.5"/>
+
+    <!-- Jet d'Eau fountain -->
+    <path d="M718,600 Q715,500 712,300 Q710,200 714,80 Q716,40 718,80 Q720,200 722,300 Q724,500 722,600Z" fill="white" stroke="#0D2B5C" stroke-width="1.2"/>
+    <!-- Spray top -->
+    <ellipse cx="718" cy="80" rx="22" ry="14" fill="white" stroke="#0D2B5C" stroke-width="1"/>
+    <path d="M700,90 Q685,60 675,40" stroke="#0D2B5C" stroke-width="1" fill="none"/>
+    <path d="M736,90 Q751,60 761,40" stroke="#0D2B5C" stroke-width="1" fill="none"/>
+    <path d="M710,85 Q700,55 695,30" stroke="#0D2B5C" stroke-width="0.8" fill="none"/>
+    <path d="M726,85 Q736,55 741,30" stroke="#0D2B5C" stroke-width="0.8" fill="none"/>
+    <path d="M705,92 Q688,75 680,58" stroke="#0D2B5C" stroke-width="0.7" fill="none"/>
+    <path d="M731,92 Q748,75 756,58" stroke="#0D2B5C" stroke-width="0.7" fill="none"/>
+    <!-- Fountain base platform -->
+    <rect x="700" y="596" width="36" height="14" fill="white" stroke="#0D2B5C" stroke-width="1.5" rx="2"/>
+
+    <!-- Sailboat left -->
+    <g transform="translate(420,460)">
+      <path d="M0,80 Q5,82 10,80 Q15,82 20,80" stroke="#0D2B5C" stroke-width="1.5" fill="none"/>
+      <polygon points="10,80 10,20 35,80" fill="white" stroke="#0D2B5C" stroke-width="1.2"/>
+      <polygon points="10,80 10,35 -12,75" fill="white" stroke="#0D2B5C" stroke-width="1.2"/>
+      <line x1="10" y1="20" x2="10" y2="80" stroke="#0D2B5C" stroke-width="1.2"/>
+      <!-- sail hatching -->
+      <line x1="12" y1="70" x2="30" y2="72" stroke="#0D2B5C" stroke-width="0.5" opacity="0.5"/>
+      <line x1="12" y1="58" x2="26" y2="57" stroke="#0D2B5C" stroke-width="0.5" opacity="0.5"/>
+      <line x1="12" y1="46" x2="21" y2="44" stroke="#0D2B5C" stroke-width="0.5" opacity="0.5"/>
     </g>
-    <g stroke="#4A3820" stroke-width="1.5" fill="none" opacity="0.5">
-      <rect x="60" y="165" width="200" height="100" rx="4"/><rect x="280" y="165" width="200" height="100" rx="4"/>
-      <rect x="500" y="165" width="200" height="100" rx="4"/><rect x="720" y="165" width="200" height="100" rx="4"/>
-      <rect x="940" y="165" width="200" height="100" rx="4"/><rect x="1160" y="165" width="220" height="100" rx="4"/>
+
+    <!-- Sailboat right -->
+    <g transform="translate(950,480)">
+      <path d="M0,60 Q5,62 10,60 Q15,62 20,60" stroke="#0D2B5C" stroke-width="1.5" fill="none"/>
+      <polygon points="10,60 10,10 30,60" fill="white" stroke="#0D2B5C" stroke-width="1.2"/>
+      <polygon points="10,60 10,22 -8,56" fill="white" stroke="#0D2B5C" stroke-width="1.2"/>
+      <line x1="10" y1="10" x2="10" y2="60" stroke="#0D2B5C" stroke-width="1.2"/>
     </g>
-    <g>
-      <line x1="380" y1="0" x2="380" y2="80" stroke="#C8A84B" stroke-width="2"/>
-      <ellipse cx="380" cy="90" rx="50" ry="12" fill="none" stroke="#C8A84B" stroke-width="2"/>
-      <g fill="#FFE080" opacity="0.9">
-        <circle cx="340" cy="100" r="5"/><circle cx="360" cy="98" r="5"/><circle cx="380" cy="96" r="6"/>
-        <circle cx="400" cy="98" r="5"/><circle cx="420" cy="100" r="5"/>
+
+    <!-- Promenade road -->
+    <polygon points="0,900 560,620 880,620 1440,900" fill="white" stroke="#0D2B5C" stroke-width="1.5"/>
+    <polygon points="0,900 560,620 880,620 1440,900" fill="url(#g1-stone)" opacity="0.15"/>
+    <!-- Road center lines -->
+    <line x1="720" y1="620" x2="720" y2="900" stroke="#0D2B5C" stroke-width="1" stroke-dasharray="12,8"/>
+
+    <!-- Left lamp posts -->
+    <g stroke="#0D2B5C" fill="white">
+      <g transform="translate(320,580)">
+        <rect x="-3" y="-160" width="6" height="160" fill="#0D2B5C"/>
+        <rect x="-18" y="-175" width="36" height="20" rx="3" stroke-width="1.5"/>
+        <circle cx="0" cy="-168" r="10" stroke-width="1.5"/>
+        <!-- light rays -->
+        <line x1="0" y1="-178" x2="0" y2="-185" stroke-width="1" stroke="#0D2B5C"/>
+        <line x1="-8" y1="-175" x2="-12" y2="-180" stroke-width="1" stroke="#0D2B5C"/>
+        <line x1="8" y1="-175" x2="12" y2="-180" stroke-width="1" stroke="#0D2B5C"/>
       </g>
-      <g stroke="#C8A84B" stroke-width="1">
-        <line x1="350" y1="100" x2="350" y2="120"/><line x1="370" y1="98" x2="370" y2="118"/>
-        <line x1="390" y1="96" x2="390" y2="116"/><line x1="410" y1="98" x2="410" y2="118"/>
-      </g>
-      <line x1="1060" y1="0" x2="1060" y2="80" stroke="#C8A84B" stroke-width="2"/>
-      <ellipse cx="1060" cy="90" rx="50" ry="12" fill="none" stroke="#C8A84B" stroke-width="2"/>
-      <g fill="#FFE080" opacity="0.9">
-        <circle cx="1020" cy="100" r="5"/><circle cx="1040" cy="98" r="5"/><circle cx="1060" cy="96" r="6"/>
-        <circle cx="1080" cy="98" r="5"/><circle cx="1100" cy="100" r="5"/>
-      </g>
-      <g stroke="#C8A84B" stroke-width="1">
-        <line x1="1030" y1="100" x2="1030" y2="120"/><line x1="1050" y1="98" x2="1050" y2="118"/>
-        <line x1="1070" y1="96" x2="1070" y2="116"/><line x1="1090" y1="98" x2="1090" y2="118"/>
-      </g>
-    </g>
-    <g fill="#3A2C1C" stroke="#5A4A2C" stroke-width="1">
-      <rect x="120" y="280" width="50" height="620"/><rect x="108" y="278" width="74" height="16" rx="2"/>
-      <rect x="108" y="896" width="74" height="8" rx="2"/>
-      <rect x="340" y="280" width="50" height="620"/><rect x="328" y="278" width="74" height="16" rx="2"/>
-      <rect x="328" y="896" width="74" height="8" rx="2"/>
-      <rect x="1050" y="280" width="50" height="620"/><rect x="1038" y="278" width="74" height="16" rx="2"/>
-      <rect x="1038" y="896" width="74" height="8" rx="2"/>
-      <rect x="1270" y="280" width="50" height="620"/><rect x="1258" y="278" width="74" height="16" rx="2"/>
-      <rect x="1258" y="896" width="74" height="8" rx="2"/>
-    </g>
-    <g stroke="#4A3A28" stroke-width="1" opacity="0.4">
-      <line x1="0" y1="900" x2="720" y2="500"/><line x1="240" y1="900" x2="720" y2="500"/>
-      <line x1="480" y1="900" x2="720" y2="500"/><line x1="720" y1="900" x2="720" y2="500"/>
-      <line x1="960" y1="900" x2="720" y2="500"/><line x1="1200" y1="900" x2="720" y2="500"/>
-      <line x1="1440" y1="900" x2="720" y2="500"/>
-      <line x1="0" y1="700" x2="1440" y2="700"/><line x1="0" y1="800" x2="1440" y2="800"/>
-    </g>
-    <rect x="530" y="480" width="380" height="80" fill="#3A2C1C" rx="4"/>
-    <rect x="530" y="476" width="380" height="12" fill="#5A4830" rx="2"/>
-    <g stroke="#C8A84B" stroke-width="1.5" fill="none" opacity="0.7">
-      <rect x="555" y="420" width="80" height="55" rx="2"/>
-      <line x1="575" y1="420" x2="575" y2="475"/><line x1="595" y1="420" x2="595" y2="475"/>
-      <line x1="615" y1="420" x2="615" y2="475"/>
-      <rect x="700" y="420" width="80" height="55" rx="2"/>
-      <line x1="720" y1="420" x2="720" y2="475"/><line x1="740" y1="420" x2="740" y2="475"/>
-      <line x1="760" y1="420" x2="760" y2="475"/>
-      <rect x="845" y="420" width="80" height="55" rx="2"/>
-      <line x1="865" y1="420" x2="865" y2="475"/><line x1="885" y1="420" x2="885" y2="475"/>
-      <line x1="905" y1="420" x2="905" y2="475"/>
-    </g>
-    <g transform="translate(720,680)">
-      <ellipse cx="0" cy="0" rx="90" ry="45" fill="#4A3820" stroke="#6A5030" stroke-width="2"/>
-      <rect x="-8" y="0" width="16" height="50" fill="#3A2810"/>
-      <ellipse cx="-30" cy="-8" rx="12" ry="8" fill="#C8A84B" opacity="0.8"/>
-      <ellipse cx="30" cy="-8" rx="12" ry="8" fill="#C8A84B" opacity="0.8"/>
-      <g transform="translate(-160,-20)">
-        <circle cx="0" cy="-55" r="24" fill="#C8A878"/>
-        <rect x="-22" y="-32" width="44" height="60" fill="#1C2840" rx="4"/>
-        <ellipse cx="-6" cy="-58" rx="8" ry="6" fill="none" stroke="#444" stroke-width="1.5"/>
-        <ellipse cx="8" cy="-58" rx="8" ry="6" fill="none" stroke="#444" stroke-width="1.5"/>
-        <line x1="-14" y1="-58" x2="-22" y2="-56" stroke="#444" stroke-width="1.5"/>
-        <line x1="16" y1="-58" x2="24" y2="-56" stroke="#444" stroke-width="1.5"/>
-        <polygon points="0,-28 -5,-5 0,5 5,-5" fill="#8B0000"/>
-        <path d="M20,-10 Q50,0 55,5" stroke="#1C2840" stroke-width="10" fill="none" stroke-linecap="round"/>
-      </g>
-      <g transform="translate(160,-20)">
-        <circle cx="0" cy="-55" r="24" fill="#D4B896"/>
-        <rect x="-22" y="-32" width="44" height="60" fill="#2C2416" rx="4"/>
-        <polygon points="0,-28 -4,-5 0,3 4,-5" fill="#C8A84B"/>
-        <path d="M-20,-15 Q-50,-25 -55,-30" stroke="#2C2416" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <g transform="translate(160,640)">
+        <rect x="-3" y="-130" width="6" height="130" fill="#0D2B5C"/>
+        <rect x="-16" y="-144" width="32" height="18" rx="3" stroke-width="1.5"/>
+        <circle cx="0" cy="-138" r="9" stroke-width="1.5"/>
       </g>
     </g>
+
+    <!-- Right lamp posts -->
+    <g stroke="#0D2B5C" fill="white">
+      <g transform="translate(1120,580)">
+        <rect x="-3" y="-160" width="6" height="160" fill="#0D2B5C"/>
+        <rect x="-18" y="-175" width="36" height="20" rx="3" stroke-width="1.5"/>
+        <circle cx="0" cy="-168" r="10" stroke-width="1.5"/>
+      </g>
+      <g transform="translate(1280,640)">
+        <rect x="-3" y="-130" width="6" height="130" fill="#0D2B5C"/>
+        <rect x="-16" y="-144" width="32" height="18" rx="3" stroke-width="1.5"/>
+        <circle cx="0" cy="-138" r="9" stroke-width="1.5"/>
+      </g>
+    </g>
+
+    <!-- Left bare tree 1 -->
+    <g stroke="#0D2B5C" fill="none">
+      <path d="M240,900 L238,760 L235,680" stroke-width="5"/>
+      <path d="M238,760 L210,710 L195,670 L185,640" stroke-width="3"/>
+      <path d="M210,710 L195,685 L188,660" stroke-width="2"/>
+      <path d="M238,760 L265,705 L278,670 L285,645" stroke-width="3"/>
+      <path d="M265,705 L278,682 L286,658" stroke-width="2"/>
+      <path d="M235,700 L215,660 L205,635" stroke-width="2.5"/>
+      <path d="M235,700 L255,655 L265,628" stroke-width="2.5"/>
+      <path d="M235,680 L220,648 L212,622" stroke-width="2"/>
+      <path d="M235,680 L250,644 L258,618" stroke-width="2"/>
+      <path d="M185,640 L178,620 L172,602" stroke-width="1.5"/>
+      <path d="M185,640 L192,618 L196,600" stroke-width="1.5"/>
+      <path d="M285,645 L278,622 L274,604" stroke-width="1.5"/>
+      <path d="M285,645 L292,622 L296,604" stroke-width="1.5"/>
+    </g>
+
+    <!-- Left bare tree 2 -->
+    <g stroke="#0D2B5C" fill="none">
+      <path d="M100,900 L98,800 L95,730" stroke-width="4"/>
+      <path d="M98,800 L75,758 L62,728" stroke-width="2.5"/>
+      <path d="M98,800 L120,752 L132,720" stroke-width="2.5"/>
+      <path d="M95,750 L78,715 L68,688" stroke-width="2"/>
+      <path d="M95,750 L112,712 L122,684" stroke-width="2"/>
+      <path d="M62,728 L54,708 L48,690" stroke-width="1.5"/>
+      <path d="M132,720 L140,700 L145,682" stroke-width="1.5"/>
+    </g>
+
+    <!-- Right bare tree 1 -->
+    <g stroke="#0D2B5C" fill="none">
+      <path d="M1200,900 L1202,760 L1205,680" stroke-width="5"/>
+      <path d="M1202,760 L1230,710 L1245,670 L1255,640" stroke-width="3"/>
+      <path d="M1230,710 L1245,685 L1252,660" stroke-width="2"/>
+      <path d="M1202,760 L1175,705 L1162,670 L1155,645" stroke-width="3"/>
+      <path d="M1175,705 L1162,682 L1154,658" stroke-width="2"/>
+      <path d="M1205,700 L1225,660 L1235,635" stroke-width="2.5"/>
+      <path d="M1205,700 L1185,655 L1175,628" stroke-width="2.5"/>
+      <path d="M1255,640 L1262,618 L1266,600" stroke-width="1.5"/>
+      <path d="M1155,645 L1148,622 L1144,604" stroke-width="1.5"/>
+    </g>
+
+    <!-- Right bare tree 2 -->
+    <g stroke="#0D2B5C" fill="none">
+      <path d="M1340,900 L1342,800 L1345,730" stroke-width="4"/>
+      <path d="M1342,800 L1365,758 L1378,728" stroke-width="2.5"/>
+      <path d="M1342,800 L1320,752 L1308,720" stroke-width="2.5"/>
+      <path d="M1345,750 L1362,715 L1372,688" stroke-width="2"/>
+      <path d="M1345,750 L1328,712 L1318,684" stroke-width="2"/>
+    </g>
+
+    <!-- Park benches left -->
+    <g transform="translate(380,720)" stroke="#0D2B5C" fill="white" stroke-width="1.2">
+      <rect x="0" y="0" width="55" height="8" rx="1"/>
+      <rect x="0" y="-14" width="55" height="6" rx="1"/>
+      <rect x="5" y="8" width="5" height="14"/>
+      <rect x="45" y="8" width="5" height="14"/>
+    </g>
+    <g transform="translate(80,760)" stroke="#0D2B5C" fill="white" stroke-width="1.2">
+      <rect x="0" y="0" width="45" height="7" rx="1"/>
+      <rect x="0" y="-12" width="45" height="5" rx="1"/>
+      <rect x="4" y="7" width="4" height="12"/>
+      <rect x="37" y="7" width="4" height="12"/>
+    </g>
+
+    <!-- Park benches right -->
+    <g transform="translate(1005,720)" stroke="#0D2B5C" fill="white" stroke-width="1.2">
+      <rect x="0" y="0" width="55" height="8" rx="1"/>
+      <rect x="0" y="-14" width="55" height="6" rx="1"/>
+      <rect x="5" y="8" width="5" height="14"/>
+      <rect x="45" y="8" width="5" height="14"/>
+    </g>
+
+    <!-- Walking figures -->
+    <g stroke="#0D2B5C" fill="#0D2B5C">
+      <!-- Figure 1 -->
+      <circle cx="580" cy="660" r="7"/>
+      <path d="M580,667 L578,695 L574,720" stroke-width="2" fill="none"/>
+      <path d="M580,667 L582,695 L585,720" stroke-width="2" fill="none"/>
+      <path d="M580,672 L570,682" stroke-width="2" fill="none"/>
+      <path d="M580,672 L590,680" stroke-width="2" fill="none"/>
+      <!-- Figure 2 (couple) -->
+      <circle cx="850" cy="658" r="7"/>
+      <path d="M850,665 L848,692 L844,716" stroke-width="2" fill="none"/>
+      <path d="M850,665 L852,692 L856,716" stroke-width="2" fill="none"/>
+      <path d="M850,670 L840,679" stroke-width="2" fill="none"/>
+      <path d="M850,670 L860,678" stroke-width="2" fill="none"/>
+      <circle cx="868" cy="657" r="6"/>
+      <path d="M868,663 L866,688 L863,712" stroke-width="2" fill="none"/>
+      <path d="M868,663 L870,688 L873,712" stroke-width="2" fill="none"/>
+    </g>
+
+    <!-- Quai buildings far shore -->
+    <g fill="white" stroke="#0D2B5C" stroke-width="1.2">
+      <rect x="1050" y="340" width="70" height="65"/>
+      <polygon points="1050,340 1085,315 1120,340" fill="white" stroke-width="1.2"/>
+      <rect x="1060" y="358" width="12" height="18"/><rect x="1082" y="358" width="12" height="18"/>
+      <rect x="1060" y="380" width="12" height="14"/><rect x="1082" y="380" width="12" height="14"/>
+
+      <rect x="1130" y="348" width="55" height="57"/>
+      <polygon points="1130,348 1157,328 1185,348"/>
+      <rect x="1140" y="365" width="10" height="15"/><rect x="1162" y="365" width="10" height="15"/>
+
+      <rect x="1195" y="355" width="80" height="50"/>
+      <polygon points="1195,355 1235,330 1275,355"/>
+      <rect x="1205" y="370" width="12" height="16"/><rect x="1232" y="370" width="12" height="16"/>
+      <rect x="1260" y="370" width="12" height="16"/>
+    </g>
+
+    <!-- border frame -->
+    <rect x="20" y="20" width="1400" height="860" fill="none" stroke="#0D2B5C" stroke-width="2" rx="4"/>
   </svg>
 
 </div>
@@ -422,19 +269,13 @@
 <div class="toolbar">
   <button class="nav-btn" id="prev-btn" onclick="navigate(-1)" disabled>← Prev</button>
   <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next →</button>
-  <span class="illus-name" id="illus-name">Alpine Panorama</span>
-  <span class="illus-counter" id="illus-counter">1 / 5</span>
+  <span class="illus-name" id="illus-name">Lake Geneva / Jet d'Eau</span>
+  <span class="illus-counter" id="illus-counter">1 / 1</span>
   <span class="hint">← → arrow keys to navigate</span>
 </div>
 
 <script>
-  const names = [
-    'Alpine Panorama',
-    'The Watchmaker',
-    "Jet d'Eau, Geneva",
-    'Beau Rivage, Lausanne',
-    'Private Banking, Geneva',
-  ];
+  const names = ['Lake Geneva / Jet d\'Eau'];
   const svgs = document.querySelectorAll('#stage svg');
   let current = 0;
 
