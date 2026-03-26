@@ -105,7 +105,9 @@ export default function TryPage() {
                 <button
                   onClick={() => handleSignIn(demo)}
                   disabled={loading !== null}
-                  className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg text-sm transition"
+                  className={`w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition ${
+                    loading !== null && loading !== demo.key ? "opacity-40 cursor-not-allowed" : ""
+                  }`}
                 >
                   {loading === demo.key ? "Setting up…" : `Try ${demo.label} →`}
                 </button>
