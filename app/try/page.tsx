@@ -17,7 +17,6 @@ const DEMOS = [
     label: "Free account",
     email: "demo@prestigeworldwide.com",
     password: "demo123456",
-    scenario: "US → Canada · 401(k) + RRSP · Swiss Alps theme",
     description: "See the core planning experience — manual accounts, AI plan, chat, and news.",
   },
   {
@@ -25,7 +24,6 @@ const DEMOS = [
     label: "Paid account",
     email: "paid@prestigeworldwide.com",
     password: "demo123456",
-    scenario: "US → UK · 401(k) + ISA · Gaudy Miami theme",
     description: "Explore paid features — Plaid connections, custom themes, and portfolio audits.",
   },
 ] as const;
@@ -103,7 +101,6 @@ export default function TryPage() {
                   <p className="text-sm text-slate-500 leading-relaxed">
                     {demo.description}
                   </p>
-                  <p className="text-xs text-slate-400 mt-2">{demo.scenario}</p>
                 </div>
                 <button
                   onClick={() => handleSignIn(demo)}
