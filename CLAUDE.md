@@ -2,6 +2,8 @@
 
 > **Start every session here.** Read this file first, then `SESSION_NOTES.md` (most recent entry), then begin work.
 
+> **Execution rule:** Never enter plan mode. Never narrate what you are about to do. Go straight to implementation — call the tool, write the code, make the edit. If a task is large, break it into steps and execute each step immediately.
+
 ---
 
 ## Project
