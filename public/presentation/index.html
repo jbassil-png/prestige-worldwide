@@ -729,22 +729,17 @@
 
   function goTo(n) {
     const goingBack = n < current;
-    if (goingBack) {
-      // Incoming slide starts off-screen to the left
-      slides[n].style.transform = 'translateX(-100%)';
-      slides[n].className = 'slide';
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        slides[current].className = 'slide';      // exit right
-        slides[current].style.transform = '';
-        slides[n].style.transform = '';
-        slides[n].className = 'slide active';     // enter from left
-      }));
-    } else {
-      slides[current].className = 'slide prev';   // exit left
-      slides[current].style.transform = '';
-      slides[n].style.transform = '';
-      slides[n].className = 'slide active';       // enter from right
-    }
+    // Snap incoming slide to correct off-screen position without animation
+    slides[n].style.transition = 'none';
+    slides[n].style.transform = goingBack ? 'translateX(-100%)' : 'translateX(100%)';
+    slides[n].className = 'slide';
+    void slides[n].offsetWidth; // force reflow so snap registers before transition re-enables
+    slides[n].style.transition = '';
+    slides[n].style.transform = '';
+    // Animate both slides simultaneously
+    slides[n].className = 'slide active';
+    slides[current].style.transform = '';
+    slides[current].className = goingBack ? 'slide' : 'slide prev';
     document.querySelectorAll('.dot')[current].classList.remove('active');
     current = n;
     document.querySelectorAll('.dot')[current].classList.add('active');
