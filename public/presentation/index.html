@@ -728,16 +728,22 @@
   });
 
   function goTo(n) {
-    slides[current].className = 'slide prev';
-    if (n < current) {
-      slides[current].className = 'slide';
+    const goingBack = n < current;
+    if (goingBack) {
+      // Incoming slide starts off-screen to the left
       slides[n].style.transform = 'translateX(-100%)';
       slides[n].className = 'slide';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => { slides[n].className = 'slide active'; });
-      });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        slides[current].className = 'slide';      // exit right
+        slides[current].style.transform = '';
+        slides[n].style.transform = '';
+        slides[n].className = 'slide active';     // enter from left
+      }));
     } else {
-      slides[n].className = 'slide active';
+      slides[current].className = 'slide prev';   // exit left
+      slides[current].style.transform = '';
+      slides[n].style.transform = '';
+      slides[n].className = 'slide active';       // enter from right
     }
     document.querySelectorAll('.dot')[current].classList.remove('active');
     current = n;
