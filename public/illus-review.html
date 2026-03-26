@@ -37,34 +37,50 @@
   <!-- 1: Lake Geneva / Jet d'Eau -->
   <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" class="active" preserveAspectRatio="xMidYMid slice">
     <defs>
-      <pattern id="g1-sky" patternUnits="userSpaceOnUse" width="1440" height="10">
-        <line x1="0" y1="5" x2="1440" y2="5" stroke="#0D2B5C" stroke-width="0.5"/>
+      <pattern id="g1-hlight" patternUnits="userSpaceOnUse" width="1440" height="14">
+        <line x1="0" y1="7" x2="1440" y2="7" stroke="#0D2B5C" stroke-width="0.45" opacity="0.5"/>
       </pattern>
-      <pattern id="g1-h45" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="7" stroke="#0D2B5C" stroke-width="0.7"/>
+      <pattern id="g1-hmed" patternUnits="userSpaceOnUse" width="1440" height="8">
+        <line x1="0" y1="4" x2="1440" y2="4" stroke="#0D2B5C" stroke-width="0.5" opacity="0.6"/>
       </pattern>
-      <pattern id="g1-h45d" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="4" stroke="#0D2B5C" stroke-width="0.8"/>
+      <pattern id="g1-h45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#0D2B5C" stroke-width="0.65"/>
       </pattern>
-      <pattern id="g1-water" patternUnits="userSpaceOnUse" width="60" height="10">
-        <path d="M0,5 Q15,2 30,5 Q45,8 60,5" stroke="#0D2B5C" stroke-width="0.7" fill="none"/>
+      <pattern id="g1-h45d" patternUnits="userSpaceOnUse" width="3.5" height="3.5" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="3.5" stroke="#0D2B5C" stroke-width="0.7"/>
       </pattern>
-      <pattern id="g1-stone" patternUnits="userSpaceOnUse" width="8" height="8">
-        <line x1="0" y1="0" x2="8" y2="8" stroke="#0D2B5C" stroke-width="0.4"/>
-        <line x1="8" y1="0" x2="0" y2="8" stroke="#0D2B5C" stroke-width="0.4"/>
+      <pattern id="g1-cross" patternUnits="userSpaceOnUse" width="6" height="6">
+        <line x1="0" y1="0" x2="6" y2="6" stroke="#0D2B5C" stroke-width="0.45"/>
+        <line x1="6" y1="0" x2="0" y2="6" stroke="#0D2B5C" stroke-width="0.45"/>
       </pattern>
-      <linearGradient id="g1-fog" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#F6F9FF"/>
-        <stop offset="60%" stop-color="#E8F2FF"/>
-        <stop offset="100%" stop-color="#D4E8F8"/>
-      </linearGradient>
+      <pattern id="g1-water" patternUnits="userSpaceOnUse" width="80" height="12">
+        <path d="M0,6 Q10,3 20,6 Q30,9 40,6 Q50,3 60,6 Q70,9 80,6" stroke="#0D2B5C" stroke-width="0.6" fill="none"/>
+      </pattern>
+      <pattern id="g1-wclose" patternUnits="userSpaceOnUse" width="50" height="8">
+        <path d="M0,4 Q6,2 12,4 Q18,6 24,4 Q30,2 36,4 Q42,6 48,4" stroke="#0D2B5C" stroke-width="0.8" fill="none"/>
+      </pattern>
+      <radialGradient id="g1-glow" cx="50%" cy="35%" r="40%">
+        <stop offset="0%" stop-color="#F6F9FF" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#D0E4F8" stop-opacity="0.4"/>
+      </radialGradient>
     </defs>
 
-    <!-- Paper background -->
+    <!-- Paper -->
     <rect width="1440" height="900" fill="#F6F9FF"/>
 
-    <!-- Sky atmospheric lines -->
-    <rect x="0" y="0" width="1440" height="380" fill="url(#g1-sky)" opacity="0.18"/>
+    <!-- Sky — fine horizontal lines, denser near horizon for atmosphere -->
+    <rect x="0" y="0" width="1440" height="420" fill="url(#g1-hlight)" opacity="0.6"/>
+    <rect x="0" y="280" width="1440" height="140" fill="url(#g1-hmed)" opacity="0.5"/>
+
+    <!-- Elegant cloud formations -->
+    <g fill="white" stroke="#0D2B5C" stroke-width="1">
+      <path d="M80,80 Q100,55 130,60 Q140,40 165,48 Q180,30 210,42 Q235,28 255,45 Q275,35 290,52 Q295,68 275,72 Q260,82 220,80 Q180,88 140,82 Q105,86 80,80Z"/>
+      <path d="M950,50 Q970,30 1005,38 Q1020,18 1055,28 Q1080,15 1110,30 Q1135,20 1155,36 Q1165,52 1140,58 Q1110,68 1070,62 Q1030,70 990,64 Q960,68 950,50Z"/>
+      <path d="M1280,100 Q1295,82 1320,88 Q1332,72 1355,80 Q1375,68 1400,78 Q1415,92 1395,100 Q1370,108 1340,104 Q1310,110 1280,100Z"/>
+    </g>
+    <!-- Cloud hatching -->
+    <clipPath id="g1-cl1"><path d="M80,80 Q100,55 130,60 Q140,40 165,48 Q180,30 210,42 Q235,28 255,45 Q275,35 290,52 Q295,68 275,72 Q260,82 220,80 Q180,88 140,82 Q105,86 80,80Z"/></clipPath>
+    <rect x="80" y="30" width="220" height="60" fill="url(#g1-hlight)" clip-path="url(#g1-cl1)" opacity="0.5"/>
 
     <!-- Far mountain range -->
     <polygon points="0,360 100,240 200,290 340,190 500,260 660,200 820,250 980,185 1100,240 1260,195 1380,230 1440,210 1440,380 0,380" fill="white" stroke="#0D2B5C" stroke-width="1.5"/>
