@@ -403,6 +403,21 @@
       font-size: 14px;
       flex-shrink: 0;
     }
+  @media print {
+    html, body { overflow: visible; height: auto; }
+    .deck { display: block; width: 100%; height: auto; overflow: visible; }
+    .nav { display: none; }
+    .slide {
+      position: relative !important;
+      display: flex !important;
+      transform: none !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100vh;
+      page-break-after: always;
+      break-after: page;
+    }
+  }
   </style>
 </head>
 <body>
