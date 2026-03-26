@@ -13,6 +13,15 @@ type RetirementGoal = {
   targetAmountUsd: number;
 };
 
+type UserGoal = {
+  id: string;
+  goal_type: string;
+  label: string;
+  target_amount_usd: number | null;
+  target_year: number | null;
+  linked_account_ids: string[];
+};
+
 type Metrics = {
   netWorthUsd: number;
   yearsToRetirement: number | null;
@@ -96,6 +105,7 @@ function formatMoney(usd: number, mode: CurrencyMode, rates: Record<string, numb
 export default function PlanView({ plan, currencyMode, residenceCurrency, retirementCurrency }: Props) {
   const [rates, setRates] = useState<Record<string, number>>({ USD: 1 });
   const [accountCount, setAccountCount] = useState<number>(0);
+  const [userGoals, setUserGoals] = useState<UserGoal[]>([]);
   const supabase = createClient();
 
   const { metrics } = plan;
@@ -108,17 +118,18 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
   }, [residenceCurrency, retirementCurrency]);
 
   useEffect(() => {
-    async function fetchAccountCount() {
+    async function fetchData() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { count } = await supabase
-          .from("user_accounts")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id);
+        const [{ count }, { data: goals }] = await Promise.all([
+          supabase.from("user_accounts").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+          supabase.from("user_goals").select("id, goal_type, label, target_amount_usd, target_year, linked_account_ids").eq("user_id", user.id),
+        ]);
         setAccountCount(count ?? 0);
+        setUserGoals(goals ?? []);
       }
     }
-    fetchAccountCount();
+    fetchData();
   }, [supabase]);
 
   const fmt = (usd: number) =>
@@ -146,11 +157,20 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
     }))
     .filter((g) => g.items.length > 0);
 
-  // Unallocated: net worth with no goal assigned (all funds, until goal-linking is set up)
+  // Unallocated: only show if there are accounts not linked to any goal
+  const allLinkedIds = new Set(userGoals.flatMap((g) => g.linked_account_ids));
+  const hasAnyGoals = userGoals.length > 0;
+  // If the user has linked all accounts to goals (allLinkedIds covers all accounts), unallocated is 0
+  // Use the retirement goal target to compute allocation as before, but only render the bucket
+  // when there are genuinely unlinked accounts (i.e., user has goals but some accounts aren't linked)
   const allocatedAmount = metrics.retirementGoal
     ? Math.min(metrics.netWorthUsd, metrics.retirementGoal.targetAmountUsd)
     : 0;
   const unallocatedAmount = metrics.netWorthUsd - allocatedAmount;
+  // Hide bucket if: user has goals AND all accounts are linked (allLinkedIds.size === accountCount)
+  const showUnallocated = !hasAnyGoals || (accountCount > 0 && allLinkedIds.size < accountCount) || unallocatedAmount > 0;
+
+  const nonRetirementGoals = userGoals.filter((g) => g.goal_type !== "retirement");
 
   return (
     <div className="space-y-6">
@@ -181,7 +201,7 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
         </div>
 
         <p className="text-xs text-gray-600">
-          💡 Numbers below are automatically synced from your connected bank and investment accounts via Plaid
+          💡 Numbers below are based on the account balances you&apos;ve connected
         </p>
       </div>
 
@@ -286,23 +306,62 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
         </div>
       )}
 
-      {/* Unallocated funds bucket */}
-      <div className="border border-dashed border-gray-200 rounded-xl px-4 py-4">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm">🪣</span>
-            <span className="text-sm font-semibold text-gray-700">Unallocated</span>
+      {/* Non-retirement goal cards */}
+      {nonRetirementGoals.map((goal) => (
+        <div key={goal.id} className="border border-gray-100 rounded-xl overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🎯</span>
+              <span className="text-sm font-semibold text-gray-800">{goal.label}</span>
+              {goal.target_year && (
+                <span className="text-xs text-gray-400">· {goal.target_year}</span>
+              )}
+            </div>
+            {goal.linked_account_ids.length > 0 && (
+              <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                {goal.linked_account_ids.length} account{goal.linked_account_ids.length !== 1 ? "s" : ""} linked
+              </span>
+            )}
           </div>
-          <span className="text-sm font-bold text-gray-900">
-            {fmt(unallocatedAmount > 0 ? unallocatedAmount : metrics.netWorthUsd)}
-          </span>
+          <div className="px-4 py-4 bg-white">
+            {goal.target_amount_usd ? (
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>Target: {fmt(goal.target_amount_usd)}</span>
+                {goal.target_year && <span>By {goal.target_year}</span>}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400">
+                {goal.linked_account_ids.length > 0
+                  ? "Accounts are allocated to this goal. Set a target amount in Settings to track progress."
+                  : "No accounts linked yet. You can update goal allocations in Settings."}
+              </p>
+            )}
+            <Link href="/settings" className="text-xs text-brand-600 hover:underline font-medium mt-2 inline-block">
+              Update goal →
+            </Link>
+          </div>
         </div>
-        <p className="text-xs text-gray-400 leading-relaxed">
-          {hasRetirementGoal
-            ? "Available to allocate across other goals. You can assign funds to additional goals any time."
-            : "All your current assets. Add goals to see how your money is working toward them."}
-        </p>
-      </div>
+      ))}
+
+      {/* Unallocated funds bucket — only shown when there are genuinely unallocated funds */}
+      {showUnallocated && (
+        <div className="border border-dashed border-gray-200 rounded-xl px-4 py-4">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🪣</span>
+              <span className="text-sm font-semibold text-gray-700">Unallocated</span>
+            </div>
+            <span className="text-sm font-bold text-gray-900">
+              {fmt(hasAnyGoals ? unallocatedAmount : metrics.netWorthUsd)}
+            </span>
+          </div>
+          <p className="text-xs text-gray-400 leading-relaxed">
+            {hasRetirementGoal
+              ? "Available to allocate across other goals. You can assign funds to additional goals any time."
+              : "All your current assets. Add goals to see how your money is working toward them."}
+          </p>
+        </div>
+      )}
 
       {/* Enhance your plan nudge — shown when no retirement goal */}
       {!hasRetirementGoal && (
