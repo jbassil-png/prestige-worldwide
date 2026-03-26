@@ -408,6 +408,7 @@ export default function OnboardingPage() {
                 onNext={handleConnectNext}
                 onBack={() => setStep(STEP_ASSETS)}
                 isPaid={isPaid}
+                isDemoAccount={demoLabel !== null}
               />
             </div>
             <div className="text-center space-y-1">

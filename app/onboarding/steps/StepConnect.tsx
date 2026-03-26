@@ -24,6 +24,7 @@ interface Props {
   onNext: (accounts: Account[]) => void;
   onBack: () => void;
   isPaid?: boolean;
+  isDemoAccount?: boolean;
   initialValues?: Account[];
 }
 
@@ -33,7 +34,7 @@ const MOCK_ACCOUNTS: Account[] = [
   { name: "TD RRSP", type: "RRSP", balanceUsd: 62000, currency: "CAD", countryCode: "CA", institution: "TD Bank", source: "plaid" },
 ];
 
-function PlaidConnect({ selections, onAccounts }: { selections: CountrySelection[]; onAccounts: (a: Account[]) => void }) {
+function PlaidConnect({ selections, onAccounts, isDemoAccount }: { selections: CountrySelection[]; onAccounts: (a: Account[]) => void; isDemoAccount?: boolean }) {
   const [accounts, setAccounts] = useState<Account[] | null>(null);
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -149,23 +150,68 @@ function PlaidConnect({ selections, onAccounts }: { selections: CountrySelection
         </ul>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {!linkToken ? (
-        <button
-          onClick={fetchLinkToken}
-          disabled={loading}
-          className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50"
-        >
-          {loading ? "Connecting…" : "Connect via Plaid"}
-        </button>
+      {isDemoAccount ? (
+        /* Demo mode: show sandbox credentials, let user open the Plaid Link with them */
+        <div className="space-y-3">
+          <div className="rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 space-y-2">
+            <p className="text-xs font-semibold text-brand-800">Demo — use Plaid sandbox credentials</p>
+            <p className="text-xs text-brand-700 leading-relaxed">
+              This is a test environment. Use the credentials below when Plaid asks you to log in to a bank:
+            </p>
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <div className="bg-white rounded-lg border border-brand-100 px-3 py-2">
+                <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Username</p>
+                <p className="text-sm font-mono font-semibold text-gray-800">user_good</p>
+              </div>
+              <div className="bg-white rounded-lg border border-brand-100 px-3 py-2">
+                <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Password</p>
+                <p className="text-sm font-mono font-semibold text-gray-800">pass_good</p>
+              </div>
+            </div>
+            <p className="text-xs text-brand-600">
+              Select any institution (e.g. Chase) when prompted.
+            </p>
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          {!linkToken ? (
+            <button
+              onClick={fetchLinkToken}
+              disabled={loading}
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50"
+            >
+              {loading ? "Connecting…" : "Open Plaid Link →"}
+            </button>
+          ) : (
+            <button
+              onClick={() => open()}
+              disabled={!ready}
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50"
+            >
+              Open Plaid Link →
+            </button>
+          )}
+        </div>
       ) : (
-        <button
-          onClick={() => open()}
-          disabled={!ready}
-          className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50"
-        >
-          Open Plaid Link
-        </button>
+        <>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          {!linkToken ? (
+            <button
+              onClick={fetchLinkToken}
+              disabled={loading}
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50"
+            >
+              {loading ? "Connecting…" : "Connect via Plaid"}
+            </button>
+          ) : (
+            <button
+              onClick={() => open()}
+              disabled={!ready}
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50"
+            >
+              Open Plaid Link
+            </button>
+          )}
+        </>
       )}
     </div>
   );
@@ -233,7 +279,7 @@ function ManualEntry({ selections, onAccounts }: { selections: CountrySelection[
   );
 }
 
-export default function StepConnect({ selections, onNext, onBack, isPaid, initialValues }: Props) {
+export default function StepConnect({ selections, onNext, onBack, isPaid, isDemoAccount, initialValues }: Props) {
   const [tab, setTab] = useState<"plaid" | "manual">(isPaid ? "plaid" : "manual");
   const [accounts, setAccounts] = useState<Account[] | null>(initialValues ?? null);
 
@@ -334,7 +380,7 @@ export default function StepConnect({ selections, onNext, onBack, isPaid, initia
       </div>
 
       {tab === "plaid" ? (
-        <PlaidConnect selections={selections} onAccounts={setAccounts} />
+        <PlaidConnect selections={selections} onAccounts={setAccounts} isDemoAccount={isDemoAccount} />
       ) : (
         <ManualEntry selections={selections} onAccounts={setAccounts} />
       )}
