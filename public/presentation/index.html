@@ -403,6 +403,23 @@
       font-size: 14px;
       flex-shrink: 0;
     }
+  @media print {
+    html, body { overflow: visible !important; height: auto !important; }
+    .deck { display: block !important; overflow: visible !important; height: auto !important; }
+    .nav { display: none !important; }
+    #dots { display: none !important; }
+    .slide {
+      position: relative !important;
+      display: flex !important;
+      transform: none !important;
+      width: 100vw !important;
+      min-width: 0 !important;
+      height: 100vh !important;
+      page-break-after: always !important;
+      break-after: page !important;
+      opacity: 1 !important;
+    }
+  }
   </style>
 </head>
 <body>
@@ -711,6 +728,7 @@
   <button id="prev" disabled>← Prev</button>
   <span class="counter" id="counter">1 / 10</span>
   <button id="next">Next →</button>
+  <button id="print-btn" style="margin-left:12px;opacity:0.6;font-size:12px;">⬇ PDF</button>
 </nav>
 
 <script>
@@ -754,6 +772,25 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (current < total - 1) goTo(current + 1); }
     if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { if (current > 0) goTo(current - 1); }
+  });
+
+  document.getElementById('print-btn').addEventListener('click', () => {
+    // Strip all JS-applied inline transforms so print CSS can take over
+    slides.forEach(s => {
+      s.style.transition = 'none';
+      s.style.transform = 'none';
+    });
+    window.print();
+    // Restore presentation state after print dialog closes
+    setTimeout(() => {
+      slides.forEach(s => { s.style.transition = ''; s.style.transform = ''; });
+      // Re-apply correct positions
+      slides.forEach((s, i) => {
+        if (i === current) s.className = 'slide active';
+        else if (i < current) s.className = 'slide prev';
+        else s.className = 'slide';
+      });
+    }, 500);
   });
 </script>
 </body>
