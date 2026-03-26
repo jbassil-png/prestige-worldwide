@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { CurrencyMode } from "./CurrencyToggle";
+import CurrencyToggle, { type CurrencyMode } from "./CurrencyToggle";
+import AllocationCharts from "./AllocationCharts";
 
 const ProjectionChart = dynamic(() => import("./ProjectionChart"), { ssr: false });
 
@@ -51,24 +52,9 @@ export type Plan = {
 
 interface Props {
   plan: Plan;
-  currencyMode: CurrencyMode;
   residenceCurrency: string;
   retirementCurrency: string;
 }
-
-const PRIORITY_STYLES: Record<string, string> = {
-  high: "bg-red-50 border-red-200 text-red-700",
-  medium: "bg-amber-50 border-amber-200 text-amber-700",
-  low: "bg-green-50 border-green-200 text-green-700",
-};
-
-const CATEGORY_ICONS: Record<string, string> = {
-  Retirement: "🏦",
-  Tax: "📋",
-  Currency: "💱",
-  Estate: "📜",
-  Investment: "📈",
-};
 
 const ON_TRACK_CONFIG = {
   on_track: {
@@ -102,10 +88,11 @@ function formatMoney(usd: number, mode: CurrencyMode, rates: Record<string, numb
   }).format(converted);
 }
 
-export default function PlanView({ plan, currencyMode, residenceCurrency, retirementCurrency }: Props) {
+export default function PlanView({ plan, residenceCurrency, retirementCurrency }: Props) {
   const [rates, setRates] = useState<Record<string, number>>({ USD: 1 });
   const [accountCount, setAccountCount] = useState<number>(0);
   const [userGoals, setUserGoals] = useState<UserGoal[]>([]);
+  const [currencyMode, setCurrencyMode] = useState<CurrencyMode>("residence");
   const supabase = createClient();
 
   const { metrics } = plan;
@@ -149,25 +136,13 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
       : []),
   ];
 
-  const byPriority = ["high", "medium", "low"];
-  const grouped = byPriority
-    .map((p) => ({
-      priority: p,
-      items: plan.recommendations.filter((r) => r.priority === p),
-    }))
-    .filter((g) => g.items.length > 0);
-
   // Unallocated: only show if there are accounts not linked to any goal
   const allLinkedIds = new Set(userGoals.flatMap((g) => g.linked_account_ids));
   const hasAnyGoals = userGoals.length > 0;
-  // If the user has linked all accounts to goals (allLinkedIds covers all accounts), unallocated is 0
-  // Use the retirement goal target to compute allocation as before, but only render the bucket
-  // when there are genuinely unlinked accounts (i.e., user has goals but some accounts aren't linked)
   const allocatedAmount = metrics.retirementGoal
     ? Math.min(metrics.netWorthUsd, metrics.retirementGoal.targetAmountUsd)
     : 0;
   const unallocatedAmount = metrics.netWorthUsd - allocatedAmount;
-  // Hide bucket if: user has goals AND all accounts are linked (allLinkedIds.size === accountCount)
   const showUnallocated = !hasAnyGoals || (accountCount > 0 && allLinkedIds.size < accountCount) || unallocatedAmount > 0;
 
   const nonRetirementGoals = userGoals.filter((g) => g.goal_type !== "retirement");
@@ -176,7 +151,7 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
     <div className="space-y-6">
       <p className="text-sm text-gray-700 leading-relaxed">{plan.summary}</p>
 
-      {/* Account metrics header */}
+      {/* Financial Snapshot header + currency toggle */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -200,11 +175,19 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
           </a>
         </div>
 
-        <p className="text-xs text-gray-600">
-          💡 Numbers below are based on the account balances you&apos;ve connected
+        {/* Currency toggle — controls all monetary values below */}
+        <CurrencyToggle
+          residenceCurrency={residenceCurrency}
+          retirementCurrency={retirementCurrency}
+          onChange={setCurrencyMode}
+        />
+
+        <p className="text-xs text-gray-500">
+          Numbers below are based on the account balances you&apos;ve connected
         </p>
       </div>
 
+      {/* Metric cards */}
       <div className="grid grid-cols-2 gap-3">
         {metricCards.map((m) => (
           <Link
@@ -221,193 +204,172 @@ export default function PlanView({ plan, currencyMode, residenceCurrency, retire
         ))}
       </div>
 
-      {/* Projection placeholder — shown when no retirement year is set */}
-      {!metrics.retirementYear && (
-        <div className="border border-dashed border-gray-200 rounded-xl overflow-hidden">
-          <div className="px-4 py-3 bg-gray-50 border-b border-dashed border-gray-200 flex items-center gap-2">
-            <span className="text-sm">📈</span>
-            <span className="text-sm font-semibold text-gray-500">Growth projection</span>
-          </div>
-          <div className="px-4 py-8 bg-white flex flex-col items-center justify-center text-center gap-2">
-            <p className="text-xs text-gray-400">Set a retirement year to see your projected portfolio growth.</p>
-            <Link href="/settings" className="text-xs font-medium text-brand-600 hover:underline">
-              Set retirement year →
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* Portfolio breakdown */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">Portfolio breakdown</h3>
+        <AllocationCharts />
+      </div>
 
-      {/* Projection chart — shown whenever we have a retirement year */}
-      {metrics.retirementYear && metrics.projectedRetirementBalanceUsd !== null && (
-        <div className="border border-gray-100 rounded-xl overflow-hidden">
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">🏦</span>
-              <span className="text-sm font-semibold text-gray-800">
-                Retirement · {metrics.retirementYear}
-              </span>
+      {/* Goals section */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-gray-900">Goals</h3>
+
+        {/* Projection placeholder — shown when no retirement year is set */}
+        {!metrics.retirementYear && (
+          <div className="border border-dashed border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-dashed border-gray-200 flex items-center gap-2">
+              <span className="text-sm">📈</span>
+              <span className="text-sm font-semibold text-gray-500">Growth projection</span>
             </div>
-            {metrics.onTrackStatus && (
-              <span
-                className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${ON_TRACK_CONFIG[metrics.onTrackStatus].className}`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${ON_TRACK_CONFIG[metrics.onTrackStatus].dot}`} />
-                {ON_TRACK_CONFIG[metrics.onTrackStatus].label}
-              </span>
-            )}
+            <div className="px-4 py-8 bg-white flex flex-col items-center justify-center text-center gap-2">
+              <p className="text-xs text-gray-400">Set a retirement year to see your projected portfolio growth.</p>
+              <Link href="/settings" className="text-xs font-medium text-brand-600 hover:underline">
+                Set retirement year →
+              </Link>
+            </div>
           </div>
-          <div className="px-4 py-4 bg-white space-y-3">
-            {/* Progress bar — only when a target amount is set */}
-            {hasRetirementGoal && metrics.retirementGoal && (() => {
-              const target = metrics.retirementGoal!.targetAmountUsd;
-              const projected = metrics.projectedRetirementBalanceUsd!;
-              const progress = Math.min(100, Math.round((projected / target) * 100));
-              return (
-                <>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>Projected: {fmt(projected)}</span>
-                    <span>Goal: {fmt(target)}</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all ${
-                        metrics.onTrackStatus === "on_track"
-                          ? "bg-green-500"
-                          : metrics.onTrackStatus === "at_risk"
-                          ? "bg-amber-400"
-                          : "bg-red-400"
-                      }`}
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-400">
-                    {progress >= 100
-                      ? "Projected to meet or exceed your goal at current trajectory (7% CAGR assumed)."
-                      : `Projected to reach ${progress}% of your goal. Consider reviewing your contributions.`}
-                  </p>
-                </>
-              );
-            })()}
+        )}
 
-            <ProjectionChart
-              netWorthUsd={metrics.netWorthUsd}
-              retirementYear={metrics.retirementYear}
-              targetAmountUsd={metrics.retirementGoal?.targetAmountUsd ?? null}
-              fmt={fmt}
-            />
-
-            <Link
-              href="/plan"
-              className="text-xs text-brand-600 hover:underline font-medium"
-            >
-              View full breakdown →
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* Non-retirement goal cards */}
-      {nonRetirementGoals.map((goal) => (
-        <div key={goal.id} className="border border-gray-100 rounded-xl overflow-hidden">
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">🎯</span>
-              <span className="text-sm font-semibold text-gray-800">{goal.label}</span>
-              {goal.target_year && (
-                <span className="text-xs text-gray-400">· {goal.target_year}</span>
+        {/* Retirement projection chart */}
+        {metrics.retirementYear && metrics.projectedRetirementBalanceUsd !== null && (
+          <div className="border border-gray-100 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">🏦</span>
+                <span className="text-sm font-semibold text-gray-800">
+                  Retirement · {metrics.retirementYear}
+                </span>
+              </div>
+              {metrics.onTrackStatus && (
+                <span
+                  className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${ON_TRACK_CONFIG[metrics.onTrackStatus].className}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${ON_TRACK_CONFIG[metrics.onTrackStatus].dot}`} />
+                  {ON_TRACK_CONFIG[metrics.onTrackStatus].label}
+                </span>
               )}
             </div>
-            {goal.linked_account_ids.length > 0 && (
-              <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                {goal.linked_account_ids.length} account{goal.linked_account_ids.length !== 1 ? "s" : ""} linked
-              </span>
-            )}
-          </div>
-          <div className="px-4 py-4 bg-white">
-            {goal.target_amount_usd ? (
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>Target: {fmt(goal.target_amount_usd)}</span>
-                {goal.target_year && <span>By {goal.target_year}</span>}
-              </div>
-            ) : (
-              <p className="text-xs text-gray-400">
-                {goal.linked_account_ids.length > 0
-                  ? "Accounts are allocated to this goal. Set a target amount in Settings to track progress."
-                  : "No accounts linked yet. You can update goal allocations in Settings."}
-              </p>
-            )}
-            <Link href="/settings" className="text-xs text-brand-600 hover:underline font-medium mt-2 inline-block">
-              Update goal →
-            </Link>
-          </div>
-        </div>
-      ))}
+            <div className="px-4 py-4 bg-white space-y-3">
+              {hasRetirementGoal && metrics.retirementGoal && (() => {
+                const target = metrics.retirementGoal!.targetAmountUsd;
+                const projected = metrics.projectedRetirementBalanceUsd!;
+                const progress = Math.min(100, Math.round((projected / target) * 100));
+                return (
+                  <>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>Projected: {fmt(projected)}</span>
+                      <span>Goal: {fmt(target)}</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          metrics.onTrackStatus === "on_track"
+                            ? "bg-green-500"
+                            : metrics.onTrackStatus === "at_risk"
+                            ? "bg-amber-400"
+                            : "bg-red-400"
+                        }`}
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {progress >= 100
+                        ? "Projected to meet or exceed your goal at current trajectory (7% CAGR assumed)."
+                        : `Projected to reach ${progress}% of your goal. Consider reviewing your contributions.`}
+                    </p>
+                  </>
+                );
+              })()}
 
-      {/* Unallocated funds bucket — only shown when there are genuinely unallocated funds */}
-      {showUnallocated && (
-        <div className="border border-dashed border-gray-200 rounded-xl px-4 py-4">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">🪣</span>
-              <span className="text-sm font-semibold text-gray-700">Unallocated</span>
-            </div>
-            <span className="text-sm font-bold text-gray-900">
-              {fmt(hasAnyGoals ? unallocatedAmount : metrics.netWorthUsd)}
-            </span>
-          </div>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            {hasRetirementGoal
-              ? "Available to allocate across other goals. You can assign funds to additional goals any time."
-              : "All your current assets. Add goals to see how your money is working toward them."}
-          </p>
-        </div>
-      )}
+              <ProjectionChart
+                netWorthUsd={metrics.netWorthUsd}
+                retirementYear={metrics.retirementYear}
+                targetAmountUsd={metrics.retirementGoal?.targetAmountUsd ?? null}
+                fmt={fmt}
+              />
 
-      {/* Enhance your plan nudge — shown when no retirement goal */}
-      {!hasRetirementGoal && (
-        <div className="bg-brand-50 border border-brand-100 rounded-xl px-4 py-4">
-          <p className="text-xs font-semibold text-brand-700 mb-1">Unlock more from your plan</p>
-          <p className="text-sm text-brand-900 mb-3 leading-relaxed">
-            Add a retirement goal to see if you&apos;re on track, get a projected timeline, and uncover optimisation opportunities.
-          </p>
-          <Link
-            href="/settings"
-            className="inline-block text-xs font-semibold text-brand-700 border border-brand-300 rounded-lg px-3 py-1.5 hover:bg-brand-100 transition"
-          >
-            Set a retirement goal →
-          </Link>
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-gray-700">Recommendations</h3>
-        {grouped.map(({ priority, items }) => (
-          <div key={priority} className="space-y-2">
-            {items.map((rec, i) => (
-              <div
-                key={i}
-                className={`rounded-xl border px-4 py-3 ${PRIORITY_STYLES[priority] ?? ""}`}
+              <Link
+                href="/plan"
+                className="text-xs text-brand-600 hover:underline font-medium"
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-base">{CATEGORY_ICONS[rec.category] ?? "💡"}</span>
-                  <span className="text-xs font-semibold uppercase tracking-wide">{rec.category}</span>
-                  <span
-                    className={`ml-auto text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                      priority === "high"
-                        ? "bg-red-100 text-red-700"
-                        : priority === "medium"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {priority}
-                  </span>
-                </div>
-                <p className="text-sm leading-relaxed">{rec.text}</p>
+                View full breakdown →
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Non-retirement goal cards */}
+        {nonRetirementGoals.map((goal) => (
+          <div key={goal.id} className="border border-gray-100 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">🎯</span>
+                <span className="text-sm font-semibold text-gray-800">{goal.label}</span>
+                {goal.target_year && (
+                  <span className="text-xs text-gray-400">· {goal.target_year}</span>
+                )}
               </div>
-            ))}
+              {goal.linked_account_ids.length > 0 && (
+                <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                  {goal.linked_account_ids.length} account{goal.linked_account_ids.length !== 1 ? "s" : ""} linked
+                </span>
+              )}
+            </div>
+            <div className="px-4 py-4 bg-white">
+              {goal.target_amount_usd ? (
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>Target: {fmt(goal.target_amount_usd)}</span>
+                  {goal.target_year && <span>By {goal.target_year}</span>}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400">
+                  {goal.linked_account_ids.length > 0
+                    ? "Accounts are allocated to this goal. Set a target amount in Settings to track progress."
+                    : "No accounts linked yet. You can update goal allocations in Settings."}
+                </p>
+              )}
+              <Link href="/settings" className="text-xs text-brand-600 hover:underline font-medium mt-2 inline-block">
+                Update goal →
+              </Link>
+            </div>
           </div>
         ))}
+
+        {/* Unallocated funds bucket — only shown when there are genuinely unallocated funds */}
+        {showUnallocated && (
+          <div className="border border-dashed border-gray-200 rounded-xl px-4 py-4">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">🪣</span>
+                <span className="text-sm font-semibold text-gray-700">Unallocated</span>
+              </div>
+              <span className="text-sm font-bold text-gray-900">
+                {fmt(hasAnyGoals ? unallocatedAmount : metrics.netWorthUsd)}
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              {hasRetirementGoal
+                ? "Available to allocate across other goals. You can assign funds to additional goals any time."
+                : "All your current assets. Add goals to see how your money is working toward them."}
+            </p>
+          </div>
+        )}
+
+        {/* Enhance your plan nudge — shown when no retirement goal */}
+        {!hasRetirementGoal && (
+          <div className="bg-brand-50 border border-brand-100 rounded-xl px-4 py-4">
+            <p className="text-xs font-semibold text-brand-700 mb-1">Unlock more from your plan</p>
+            <p className="text-sm text-brand-900 mb-3 leading-relaxed">
+              Add a retirement goal to see if you&apos;re on track, get a projected timeline, and uncover optimisation opportunities.
+            </p>
+            <Link
+              href="/settings"
+              className="inline-block text-xs font-semibold text-brand-700 border border-brand-300 rounded-lg px-3 py-1.5 hover:bg-brand-100 transition"
+            >
+              Set a retirement goal →
+            </Link>
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-gray-400 border-t border-gray-100 pt-4 leading-relaxed">
