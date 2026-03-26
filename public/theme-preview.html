@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="swiss-alps">
+<html lang="en" data-theme="swiss-seclusion">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,9 +11,9 @@
 
   <style>
     /* ── Theme tokens ──────────────────────────────────────────────────────── */
-    [data-theme="swiss-alps"] {
+    [data-theme="swiss-seclusion"] {
       --bg:       #F1F5F9;
-      --surface:  #FFFFFF;
+      --surface:  rgba(255,255,255,0.82);
       --primary:  #1E293B;
       --accent:   #38BDF8;
       --border:   #CBD5E1;
@@ -62,15 +62,6 @@
     }
     h1, h2, h3, h4 { font-family: var(--font-h); }
 
-    /* ── Generative background canvas ─────────────────────────────────────── */
-    #bg-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
     .page { position: relative; z-index: 1; }
 
     /* ── Dev toolbar ───────────────────────────────────────────────────────── */
@@ -214,14 +205,27 @@
     .chat-input input { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; font-family: var(--font-b); background: var(--surface); color: var(--text); outline: none; }
     .chat-input button { background: var(--primary); color: white; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-family: var(--font-b); cursor: pointer; font-weight: 600; }
 
+    /* ── Swiss Seclusion: glassmorphic surfaces ────────────────────────────── */
+    [data-theme="swiss-seclusion"] .card,
+    [data-theme="swiss-seclusion"] .header,
+    [data-theme="swiss-seclusion"] .control-bar {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    [data-theme="swiss-seclusion"] .metric-card {
+      background: rgba(248,250,252,0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
     /* ── Entry animations ──────────────────────────────────────────────────── */
 
-    /* Swiss Alps: crisp, precise slide-up */
-    [data-theme="swiss-alps"] .animate {
-      animation: swiss-enter 0.28s cubic-bezier(0.0, 0.0, 0.2, 1) both;
+    /* Swiss Seclusion: crisp, precise slide-up */
+    [data-theme="swiss-seclusion"] .animate {
+      animation: seclusion-enter 0.32s cubic-bezier(0.0, 0.0, 0.2, 1) both;
     }
-    @keyframes swiss-enter {
-      from { opacity: 0; transform: translateY(14px); }
+    @keyframes seclusion-enter {
+      from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
@@ -246,17 +250,442 @@
 </head>
 <body>
 
-<canvas id="bg-canvas"></canvas>
+<!-- Swiss Seclusion background illustrations -->
+<div id="bg-illus" style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:none;">
+
+  <!-- illus-alps: Alpine Panorama -->
+  <svg id="illus-alps" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:none;" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="sky-alps" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#B8D4E8"/>
+        <stop offset="100%" stop-color="#E8F4F8"/>
+      </linearGradient>
+      <linearGradient id="snow-g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="100%" stop-color="#D4E8F0"/>
+      </linearGradient>
+    </defs>
+    <!-- Sky -->
+    <rect width="1440" height="900" fill="url(#sky-alps)"/>
+    <!-- Far mountains -->
+    <polygon points="0,520 180,280 360,420 540,260 720,380 900,240 1080,360 1260,280 1440,400 1440,900 0,900" fill="#8AADC0" opacity="0.5"/>
+    <!-- Mid mountains with snow -->
+    <polygon points="0,600 200,340 400,480 600,300 800,440 1000,310 1200,420 1440,350 1440,900 0,900" fill="#6B94AF"/>
+    <polygon points="200,340 240,380 260,355 280,390 320,360 360,400 400,480 200,340" fill="url(#snow-g)" opacity="0.9"/>
+    <polygon points="600,300 640,345 670,320 700,350 740,330 770,360 800,440 600,300" fill="url(#snow-g)" opacity="0.9"/>
+    <polygon points="1000,310 1040,360 1070,330 1100,365 1130,340 1150,370 1200,420 1000,310" fill="url(#snow-g)" opacity="0.9"/>
+    <!-- Foreground hills -->
+    <ellipse cx="200" cy="820" rx="420" ry="180" fill="#2D5016" opacity="0.8"/>
+    <ellipse cx="1240" cy="840" rx="380" ry="160" fill="#2D5016" opacity="0.8"/>
+    <rect x="0" y="780" width="1440" height="120" fill="#1E3A0A"/>
+    <!-- Pine trees left -->
+    <g fill="#1A3008">
+      <polygon points="80,720 95,680 110,720"/><rect x="93" y="720" width="4" height="18"/>
+      <polygon points="120,730 137,685 154,730"/><rect x="135" y="730" width="4" height="20"/>
+      <polygon points="160,715 178,665 196,715"/><rect x="176" y="715" width="4" height="22"/>
+      <polygon points="200,725 216,678 232,725"/><rect x="214" y="725" width="4" height="20"/>
+      <polygon points="240,710 258,660 276,710"/><rect x="256" y="710" width="4" height="22"/>
+    </g>
+    <!-- Pine trees right -->
+    <g fill="#1A3008">
+      <polygon points="1200,720 1215,680 1230,720"/><rect x="1213" y="720" width="4" height="18"/>
+      <polygon points="1240,730 1257,685 1274,730"/><rect x="1255" y="730" width="4" height="20"/>
+      <polygon points="1280,710 1298,660 1316,710"/><rect x="1296" y="710" width="4" height="22"/>
+      <polygon points="1320,722 1336,675 1352,722"/><rect x="1334" y="722" width="4" height="20"/>
+    </g>
+    <!-- Chalet -->
+    <g transform="translate(660,620)">
+      <rect x="0" y="60" width="120" height="80" fill="#8B6914" rx="2"/>
+      <polygon points="-15,60 60,10 135,60" fill="#5C3D11"/>
+      <rect x="20" y="80" width="30" height="40" fill="#4A3000" rx="1"/>
+      <rect x="70" y="80" width="25" height="25" fill="#87CEEB" rx="1"/>
+      <rect x="70" y="80" width="25" height="1" fill="#5C3D11"/>
+      <rect x="82" y="80" width="1" height="25" fill="#5C3D11"/>
+      <!-- Lit windows glow -->
+      <rect x="70" y="80" width="25" height="25" fill="#FFE066" rx="1" opacity="0.5"/>
+      <rect x="20" y="80" width="30" height="40" fill="#FFE066" rx="1" opacity="0.3"/>
+    </g>
+  </svg>
+
+  <!-- illus-watchmaker: The Watchmaker -->
+  <svg id="illus-watchmaker" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:none;" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="spotlight" cx="50%" cy="40%" r="40%">
+        <stop offset="0%" stop-color="#FFF8DC" stop-opacity="0.9"/>
+        <stop offset="60%" stop-color="#E8D5A3" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#1A1208" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- Dark workshop -->
+    <rect width="1440" height="900" fill="#1A1208"/>
+    <rect width="1440" height="900" fill="url(#spotlight)"/>
+    <!-- Workbench -->
+    <rect x="300" y="520" width="840" height="20" fill="#5C3D11" rx="2"/>
+    <rect x="310" y="540" width="820" height="200" fill="#4A3000"/>
+    <!-- Watch movement (gears) -->
+    <g transform="translate(720,420)" opacity="0.85">
+      <!-- Main plate -->
+      <circle cx="0" cy="0" r="120" fill="none" stroke="#C8A84B" stroke-width="2.5"/>
+      <circle cx="0" cy="0" r="115" fill="#1C1404" stroke="#8B6914" stroke-width="1"/>
+      <!-- Gears -->
+      <circle cx="0" cy="0" r="40" fill="none" stroke="#C8A84B" stroke-width="2"/>
+      <circle cx="0" cy="0" r="35" fill="#2A1C06" stroke="#8B6914" stroke-width="1"/>
+      <!-- Gear teeth (main) -->
+      <g stroke="#C8A84B" stroke-width="3">
+        <line x1="40" y1="0" x2="48" y2="0"/><line x1="-40" y1="0" x2="-48" y2="0"/>
+        <line x1="0" y1="40" x2="0" y2="48"/><line x1="0" y1="-40" x2="0" y2="-48"/>
+        <line x1="28" y1="28" x2="34" y2="34"/><line x1="-28" y1="28" x2="-34" y2="34"/>
+        <line x1="28" y1="-28" x2="34" y2="-34"/><line x1="-28" y1="-28" x2="-34" y2="-34"/>
+      </g>
+      <!-- Sub-gear left -->
+      <circle cx="-65" cy="30" r="22" fill="none" stroke="#C8A84B" stroke-width="1.5"/>
+      <circle cx="-65" cy="30" r="18" fill="#1C1404" stroke="#8B6914" stroke-width="1"/>
+      <g stroke="#C8A84B" stroke-width="2">
+        <line x1="-87" y1="30" x2="-92" y2="30"/><line x1="-43" y1="30" x2="-38" y2="30"/>
+        <line x1="-65" y1="8" x2="-65" y2="3"/><line x1="-65" y1="52" x2="-65" y2="57"/>
+      </g>
+      <!-- Sub-gear right -->
+      <circle cx="70" cy="-35" r="18" fill="none" stroke="#C8A84B" stroke-width="1.5"/>
+      <circle cx="70" cy="-35" r="14" fill="#1C1404" stroke="#8B6914" stroke-width="1"/>
+      <!-- Balance wheel -->
+      <circle cx="55" cy="65" r="28" fill="none" stroke="#B8963C" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <circle cx="55" cy="65" r="4" fill="#C8A84B"/>
+      <!-- Hands -->
+      <line x1="0" y1="0" x2="0" y2="-28" stroke="#E8D080" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="20" y2="0" stroke="#E8D080" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+    <!-- Hunched watchmaker figure -->
+    <g transform="translate(680,360)">
+      <!-- Body / coat -->
+      <ellipse cx="40" cy="120" rx="35" ry="45" fill="#2C2010"/>
+      <!-- Head -->
+      <circle cx="40" cy="70" r="28" fill="#C8A878"/>
+      <!-- Hair -->
+      <ellipse cx="40" cy="48" rx="28" ry="14" fill="#8B7355"/>
+      <!-- Loupe / eyeglass -->
+      <circle cx="52" cy="72" r="12" fill="none" stroke="#888" stroke-width="2"/>
+      <line x1="64" y1="65" x2="70" y2="60" stroke="#888" stroke-width="1.5"/>
+      <!-- Arms hunched over -->
+      <path d="M18,110 Q5,130 20,155" stroke="#2C2010" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <path d="M62,110 Q75,130 55,155" stroke="#2C2010" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <!-- Hands -->
+      <ellipse cx="18" cy="155" rx="8" ry="6" fill="#C8A878"/>
+      <ellipse cx="56" cy="155" rx="8" ry="6" fill="#C8A878"/>
+      <!-- Tweezers in right hand -->
+      <line x1="60" y1="155" x2="75" y2="175" stroke="#AAA" stroke-width="1.5"/>
+      <line x1="62" y1="155" x2="78" y2="175" stroke="#AAA" stroke-width="1.5"/>
+    </g>
+    <!-- Workshop tools on bench -->
+    <g fill="#8B6914" opacity="0.6">
+      <rect x="400" y="510" width="60" height="8" rx="2"/>
+      <rect x="480" y="505" width="8" height="12" rx="1"/>
+      <rect x="960" y="508" width="50" height="6" rx="1"/>
+    </g>
+    <!-- Wood grain lines on bench -->
+    <g stroke="#3A2800" stroke-width="1" opacity="0.4">
+      <line x1="310" y1="560" x2="1130" y2="560"/>
+      <line x1="310" y1="590" x2="1130" y2="590"/>
+      <line x1="310" y1="620" x2="1130" y2="620"/>
+    </g>
+  </svg>
+
+  <!-- illus-jet-deau: Jet d'Eau, Geneva -->
+  <svg id="illus-jet-deau" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:none;" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="sky-jd" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#C5D8EC"/>
+        <stop offset="100%" stop-color="#E8F2F8"/>
+      </linearGradient>
+      <linearGradient id="lake-jd" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#7AACCA"/>
+        <stop offset="100%" stop-color="#4A8BAA"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#sky-jd)"/>
+    <!-- Alps in background -->
+    <polygon points="0,380 200,260 350,320 500,230 700,310 900,250 1100,320 1300,270 1440,310 1440,500 0,500" fill="#9BB8CC" opacity="0.6"/>
+    <!-- Lake -->
+    <rect x="0" y="600" width="1440" height="300" fill="url(#lake-jd)"/>
+    <!-- Lake shimmer -->
+    <g stroke="#A0C8E0" stroke-width="1" opacity="0.4">
+      <line x1="100" y1="640" x2="300" y2="640"/><line x1="400" y1="660" x2="650" y2="660"/>
+      <line x1="800" y1="645" x2="1000" y2="645"/><line x1="1100" y1="655" x2="1350" y2="655"/>
+    </g>
+    <!-- Pont du Mont-Blanc (bridge) -->
+    <rect x="380" y="590" width="680" height="12" fill="#8899AA" rx="2"/>
+    <g fill="#8899AA">
+      <rect x="400" y="550" width="8" height="42"/><rect x="450" y="555" width="8" height="37"/>
+      <rect x="500" y="552" width="8" height="40"/><rect x="560" y="550" width="8" height="42"/>
+      <rect x="620" y="553" width="8" height="39"/><rect x="680" y="550" width="8" height="42"/>
+      <rect x="740" y="553" width="8" height="39"/><rect x="800" y="550" width="8" height="42"/>
+      <rect x="850" y="555" width="8" height="37"/><rect x="900" y="552" width="8" height="40"/>
+      <rect x="940" y="550" width="8" height="42"/>
+    </g>
+    <!-- Lakeside promenade -->
+    <rect x="0" y="590" width="380" height="12" fill="#B0BEC5"/>
+    <rect x="1060" y="590" width="380" height="12" fill="#B0BEC5"/>
+    <!-- Trees on promenade -->
+    <g>
+      <rect x="60" y="530" width="6" height="62" fill="#5C4A3A"/>
+      <ellipse cx="63" cy="520" rx="22" ry="28" fill="#2D5016"/>
+      <rect x="140" y="535" width="6" height="57" fill="#5C4A3A"/>
+      <ellipse cx="143" cy="525" rx="20" ry="26" fill="#2D5016"/>
+      <rect x="220" y="532" width="6" height="60" fill="#5C4A3A"/>
+      <ellipse cx="223" cy="522" rx="21" ry="27" fill="#2D5016"/>
+      <rect x="300" y="535" width="6" height="57" fill="#5C4A3A"/>
+      <ellipse cx="303" cy="525" rx="20" ry="26" fill="#2D5016"/>
+    </g>
+    <!-- Jet d'Eau fountain -->
+    <g transform="translate(760,0)">
+      <!-- Base platform in lake -->
+      <rect x="-20" y="582" width="40" height="18" fill="#7A8899" rx="3"/>
+      <!-- Water column -->
+      <ellipse cx="0" cy="570" rx="6" ry="12" fill="rgba(255,255,255,0.7)"/>
+      <path d="M-5,570 Q-8,400 -2,100 Q0,50 2,100 Q8,400 5,570Z" fill="rgba(255,255,255,0.75)"/>
+      <!-- Spray top -->
+      <ellipse cx="0" cy="95" rx="18" ry="12" fill="rgba(255,255,255,0.5)"/>
+      <ellipse cx="0" cy="85" rx="10" ry="8" fill="rgba(255,255,255,0.65)"/>
+      <!-- Mist droplets -->
+      <circle cx="-15" cy="120" r="3" fill="rgba(255,255,255,0.4)"/>
+      <circle cx="18" cy="130" r="2" fill="rgba(255,255,255,0.4)"/>
+      <circle cx="-22" cy="160" r="2" fill="rgba(255,255,255,0.3)"/>
+      <circle cx="25" cy="155" r="3" fill="rgba(255,255,255,0.3)"/>
+      <!-- Fountain reflection -->
+      <path d="M-5,598 Q0,650 5,598" fill="rgba(255,255,255,0.3)"/>
+    </g>
+    <!-- Buildings on far shore -->
+    <g fill="#8A9BAA" opacity="0.6">
+      <rect x="1100" y="500" width="60" height="90"/><rect x="1170" y="520" width="50" height="70"/>
+      <rect x="1230" y="510" width="70" height="80"/><rect x="1310" y="530" width="50" height="60"/>
+    </g>
+  </svg>
+
+  <!-- illus-beau-rivage: Beau Rivage, Lausanne -->
+  <svg id="illus-beau-rivage" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:none;" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="sky-br" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#C8D8E8"/>
+        <stop offset="100%" stop-color="#E8F0F8"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#sky-br)"/>
+    <!-- Lake -->
+    <rect x="0" y="780" width="1440" height="120" fill="#7AACCA"/>
+    <!-- Hotel facade (centered, full-width Belle Époque) -->
+    <g transform="translate(120,200)">
+      <!-- Main facade -->
+      <rect x="0" y="0" width="1200" height="540" fill="#F0EAD8"/>
+      <!-- Roof mansard -->
+      <rect x="-20" y="-60" width="1240" height="75" fill="#C8B89A"/>
+      <polygon points="-20,-60 0,0 1200,0 1220,-60" fill="#B8A88A"/>
+      <!-- Roof dormers -->
+      <g fill="#F0EAD8" stroke="#C8B89A" stroke-width="2">
+        <rect x="50" y="-52" width="55" height="45" rx="2"/>
+        <path d="M45,-52 Q77,-75 110,-52" fill="#C8B89A" stroke="none"/>
+        <rect x="200" y="-52" width="55" height="45" rx="2"/>
+        <path d="M195,-52 Q227,-75 260,-52" fill="#C8B89A" stroke="none"/>
+        <rect x="350" y="-52" width="55" height="45" rx="2"/>
+        <path d="M345,-52 Q377,-75 410,-52" fill="#C8B89A" stroke="none"/>
+        <rect x="500" y="-52" width="55" height="45" rx="2"/>
+        <path d="M495,-52 Q527,-75 560,-52" fill="#C8B89A" stroke="none"/>
+        <rect x="650" y="-52" width="55" height="45" rx="2"/>
+        <path d="M645,-52 Q677,-75 710,-52" fill="#C8B89A" stroke="none"/>
+        <rect x="800" y="-52" width="55" height="45" rx="2"/>
+        <path d="M795,-52 Q827,-75 860,-52" fill="#C8B89A" stroke="none"/>
+        <rect x="950" y="-52" width="55" height="45" rx="2"/>
+        <path d="M945,-52 Q977,-75 1010,-52" fill="#C8B89A" stroke="none"/>
+        <rect x="1095" y="-52" width="55" height="45" rx="2"/>
+        <path d="M1090,-52 Q1122,-75 1155,-52" fill="#C8B89A" stroke="none"/>
+      </g>
+      <!-- Floor separators / cornices -->
+      <rect x="0" y="170" width="1200" height="8" fill="#C8B89A"/>
+      <rect x="0" y="340" width="1200" height="8" fill="#C8B89A"/>
+      <!-- Arched windows row 1 -->
+      <g fill="#B8D4E8" stroke="#A09070" stroke-width="1.5">
+        <rect x="40" y="30" width="55" height="120" rx="28"/><rect x="130" y="30" width="55" height="120" rx="28"/>
+        <rect x="220" y="30" width="55" height="120" rx="28"/><rect x="310" y="30" width="55" height="120" rx="28"/>
+        <rect x="400" y="30" width="55" height="120" rx="28"/><rect x="490" y="30" width="55" height="120" rx="28"/>
+        <rect x="580" y="30" width="55" height="120" rx="28"/><rect x="670" y="30" width="55" height="120" rx="28"/>
+        <rect x="760" y="30" width="55" height="120" rx="28"/><rect x="850" y="30" width="55" height="120" rx="28"/>
+        <rect x="940" y="30" width="55" height="120" rx="28"/><rect x="1030" y="30" width="55" height="120" rx="28"/>
+        <rect x="1120" y="30" width="55" height="120" rx="28"/>
+      </g>
+      <!-- Windows row 2 -->
+      <g fill="#B8D4E8" stroke="#A09070" stroke-width="1.5">
+        <rect x="40" y="200" width="55" height="110" rx="4"/><rect x="130" y="200" width="55" height="110" rx="4"/>
+        <rect x="220" y="200" width="55" height="110" rx="4"/><rect x="310" y="200" width="55" height="110" rx="4"/>
+        <rect x="400" y="200" width="55" height="110" rx="4"/><rect x="490" y="200" width="55" height="110" rx="4"/>
+        <rect x="580" y="200" width="55" height="110" rx="4"/><rect x="670" y="200" width="55" height="110" rx="4"/>
+        <rect x="760" y="200" width="55" height="110" rx="4"/><rect x="850" y="200" width="55" height="110" rx="4"/>
+        <rect x="940" y="200" width="55" height="110" rx="4"/><rect x="1030" y="200" width="55" height="110" rx="4"/>
+        <rect x="1120" y="200" width="55" height="110" rx="4"/>
+      </g>
+      <!-- Main entrance / grand door -->
+      <rect x="540" y="370" width="120" height="170" rx="4" fill="#8B6914"/>
+      <rect x="540" y="370" width="120" height="80" rx="40" fill="#8B6914"/>
+      <rect x="555" y="385" width="45" height="65" fill="#C8A84B" opacity="0.5"/>
+      <rect x="605" y="385" width="45" height="65" fill="#C8A84B" opacity="0.5"/>
+      <!-- Flags -->
+      <line x1="100" y1="-60" x2="100" y2="-140" stroke="#888" stroke-width="3"/>
+      <rect x="100" y="-140" width="50" height="30" fill="#FF0000" opacity="0.8"/>
+      <line x1="1100" y1="-60" x2="1100" y2="-140" stroke="#888" stroke-width="3"/>
+      <rect x="1100" y="-140" width="50" height="30" fill="#FF0000" opacity="0.8"/>
+      <line x1="600" y1="-60" x2="600" y2="-130" stroke="#888" stroke-width="2"/>
+      <rect x="600" y="-130" width="45" height="28" fill="#003087" opacity="0.8"/>
+    </g>
+    <!-- Promenade / terrace -->
+    <rect x="0" y="740" width="1440" height="45" fill="#D4C9B0"/>
+    <!-- Lamp posts -->
+    <g fill="#555">
+      <rect x="200" y="680" width="5" height="62"/><circle cx="202" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
+      <rect x="500" y="680" width="5" height="62"/><circle cx="502" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
+      <rect x="800" y="680" width="5" height="62"/><circle cx="802" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
+      <rect x="1100" y="680" width="5" height="62"/><circle cx="1102" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
+      <rect x="1300" y="680" width="5" height="62"/><circle cx="1302" cy="678" r="8" fill="#FFE088" opacity="0.8"/>
+    </g>
+  </svg>
+
+  <!-- illus-bank: Private Banking, Geneva -->
+  <svg id="illus-bank" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:none;" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="hall-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2C2416"/>
+        <stop offset="100%" stop-color="#1A150C"/>
+      </linearGradient>
+      <radialGradient id="chandelier-glow" cx="30%" cy="15%" r="30%">
+        <stop offset="0%" stop-color="#FFF0A0" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#FFF0A0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="chandelier-glow2" cx="70%" cy="12%" r="28%">
+        <stop offset="0%" stop-color="#FFF0A0" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#FFF0A0" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- Hall background -->
+    <rect width="1440" height="900" fill="url(#hall-grad)"/>
+    <rect width="1440" height="900" fill="url(#chandelier-glow)"/>
+    <rect width="1440" height="900" fill="url(#chandelier-glow2)"/>
+    <!-- Coffered ceiling -->
+    <g stroke="#4A3820" stroke-width="2" fill="none" opacity="0.7">
+      <rect x="60" y="30" width="200" height="120" rx="4"/><rect x="80" y="50" width="160" height="80" rx="2"/>
+      <rect x="280" y="30" width="200" height="120" rx="4"/><rect x="300" y="50" width="160" height="80" rx="2"/>
+      <rect x="500" y="30" width="200" height="120" rx="4"/><rect x="520" y="50" width="160" height="80" rx="2"/>
+      <rect x="720" y="30" width="200" height="120" rx="4"/><rect x="740" y="50" width="160" height="80" rx="2"/>
+      <rect x="940" y="30" width="200" height="120" rx="4"/><rect x="960" y="50" width="160" height="80" rx="2"/>
+      <rect x="1160" y="30" width="220" height="120" rx="4"/><rect x="1180" y="50" width="180" height="80" rx="2"/>
+    </g>
+    <!-- Second row coffers -->
+    <g stroke="#4A3820" stroke-width="1.5" fill="none" opacity="0.5">
+      <rect x="60" y="165" width="200" height="100" rx="4"/><rect x="280" y="165" width="200" height="100" rx="4"/>
+      <rect x="500" y="165" width="200" height="100" rx="4"/><rect x="720" y="165" width="200" height="100" rx="4"/>
+      <rect x="940" y="165" width="200" height="100" rx="4"/><rect x="1160" y="165" width="220" height="100" rx="4"/>
+    </g>
+    <!-- Chandeliers -->
+    <g>
+      <!-- Left chandelier -->
+      <line x1="380" y1="0" x2="380" y2="80" stroke="#C8A84B" stroke-width="2"/>
+      <ellipse cx="380" cy="90" rx="50" ry="12" fill="none" stroke="#C8A84B" stroke-width="2"/>
+      <g fill="#FFE080" opacity="0.9">
+        <circle cx="340" cy="100" r="5"/><circle cx="360" cy="98" r="5"/><circle cx="380" cy="96" r="6"/>
+        <circle cx="400" cy="98" r="5"/><circle cx="420" cy="100" r="5"/>
+      </g>
+      <!-- Hanging drops -->
+      <g stroke="#C8A84B" stroke-width="1">
+        <line x1="350" y1="100" x2="350" y2="120"/><line x1="370" y1="98" x2="370" y2="118"/>
+        <line x1="390" y1="96" x2="390" y2="116"/><line x1="410" y1="98" x2="410" y2="118"/>
+      </g>
+      <!-- Right chandelier -->
+      <line x1="1060" y1="0" x2="1060" y2="80" stroke="#C8A84B" stroke-width="2"/>
+      <ellipse cx="1060" cy="90" rx="50" ry="12" fill="none" stroke="#C8A84B" stroke-width="2"/>
+      <g fill="#FFE080" opacity="0.9">
+        <circle cx="1020" cy="100" r="5"/><circle cx="1040" cy="98" r="5"/><circle cx="1060" cy="96" r="6"/>
+        <circle cx="1080" cy="98" r="5"/><circle cx="1100" cy="100" r="5"/>
+      </g>
+      <g stroke="#C8A84B" stroke-width="1">
+        <line x1="1030" y1="100" x2="1030" y2="120"/><line x1="1050" y1="98" x2="1050" y2="118"/>
+        <line x1="1070" y1="96" x2="1070" y2="116"/><line x1="1090" y1="98" x2="1090" y2="118"/>
+      </g>
+    </g>
+    <!-- Columns -->
+    <g fill="#3A2C1C" stroke="#5A4A2C" stroke-width="1">
+      <rect x="120" y="280" width="50" height="620"/><rect x="108" y="278" width="74" height="16" rx="2"/>
+      <rect x="108" y="896" width="74" height="8" rx="2"/>
+      <rect x="340" y="280" width="50" height="620"/><rect x="328" y="278" width="74" height="16" rx="2"/>
+      <rect x="328" y="896" width="74" height="8" rx="2"/>
+      <rect x="1050" y="280" width="50" height="620"/><rect x="1038" y="278" width="74" height="16" rx="2"/>
+      <rect x="1038" y="896" width="74" height="8" rx="2"/>
+      <rect x="1270" y="280" width="50" height="620"/><rect x="1258" y="278" width="74" height="16" rx="2"/>
+      <rect x="1258" y="896" width="74" height="8" rx="2"/>
+    </g>
+    <!-- Marble floor (perspective lines) -->
+    <g stroke="#4A3A28" stroke-width="1" opacity="0.4">
+      <line x1="0" y1="900" x2="720" y2="500"/><line x1="240" y1="900" x2="720" y2="500"/>
+      <line x1="480" y1="900" x2="720" y2="500"/><line x1="720" y1="900" x2="720" y2="500"/>
+      <line x1="960" y1="900" x2="720" y2="500"/><line x1="1200" y1="900" x2="720" y2="500"/>
+      <line x1="1440" y1="900" x2="720" y2="500"/>
+      <line x1="0" y1="700" x2="1440" y2="700"/><line x1="0" y1="800" x2="1440" y2="800"/>
+    </g>
+    <!-- Teller counter in back -->
+    <rect x="530" y="480" width="380" height="80" fill="#3A2C1C" rx="4"/>
+    <rect x="530" y="476" width="380" height="12" fill="#5A4830" rx="2"/>
+    <!-- Teller window grilles -->
+    <g stroke="#C8A84B" stroke-width="1.5" fill="none" opacity="0.7">
+      <rect x="555" y="420" width="80" height="55" rx="2"/>
+      <line x1="575" y1="420" x2="575" y2="475"/><line x1="595" y1="420" x2="595" y2="475"/>
+      <line x1="615" y1="420" x2="615" y2="475"/>
+      <rect x="700" y="420" width="80" height="55" rx="2"/>
+      <line x1="720" y1="420" x2="720" y2="475"/><line x1="740" y1="420" x2="740" y2="475"/>
+      <line x1="760" y1="420" x2="760" y2="475"/>
+      <rect x="845" y="420" width="80" height="55" rx="2"/>
+      <line x1="865" y1="420" x2="865" y2="475"/><line x1="885" y1="420" x2="885" y2="475"/>
+      <line x1="905" y1="420" x2="905" y2="475"/>
+    </g>
+    <!-- Foreground: round table with 2 figures -->
+    <g transform="translate(720,680)">
+      <!-- Table -->
+      <ellipse cx="0" cy="0" rx="90" ry="45" fill="#4A3820" stroke="#6A5030" stroke-width="2"/>
+      <rect x="-8" y="0" width="16" height="50" fill="#3A2810"/>
+      <!-- Coffee cups -->
+      <ellipse cx="-30" cy="-8" rx="12" ry="8" fill="#C8A84B" opacity="0.8"/>
+      <ellipse cx="30" cy="-8" rx="12" ry="8" fill="#C8A84B" opacity="0.8"/>
+      <!-- Client (left, bespectacled, nice suit) -->
+      <g transform="translate(-160,-20)">
+        <circle cx="0" cy="-55" r="24" fill="#C8A878"/>
+        <rect x="-22" y="-32" width="44" height="60" fill="#1C2840" rx="4"/>
+        <!-- Glasses -->
+        <ellipse cx="-6" cy="-58" rx="8" ry="6" fill="none" stroke="#444" stroke-width="1.5"/>
+        <ellipse cx="8" cy="-58" rx="8" ry="6" fill="none" stroke="#444" stroke-width="1.5"/>
+        <line x1="-14" y1="-58" x2="-22" y2="-56" stroke="#444" stroke-width="1.5"/>
+        <line x1="16" y1="-58" x2="24" y2="-56" stroke="#444" stroke-width="1.5"/>
+        <!-- Tie -->
+        <polygon points="0,-28 -5,-5 0,5 5,-5" fill="#8B0000"/>
+        <!-- Arm reaching for cup -->
+        <path d="M20,-10 Q50,0 55,5" stroke="#1C2840" stroke-width="10" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- Bank manager (right) -->
+      <g transform="translate(160,-20)">
+        <circle cx="0" cy="-55" r="24" fill="#D4B896"/>
+        <rect x="-22" y="-32" width="44" height="60" fill="#2C2416" rx="4"/>
+        <!-- Tie/pocket square -->
+        <polygon points="0,-28 -4,-5 0,3 4,-5" fill="#C8A84B"/>
+        <!-- Arm gesturing -->
+        <path d="M-20,-15 Q-50,-25 -55,-30" stroke="#2C2416" stroke-width="10" fill="none" stroke-linecap="round"/>
+      </g>
+    </g>
+  </svg>
+
+</div>
 
 <!-- Dev toolbar -->
 <div class="switcher">
   <span class="group-label">Theme</span>
-  <button class="active" onclick="setTheme('swiss-alps', this)">❄️ Swiss Alps</button>
+  <button class="active" onclick="setTheme('swiss-seclusion', this)">❄️ Swiss Seclusion</button>
   <button onclick="setTheme('gaudy-miami', this)">🌴 Gaudy Miami</button>
   <button onclick="setTheme('positano', this)">🇮🇹 Positano</button>
   <div class="divider"></div>
   <button class="action" onclick="newVisit()">↻ New visit</button>
   <button class="action" onclick="replayAnimations()">▶ Replay animations</button>
+  <span class="seed-display" id="illus-display"></span>
   <span class="seed-display" id="seed-display"></span>
 </div>
 
@@ -416,16 +845,6 @@
 </div>
 
 <script>
-// ── Seeded PRNG (Mulberry32) ──────────────────────────────────────────────────
-function mulberry32(seed) {
-  return function() {
-    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
 // ── Session seed management ───────────────────────────────────────────────────
 function getSeed() {
   let seed = sessionStorage.getItem('pw_bg_seed');
@@ -439,125 +858,60 @@ function getSeed() {
 function newVisit() {
   const seed = Math.floor(Math.random() * 99999999);
   sessionStorage.setItem('pw_bg_seed', seed);
-  renderBackground();
+  showBackground();
   replayAnimations();
 }
 
-// ── Background renderers ──────────────────────────────────────────────────────
+// ── Illustration library ──────────────────────────────────────────────────────
+const ILLUSTRATIONS = [
+  { id: 'illus-alps',        name: 'Alpine Panorama' },
+  { id: 'illus-watchmaker',  name: 'The Watchmaker' },
+  { id: 'illus-jet-deau',    name: "Jet d'Eau, Geneva" },
+  { id: 'illus-beau-rivage', name: 'Beau Rivage, Lausanne' },
+  { id: 'illus-bank',        name: 'Private Banking, Geneva' },
+];
 
-function renderSwissAlps(canvas, rand) {
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
-
-  // Base fill
-  ctx.fillStyle = '#F1F5F9';
-  ctx.fillRect(0, 0, W, H);
-
-  // Mesh gradient layer — soft cool blobs
-  const meshColors = [
-    [186, 230, 253],  // sky-200
-    [224, 242, 254],  // sky-100
-    [148, 163, 184],  // slate-400
-    [226, 232, 240],  // slate-200
-    [56,  189, 248],  // sky-400 (accent, used sparingly)
-    [203, 213, 225],  // slate-300
-  ];
-
-  const blobCount = 7 + Math.floor(rand() * 4);
-  for (let i = 0; i < blobCount; i++) {
-    const x = rand() * W;
-    const y = rand() * H;
-    const r = (0.22 + rand() * 0.32) * Math.max(W, H);
-    const col = meshColors[Math.floor(rand() * meshColors.length)];
-    const alpha = 0.35 + rand() * 0.35;
-    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-    grad.addColorStop(0, `rgba(${col[0]},${col[1]},${col[2]},${alpha.toFixed(2)})`);
-    grad.addColorStop(1, `rgba(${col[0]},${col[1]},${col[2]},0)`);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  // Crystal facet layer — jittered grid triangulation
-  const COLS = 14, ROWS = 9;
-  const dx = W / COLS, dy = H / ROWS;
-
-  // Build jittered point grid
-  const pts = [];
-  for (let r = 0; r <= ROWS; r++) {
-    for (let c = 0; c <= COLS; c++) {
-      const edge = (r === 0 || r === ROWS || c === 0 || c === COLS);
-      const jx = edge ? 0 : (rand() - 0.5) * dx * 0.55;
-      const jy = edge ? 0 : (rand() - 0.5) * dy * 0.55;
-      pts.push([
-        Math.max(0, Math.min(W, c * dx + jx)),
-        Math.max(0, Math.min(H, r * dy + jy))
-      ]);
-    }
-  }
-
-  const idx = (c, r) => r * (COLS + 1) + c;
-
-  // Draw triangles
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const tl = pts[idx(c, r)];
-      const tr = pts[idx(c + 1, r)];
-      const bl = pts[idx(c, r + 1)];
-      const br = pts[idx(c + 1, r + 1)];
-
-      // Alternate the diagonal cut so it doesn't feel like a regular grid
-      const flip = rand() > 0.5;
-      const triangles = flip
-        ? [[tl, tr, bl], [tr, br, bl]]
-        : [[tl, tr, br], [tl, br, bl]];
-
-      for (const [p1, p2, p3] of triangles) {
-        // Face lightness based on average Y (higher = lighter, as if lit from above)
-        const avgY = (p1[1] + p2[1] + p3[1]) / 3;
-        const lightFactor = 1 - (avgY / H) * 0.4; // 1.0 at top → 0.6 at bottom
-        const baseAlpha = 0.15 + rand() * 0.25;
-        const faceAlpha = (baseAlpha * lightFactor).toFixed(3);
-
-        ctx.beginPath();
-        ctx.moveTo(p1[0], p1[1]);
-        ctx.lineTo(p2[0], p2[1]);
-        ctx.lineTo(p3[0], p3[1]);
-        ctx.closePath();
-        ctx.fillStyle = `rgba(148,163,184,${faceAlpha})`;
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(100,116,139,0.45)';
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-      }
-    }
-  }
-}
-
-function renderPlainBg(canvas, color) {
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = color;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-// ── Main render dispatch ──────────────────────────────────────────────────────
-function renderBackground() {
-  const canvas = document.getElementById('bg-canvas');
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const seed = getSeed();
-  document.getElementById('seed-display').textContent = `seed ${seed}`;
-  const rand = mulberry32(seed);
-
+// ── Background display ────────────────────────────────────────────────────────
+function showBackground() {
   const theme = document.documentElement.getAttribute('data-theme');
-  if (theme === 'swiss-alps') {
-    renderSwissAlps(canvas, rand);
+  const bgDiv = document.getElementById('bg-illus');
+
+  if (theme === 'swiss-seclusion') {
+    bgDiv.style.display = 'block';
+    const seed = getSeed();
+    document.getElementById('seed-display').textContent = `seed ${seed}`;
+    const illus = ILLUSTRATIONS[seed % ILLUSTRATIONS.length];
+    document.getElementById('illus-display').textContent = illus.name;
+    ILLUSTRATIONS.forEach(i => {
+      document.getElementById(i.id).style.display = (i.id === illus.id) ? 'block' : 'none';
+    });
   } else {
-    // Gaudy Miami and Positano — plain for now, generative coming next
-    renderPlainBg(canvas, theme === 'gaudy-miami' ? '#FFF0F6' : '#FEF3C7');
+    bgDiv.style.display = 'none';
+    document.getElementById('seed-display').textContent = '';
+    document.getElementById('illus-display').textContent = '';
   }
+}
+
+// ── Metric tick-up (swiss-seclusion only) ─────────────────────────────────────
+function runMetricTickUp() {
+  if (document.documentElement.getAttribute('data-theme') !== 'swiss-seclusion') return;
+  document.querySelectorAll('.metric-value[data-target]').forEach(el => {
+    const target = parseInt(el.getAttribute('data-target'));
+    const prefix = el.getAttribute('data-prefix') || '';
+    const delay = parseFloat(el.closest('.metric-card')?.style.animationDelay || '0') * 1000;
+    setTimeout(() => {
+      const start = performance.now();
+      const duration = 900;
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        const val = Math.round(target * ease);
+        el.textContent = prefix + val.toLocaleString();
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }, delay + 170);
+  });
 }
 
 // ── Animations ────────────────────────────────────────────────────────────────
@@ -567,29 +921,21 @@ function replayAnimations() {
     el.offsetHeight; // force reflow
     el.style.animation = '';
   });
+  runMetricTickUp();
 }
 
 // ── Theme switch ──────────────────────────────────────────────────────────────
-const themeNames = {
-  'swiss-alps': 'Swiss Alps Retreat ❄️',
-  'gaudy-miami': 'Gaudy Miami 🌴',
-  'positano':   "Clooney's Positano 🇮🇹",
-};
-
 function setTheme(theme, btn) {
   document.documentElement.setAttribute('data-theme', theme);
   document.querySelectorAll('.switcher button:not(.action)').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderBackground();
+  showBackground();
   replayAnimations();
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  renderBackground();
-});
-
-renderBackground();
+showBackground();
+replayAnimations();
 </script>
 </body>
 </html>
